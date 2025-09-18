@@ -1,0 +1,23 @@
+
+{
+    "faq_general": [
+        {
+            "question": "De ce se îngălbenesc frunzele plantei mele?",
+            "answer": "Frunzele galbene sunt cel mai adesea un semn de udare excesivă. Asigură-te că solul se usucă parțial între udări. Alte cauze pot fi lipsa de lumină, un ghiveci prea mic sau deficiențe de nutrienți."
+        },
+        {
+            "question": "Cât de des trebuie să-mi ud plantele?",
+            "answer": "Frecvența udării depinde de tipul plantei, lumină și umiditate. Verifică întotdeauna primii câțiva centimetri de sol. O regulă generală este să uzi doar când solul este uscat la atingere."
+        },
+        {
+            "question": "De ce are planta mea vârfuri maronii la frunze?",
+            "answer": "Vârfurile maronii sunt de obicei un semn de umiditate scăzută sau de exces de minerale și fluor în apa de la robinet. Pulverizează frunzele periodic cu apă distilată și folosește un umidificator."
+        }
+    ],
+    "faq_technical": [
+        {
+            "question": "Ce înseamnă 'drenaj bun'?",
+            "answer": "Un sol cu 'drenaj bun' este un amestec care permite apei să se scurgă rapid, fără a rămâne îmbibat. Acest lucru previne putrezirea rădăcinilor. Un amestec de turbă, perlit și nisip grosier asigură un drenaj optim."
+        }
+    ]
+}

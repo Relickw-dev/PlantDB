@@ -1,0 +1,862 @@
+[
+    {
+        "id": 1,
+        "emoji": "🪴",
+        "image": "assets/images/pothos.jpg",
+        "name": "Pothos (Iedera Diavolului)",
+        "latin": "Epipremnum aureum",
+        "etymology": "",
+        "tags": [
+            "cățărătoare",
+            "ușor de îngrijit"
+        ],
+        "category": "tropicală",
+        "toxicity": {
+            "cats": "toxic",
+            "dogs": "toxic"
+        },
+        "toxicityLevel": 3,
+        "difficulty": "ușoară",
+        "origin": "Insulele Solomon",
+        "size": "până la 2 m ca plantă agățătoare",
+        "desc": "Pothos este extrem de iertător. Tolerează lumina slabă, dar crește mai repede în lumină medie.",
+        "air_purifying_level": 2,
+        "blooming": "Rar în interior",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Lumină indirectă medie",
+                "description": "Deși pothos supraviețuiește în condiții de lumină scăzută, frunzele își pierd din variegare și creșterea încetinește. Pentru o dezvoltare optimă, așează-l într-un loc cu lumină indirectă medie, ferit de soare direct, care poate arde frunzele.",
+                "tip": "Roată ghiveciul săptămânal pentru a asigura o creștere uniformă a plantei."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "O dată la 1–2 săpt.",
+                "description": "Udă planta doar când primii 2-3 cm de sol sunt uscați la atingere. Evită udarea excesivă, care poate duce la putrezirea rădăcinilor.",
+                "tip": "Frunzele îngălbenite sunt un semn de udare excesivă, iar cele lăsate în jos, de deshidratare."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Medie (40-60%)",
+                "description": "Pothos se descurcă bine cu umiditatea medie a casei. Pentru o creștere mai rapidă și frunze mai mari, poți crește umiditatea prin pulverizare sau un umidificator.",
+                "tip": "Vârfurile maronii ale frunzelor sunt un semn de umiditate insuficientă."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "18–27°C",
+                "description": "Pothos preferă temperaturile moderate, specifice mediului interior. Evită variațiile mari de temperatură și curenții de aer reci.",
+                "tip": "Nu-l așeza lângă calorifere sau aparate de aer condiționat."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Universal, bine drenat",
+                "description": "O combinație de sol universal și perlit va asigura un drenaj excelent, prevenind excesul de umiditate.",
+                "tip": "Poți adăuga nisip grosier în amestec pentru a îmbunătăți și mai mult drenajul."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "O dată pe lună (vară)",
+                "description": "Folosește un îngrășământ lichid diluat, o dată pe lună, în timpul sezonului de creștere (primăvară-vară). Redu fertilizarea iarna.",
+                "tip": "Excesul de fertilizator poate arde rădăcinile, deci folosește o doză mai mică decât cea recomandată."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Simplu, prin butași",
+                "description": "Taie o tulpină cu 3-4 noduri și plaseaz-o în apă sau direct în pământ. Rădăcinile vor apărea în câteva săptămâni.",
+                "tip": "Asigură-te că butașul are cel puțin o frunză."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Ușor de evitat",
+                "description": "Principalii dăunători sunt afidele și păduchii țestoși. Pot apărea și putreziri ale rădăcinilor din cauza udării excesive.",
+                "tip": "Verifică periodic frunzele și solul pentru a preveni problemele."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Liliopsida",
+            "subclass": "Arecidae",
+            "order": "Arales",
+            "family": "Araceae",
+            "genus": "Epipremnum",
+            "species": "Epipremnum aureum"
+        }
+    },
+    {
+        "id": 2,
+        "emoji": "🌵",
+        "image": "assets/images/cactus.jpg",
+        "name": "Cactus Saguaro",
+        "latin": "Carnegiea gigantea",
+        "etymology": "",
+        "tags": [
+            "suculentă",
+            "rezistentă"
+        ],
+        "category": "suculentă",
+        "toxicity": {
+            "cats": "non-toxic",
+            "dogs": "non-toxic"
+        },
+        "toxicityLevel": 0,
+        "difficulty": "medie",
+        "origin": "Deșertul Sonora, SUA/Mexic",
+        "size": "poate depăși 12 m în natură",
+        "desc": "Cactușii preferă lumină foarte puternică și udări rare. Evită excesul de apă.",
+        "air_purifying_level": 0,
+        "blooming": "Primăvara-Vara",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Soare direct",
+                "description": "Cactușii Saguaro sunt nativi în deșert și necesită expunere directă la soare. Așează-i într-un loc cu cel puțin 6-8 ore de soare pe zi pentru o creștere sănătoasă.",
+                "tip": "Dacă este mutat dintr-un loc cu lumină scăzută la soare direct, aclimatizează-l treptat pentru a evita arsurile."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "La 3–4 săpt. (vară)",
+                "description": "Udă-l abundent, dar rar. Lasă solul să se usuce complet între udări. În lunile de iarnă, udă-l și mai rar sau deloc.",
+                "tip": "Excesul de apă este cel mai mare inamic al cactusului. Dacă ești în dubiu, mai bine amână udarea."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Scăzută (sub 30%)",
+                "description": "Ca plantă de deșert, cactusul Saguaro preferă umiditatea foarte scăzută. Umiditatea excesivă poate duce la boli fungice.",
+                "tip": "Nu este nevoie să pulverizezi apă pe această plantă."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "20–35°C",
+                "description": "Acești cactuși preferă temperaturile ridicate. Rezistă bine la căldură, dar trebuie protejați de frig și îngheț.",
+                "tip": "Pot supraviețui la temperaturi scăzute, dar e preferabil să-i ții într-un mediu călduros."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Pentru cactuși",
+                "description": "Folosește un amestec special pentru cactuși și suculente, care asigură un drenaj rapid și eficient.",
+                "tip": "Un sol cu mult nisip și perlit este ideal."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "O dată pe an",
+                "description": "Fertilizează cu un îngrășământ special pentru cactuși și suculente, diluat la jumătate din doză, o dată pe an, primăvara.",
+                "tip": "Fertilizarea excesivă poate dăuna rădăcinilor fragile."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Dificil, prin semințe",
+                "description": "Înmulțirea se face de obicei din semințe, un proces lent și dificil, care poate dura ani de zile pentru a vedea o creștere semnificativă.",
+                "tip": "Necesită condiții specifice și multă răbdare."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Putrezirea rădăcinilor",
+                "description": "Cea mai frecventă problemă este putrezirea rădăcinilor, cauzată de udarea excesivă. Fii atent la petele maronii pe tulpină.",
+                "tip": "Asigură-te că solul se usucă complet între udări."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Magnoliopsida",
+            "subclass": "Caryophyllidae",
+            "order": "Caryophyllales",
+            "family": "Cactaceae",
+            "genus": "Carnegiea",
+            "species": "Carnegiea gigantea"
+        }
+    },
+    {
+        "id": 3,
+        "emoji": "🌿",
+        "image": "assets/images/monstera.jpg",
+        "name": "Monstera Deliciosa",
+        "latin": "Monstera deliciosa",
+        "etymology": "",
+        "tags": [
+            "populară",
+            "frunze mari"
+        ],
+        "category": "tropicală",
+        "toxicity": {
+            "cats": "toxic",
+            "dogs": "toxic"
+        },
+        "toxicityLevel": 3,
+        "difficulty": "medie",
+        "origin": "America Centrală",
+        "size": "1–3 m în interior",
+        "desc": "Cunoscută pentru frunzele perforate. Iubește suport pentru a se urca.",
+        "air_purifying_level": 2,
+        "blooming": "Foarte rar în interior",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Lumină indirectă puternică",
+                "description": "Monstera iubește lumina, dar nu suportă soarele direct, care îi poate arde frunzele. Așeaz-o lângă o fereastră orientată spre est sau vest.",
+                "tip": "Dacă frunzele noi nu se perforează, e posibil să aibă nevoie de mai multă lumină."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "La 1–2 săpt.",
+                "description": "Udă planta când primii 5 cm de sol sunt uscați. Udă bine, lăsând apa să se scurgă complet din ghiveci.",
+                "tip": "Frunzele se lasă ușor în jos când planta are nevoie de apă."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Medie–Înaltă (60-80%)",
+                "description": "Monstera prosperă la umiditate ridicată. Pulverizează-i frunzele regulat sau folosește un umidificator pentru a preveni apariția vârfurilor maronii.",
+                "tip": "O poți ține și în baie, dacă are lumină naturală."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "18–30°C",
+                "description": "Monstera se simte cel mai bine la temperaturi calde. Evită expunerea la temperaturi sub 15°C.",
+                "tip": "Este o plantă tropicală, așa că îi place căldura și umiditatea."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Aerat (turbă + perlit)",
+                "description": "Folosește un amestec de sol aerisit și bine drenat. Un amestec de turbă, perlit și scoarță de copac este ideal.",
+                "tip": "Solul prea compact poate duce la putrezirea rădăcinilor."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "La 2-4 săpt. (vară)",
+                "description": "Folosește un îngrășământ lichid echilibrat, o dată la 2-4 săptămâni, în timpul sezonului de creștere. Redu fertilizarea în timpul iernii.",
+                "tip": "Frunzele noi, mici și neperforate pot indica lipsa de nutrienți."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Simplu, prin butași",
+                "description": "Taie o tulpină cu un nod aerian și o frunză. Pune-o în apă sau în mușchi sphagnum până apar rădăcini. Apoi, poți planta butașul în sol.",
+                "tip": "Poți folosi hormon de înrădăcinare pentru rezultate mai rapide."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Dăunători",
+                "description": "Este sensibilă la păianjeni roșii și trips. Verifică periodic partea inferioară a frunzelor. Frunzele galbene indică udarea excesivă.",
+                "tip": "Curăță frunzele cu o cârpă umedă pentru a preveni dăunătorii."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Liliopsida",
+            "subclass": "Arecidae",
+            "order": "Arales",
+            "family": "Araceae",
+            "genus": "Monstera",
+            "species": "Monstera deliciosa"
+        }
+    },
+    {
+        "id": 4,
+        "emoji": "🪷",
+        "image": "assets/images/zz.jpg",
+        "name": "Zamioculcas (ZZ)",
+        "latin": "Zamioculcas zamiifolia",
+        "etymology": "",
+        "tags": [
+            "lumina slabă",
+            "office"
+        ],
+        "category": "tropicală",
+        "toxicity": {
+            "cats": "toxic",
+            "dogs": "toxic"
+        },
+        "toxicityLevel": 3,
+        "difficulty": "ușoară",
+        "origin": "Africa de Est",
+        "size": "60–90 cm",
+        "desc": "Planta de birou perfectă. Supraviețuiește în condiții mai puțin ideale.",
+        "air_purifying_level": 1,
+        "blooming": "Rar în interior",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Slabă–medie",
+                "description": "Planta ZZ este incredibil de tolerantă la lumina scăzută, fiind ideală pentru birouri sau spații întunecate. Evită soarele direct pentru a nu-i arde frunzele.",
+                "tip": "O poți ține și într-un loc luminos, dar cu lumină indirectă."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "La 2–3 săpt.",
+                "description": "Planta ZZ stochează apă în rizomi și în tulpină, deci este foarte rezistentă la secetă. Lasă solul să se usuce complet între udări. Udă o dată pe lună în timpul iernii.",
+                "tip": "Este aproape imposibil să o usuci, dar e foarte ușor să o uzi prea mult."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Scăzută–Medie (sub 60%)",
+                "description": "Planta ZZ nu are nevoie de umiditate ridicată și se simte bine în mediul obișnuit al casei. Nu necesită pulverizare.",
+                "tip": "O poți așeza lângă alte plante pentru a beneficia de umiditatea pe care o creează acestea."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "18–27°C",
+                "description": "Preferă temperaturile tipice de interior și nu-i place frigul. Nu o expune la temperaturi sub 10°C.",
+                "tip": "O plantă ideală pentru a fi ținută în interior pe tot parcursul anului."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Bine drenat",
+                "description": "Un amestec de sol universal pentru plante de interior, cu perlit sau nisip grosier adăugat pentru a asigura un drenaj excelent.",
+                "tip": "Un ghiveci cu găuri de scurgere este esențial pentru a preveni putrezirea rădăcinilor."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "La 2-3 luni (vară)",
+                "description": "Fertilizează rar, o dată la 2-3 luni, cu un îngrășământ echilibrat, diluat la jumătate din doză.",
+                "tip": "Excesul de nutrienți poate afecta sănătatea plantei."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Lent, din butași de frunză",
+                "description": "Poate fi înmulțită prin butași de frunză, dar procesul este lent. Se poate înmulți și prin divizarea rizomului (tuberculului).",
+                "tip": "Rădăcinile apar în câteva luni. Fii răbdător."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Putrezirea rădăcinilor",
+                "description": "Planta ZZ este foarte susceptibilă la putrezirea rădăcinilor cauzată de udarea excesivă.",
+                "tip": "Mai puțină apă e întotdeauna mai bine pentru ZZ decât prea multă."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Liliopsida",
+            "subclass": "Arecidae",
+            "order": "Arales",
+            "family": "Araceae",
+            "genus": "Zamioculcas",
+            "species": "Zamioculcas zamiifolia"
+        }
+    },
+    {
+        "id": 5,
+        "emoji": "🌼",
+        "image": "assets/images/spathiphyllum.jpg",
+        "name": "Spathiphyllum (Crinul Păcii)",
+        "latin": "Spathiphyllum wallisii",
+        "etymology": "",
+        "tags": [
+            "flori",
+            "purifică aerul"
+        ],
+        "category": "plante cu flori",
+        "toxicity": {
+            "cats": "toxic",
+            "dogs": "toxic"
+        },
+        "toxicityLevel": 3,
+        "difficulty": "medie",
+        "origin": "America Centrală",
+        "size": "40–90 cm",
+        "desc": "Înflorește în interior. Semnalează setea prin lăsarea frunzelor.",
+        "air_purifying_level": 3,
+        "blooming": "Vara-Toamna",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Slabă–medie",
+                "description": "Crinul Păcii preferă lumina indirectă, dar se adaptează bine și la lumină slabă. Prea multă lumină directă îi va arde frunzele.",
+                "tip": "Dacă planta nu înflorește, e posibil să aibă nevoie de mai multă lumină."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "Săptămânal",
+                "description": "Udă planta când solul este uscat la atingere. Crinul Păcii este cunoscut pentru frunzele care se lasă în jos spectaculos când are nevoie de apă, dar își revin rapid după udare.",
+                "tip": "Dacă o uzi prea mult, vei observa vârfuri maronii la frunze."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Înaltă (60-80%)",
+                "description": "Crinul Păcii se simte cel mai bine în medii cu umiditate ridicată. Pulverizează-i frunzele zilnic sau folosește un umidificator.",
+                "tip": "O poți așeza într-o tavă cu pietriș umed pentru a crește umiditatea locală."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "18–26°C",
+                "description": "Planta se dezvoltă cel mai bine la temperaturi calde și constante. Evită curenții de aer reci și temperaturile sub 15°C.",
+                "tip": "Nu o așeza lângă o fereastră deschisă iarna."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Ușor acid",
+                "description": "Un sol de tip turbă, ușor acid, care reține umiditatea dar permite un bun drenaj.",
+                "tip": "Folosește un amestec pentru plante de interior, îmbogățit cu compost."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "La 6 săpt. (vară)",
+                "description": "Folosește un îngrășământ echilibrat, diluat la jumătate din doză, o dată la 6 săptămâni în timpul sezonului de creștere.",
+                "tip": "Nu fertiliza iarna."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Simplu, prin divizare",
+                "description": "Cel mai ușor se înmulțește prin divizarea plantei la baza rădăcinilor în timpul repotării.",
+                "tip": "Fii delicat când separi rădăcinile."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Vârfuri maronii",
+                "description": "Vârfurile maronii ale frunzelor sunt cauzate de lipsa umidității sau de excesul de fluor din apa de la robinet.",
+                "tip": "Folosește apă distilată sau de ploaie."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Liliopsida",
+            "subclass": "Arecidae",
+            "order": "Arales",
+            "family": "Araceae",
+            "genus": "Spathiphyllum",
+            "species": "Spathiphyllum wallisii"
+        }
+    },
+    {
+        "id": 6,
+        "emoji": "🌱",
+        "image": "assets/images/peperomia.jpg",
+        "name": "Peperomia",
+        "latin": "Peperomia obtusifolia",
+        "etymology": "",
+        "tags": [
+            "compactă",
+            "ne-toxică"
+        ],
+        "category": "tropicală",
+        "toxicity": {
+            "cats": "non-toxic",
+            "dogs": "non-toxic"
+        },
+        "toxicityLevel": 0,
+        "difficulty": "ușoară",
+        "origin": "America de Sud",
+        "size": "20–40 cm",
+        "desc": "Formează tufe compacte. Ideală pentru spații mici.",
+        "air_purifying_level": 1,
+        "blooming": "Rar",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Medie",
+                "description": "Peperomia se descurcă cel mai bine în lumină medie, indirectă. Soarele direct îi poate arde frunzele, iar lumina insuficientă va face ca frunzele să devină palide.",
+                "tip": "O fereastră orientată spre nord sau est este un loc excelent pentru ea."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "La 1–2 săpt.",
+                "description": "Udă planta când solul este uscat la atingere. Frunzele ei suculente stochează apă, așa că udarea excesivă este principala problemă.",
+                "tip": "Verifică solul înainte de udare. Dacă e umed, mai așteaptă."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Medie (40-60%)",
+                "description": "Peperomia preferă umiditatea medie. Nu este la fel de pretențioasă ca alte plante tropicale, dar beneficiază de pulverizare ocazională.",
+                "tip": "Gruparea cu alte plante poate ajuta la menținerea umidității."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "18–26°C",
+                "description": "Peperomia preferă temperaturile calde, de interior. Evită curenții de aer reci.",
+                "tip": "Este o plantă ce nu necesită multă atenție, perfectă pentru începători."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Ușor aerat",
+                "description": "Un amestec de sol bine drenat, care să nu rețină excesiv umiditatea. Un mix pentru suculente este o alegere bună.",
+                "tip": "Adaugă nisip sau perlit pentru un drenaj optim."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "La 1-2 luni (vară)",
+                "description": "Fertilizează cu un îngrășământ diluat la jumătate din doză, o dată la 1-2 luni, în timpul sezonului de creștere.",
+                "tip": "Optează pentru un îngrășământ lichid organic."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Ușor, prin butași de tulpină sau frunză",
+                "description": "Taie o tulpină sau o frunză și plasează-o într-un mediu umed (sol, mușchi, apă). Se vor forma rădăcini în câteva săptămâni.",
+                "tip": "Poți acoperi ghiveciul cu o pungă de plastic pentru a menține umiditatea ridicată."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Udare excesivă",
+                "description": "Udarea excesivă duce la putrezirea rădăcinilor și la căderea frunzelor. Frunzele ridate pot indica deshidratarea.",
+                "tip": "E mai bine să sub-udezi decât să supra-udezi."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Magnoliopsida",
+            "subclass": "Hamamelididae",
+            "order": "Piperales",
+            "family": "Piperaceae",
+            "genus": "Peperomia",
+            "species": "Peperomia obtusifolia"
+        }
+    },
+    {
+        "id": 7,
+        "emoji": "🍀",
+        "image": "assets/images/oxalis.jpg",
+        "name": "Oxalis Triangularis",
+        "latin": "Oxalis triangularis",
+        "etymology": "",
+        "tags": [
+            "decorativă",
+            "mov"
+        ],
+        "category": "plante decorative",
+        "toxicity": {
+            "cats": "ușor toxic",
+            "dogs": "ușor toxic"
+        },
+        "toxicityLevel": 1,
+        "difficulty": "medie",
+        "origin": "Brazilia",
+        "size": "20–30 cm",
+        "desc": "Frunze mov în formă de trifoi, se deschid/închid după lumină.",
+        "air_purifying_level": 0,
+        "blooming": "Vara",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Medie–puternică",
+                "description": "Oxalis are nevoie de multă lumină indirectă pentru a-și menține culoarea vibrantă și pentru a înflori. Frunzele se mișcă în funcție de lumină, deschizându-se ziua și închizându-se noaptea.",
+                "tip": "Fără suficientă lumină, frunzele își pierd pigmentul mov."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "La 1 săpt.",
+                "description": "Udă planta când solul este uscat la atingere. În perioadele de dormitare (de obicei iarna), udările trebuie reduse drastic.",
+                "tip": "Nu tolereză solul îmbibat cu apă."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Medie",
+                "description": "Oxalis se adaptează bine la umiditatea standard a casei, dar apreciază o pulverizare ocazională.",
+                "tip": "Nu pulveriza pe flori, pentru a evita petele."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "16–24°C",
+                "description": "Se dezvoltă cel mai bine la temperaturi moderate, specifice mediului interior.",
+                "tip": "Evită-o în curenții de aer reci."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Universal",
+                "description": "Folosește un amestec de sol universal, bine drenat.",
+                "tip": "Asigură-te că ghiveciul are orificii de drenaj."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "O dată pe lună (vară)",
+                "description": "Folosește un îngrășământ lichid diluat o dată pe lună în timpul sezonului de creștere. Se oprește fertilizarea când intră în dormitare.",
+                "tip": "Respectă instrucțiunile de pe ambalajul îngrășământului."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Ușor, prin rizomi",
+                "description": "Se înmulțește prin divizarea rizomilor (bulbii mici) în timpul repotării, toamna sau primăvara.",
+                "tip": "Poți planta câțiva rizomi într-un singur ghiveci pentru un aspect mai plin."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Dormitare",
+                "description": "Oxalis poate intra în dormitare și își poate pierde frunzele. Aceasta este o reacție normală. Udă mai puțin și așteaptă ca planta să se reactiveze.",
+                "tip": "Păstrează rizomii în pământ uscat până reapar frunzele."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Magnoliopsida",
+            "subclass": "Rosidae",
+            "order": "Geraniales",
+            "family": "Oxalidaceae",
+            "genus": "Oxalis",
+            "species": "Oxalis triangularis"
+        }
+    },
+    {
+        "id": 8,
+        "emoji": "🌴",
+        "image": "assets/images/areca.jpg",
+        "name": "Palmier Areca",
+        "latin": "Dypsis lutescens",
+        "etymology": "",
+        "tags": [
+            "ambiental",
+            "inalt"
+        ],
+        "category": "tropicală",
+        "toxicity": {
+            "cats": "non-toxic",
+            "dogs": "non-toxic"
+        },
+        "toxicityLevel": 0,
+        "difficulty": "medie",
+        "origin": "Madagascar",
+        "size": "1–2 m în ghiveci",
+        "desc": "Aduce vibe tropical. Preferă umiditate mai mare.",
+        "air_purifying_level": 3,
+        "blooming": "Rar în interior",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Lumină indirectă",
+                "description": "Palmierul Areca preferă lumina indirectă, dar puternică. Prea mult soare direct îi va arde frunzele delicate. Așează-l lângă o fereastră luminoasă, dar ferit de razele directe.",
+                "tip": "Frunzele îngălbenite pot indica o expunere prea mare la soare."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "La 5–7 zile",
+                "description": "Menține solul uniform umed, dar nu îmbibat cu apă. Udă-l când primii 2-3 cm de sol sunt uscați. Evită ca planta să stea în apă.",
+                "tip": "Folosește apă filtrată sau de ploaie, deoarece este sensibil la fluor."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Înaltă (60-80%)",
+                "description": "Palmierul Areca iubește umiditatea ridicată. Pulverizează-i frunzele zilnic sau folosește un umidificator. Lipsa umidității poate duce la apariția păianjenilor roșii.",
+                "tip": "Evită curenții de aer, care usucă rapid frunzele."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "18–30°C",
+                "description": "Ca plantă tropicală, palmierul Areca iubește căldura. Evită-l în zonele cu curenți de aer reci și nu-l lăsa la temperaturi sub 15°C.",
+                "tip": "O plantă ideală pentru a adăuga un element tropical în casa ta."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Bine drenat",
+                "description": "Un amestec de sol universal, aerat, cu nisip și perlit, va asigura un drenaj excelent și o aerisire a rădăcinilor.",
+                "tip": "Repotează planta la fiecare 2 ani pentru a-i oferi nutrienți proaspeți."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "La 2-3 săpt. (vară)",
+                "description": "Fertilizează cu un îngrășământ lichid echilibrat, diluat la jumătate din doză, la fiecare 2-3 săptămâni, în sezonul de creștere.",
+                "tip": "Urmează instrucțiunile producătorului pentru a evita supra-fertilizarea."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Dificil, prin divizare",
+                "description": "Palmierul Areca se înmulțește prin divizarea tufei la baza plantei. Este un proces delicat, care poate dăuna rădăcinilor.",
+                "tip": "Asigură-te că fiecare secțiune are un sistem de rădăcini sănătos înainte de a o replanta."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Vârfuri maronii",
+                "description": "Vârfurile maronii sunt cauzate de lipsa umidității sau de excesul de sare și fluor din apă.",
+                "tip": "Curăță periodic frunzele de praf pentru a menține un aspect sănătos."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Liliopsida",
+            "subclass": "Arecidae",
+            "order": "Arecales",
+            "family": "Arecaceae",
+            "genus": "Dypsis",
+            "species": "Dypsis lutescens"
+        }
+    },
+    {
+        "id": 9,
+        "emoji": "🪻",
+        "image": "assets/images/lavanda.jpg",
+        "name": "Lavandă",
+        "latin": "Lavandula angustifolia",
+        "etymology": "",
+        "tags": [
+            "miros plăcut",
+            "grădină"
+        ],
+        "category": "aromatică",
+        "toxicity": {
+            "cats": "non-toxic",
+            "dogs": "non-toxic"
+        },
+        "toxicityLevel": 0,
+        "difficulty": "ușoară",
+        "origin": "Mediterraneană",
+        "size": "30–80 cm",
+        "desc": "Folosită pentru aromă și uleiuri. Atrage albine.",
+        "air_purifying_level": 0,
+        "blooming": "Vara",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Soare direct",
+                "description": "Lavanda prosperă în plin soare. Are nevoie de cel puțin 6-8 ore de soare direct pe zi pentru a crește și a înflori abundent.",
+                "tip": "Lumina insuficientă va duce la o creștere alungită și la flori rare."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "La 1 săpt.",
+                "description": "Udă lavanda doar când solul este complet uscat. Este o plantă rezistentă la secetă și preferă să fie ținută pe partea mai uscată.",
+                "tip": "Udarea excesivă este principala cauză a bolilor fungice și a putrezirii rădăcinilor."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Scăzută",
+                "description": "Lavanda, fiind o plantă mediteraneeană, preferă aerul uscat și nu necesită umiditate ridicată. Prea multă umiditate poate duce la boli fungice.",
+                "tip": "Asigură o bună circulație a aerului în jurul plantei."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "10–28°C",
+                "description": "Lavanda este o plantă rezistentă la temperaturi scăzute, dar și la căldură. Se dezvoltă cel mai bine în climate moderate.",
+                "tip": "Rezistă la îngheț, dar trebuie protejată în ghiveci."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Alcalin, drenat",
+                "description": "Lavanda preferă solul alcalin (pH > 7) și foarte bine drenat, cu conținut scăzut de nutrienți. Solul nisipos sau cu pietriș este ideal.",
+                "tip": "Adaugă var (calcar) în sol pentru a-i crește pH-ul."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "Rar, nu este necesar",
+                "description": "Lavanda nu are nevoie de fertilizare regulată. O poți fertiliza o dată pe an, primăvara, cu un îngrășământ cu conținut scăzut de azot.",
+                "tip": "Solul prea bogat în nutrienți poate afecta producția de flori."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Simplu, prin butași",
+                "description": "Înmulțirea se face cel mai ușor prin butași de tulpină, prelevați primăvara sau toamna. Se plantează în sol nisipos, bine drenat.",
+                "tip": "Alege butași de 10-15 cm dintr-o tulpină sănătoasă, nelemnoasă."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Putrezirea rădăcinilor",
+                "description": "Udarea excesivă este principala cauză a bolilor fungice și a putrezirii rădăcinilor. Frunzele îngălbenite sunt un semn al acestora.",
+                "tip": "Asigură-te că planta este expusă la soare direct și are un drenaj excelent."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Magnoliopsida",
+            "subclass": "Asteridae",
+            "order": "Lamiales",
+            "family": "Lamiaceae",
+            "genus": "Lavandula",
+            "species": "Lavandula angustifolia"
+        }
+    },
+    {
+        "id": 10,
+        "emoji": "🥀",
+        "image": "assets/images/trandafir.jpg",
+        "name": "Trandafir Miniatural",
+        "latin": "Rosa chinensis minima",
+        "etymology": "",
+        "tags": [
+            "flori",
+            "cadou"
+        ],
+        "category": "plante cu flori",
+        "toxicity": {
+            "cats": "non-toxic",
+            "dogs": "non-toxic"
+        },
+        "toxicityLevel": 0,
+        "difficulty": "grea",
+        "origin": "China",
+        "size": "20–40 cm",
+        "desc": "Necesită lumină multă și fertilizare regulată pentru a înflori.",
+        "air_purifying_level": 1,
+        "blooming": "Pe tot parcursul anului",
+        "care_guide": {
+            "light_details": {
+                "title": "Lumină 🌞",
+                "level": "Soare direct–indirect puternic",
+                "description": "Trandafirii miniaturali au nevoie de cel puțin 6 ore de soare direct pe zi pentru a produce flori abundente. Îi poți ține și în lumină puternică, indirectă, dar florile vor fi mai rare.",
+                "tip": "Dacă este ținut în interior, așează-l într-un loc cât mai luminos."
+            },
+            "water_details": {
+                "title": "Apă 💧",
+                "level": "La 2–3 zile",
+                "description": "Solul trebuie menținut uniform umed, dar nu îmbibat. Udă-l des, dar în cantități mici. Verifică solul zilnic pentru a te asigura că nu se usucă complet.",
+                "tip": "Acest tip de trandafir este sensibil la secetă și la udarea excesivă."
+            },
+            "humidity_details": {
+                "title": "Umiditate 💧",
+                "level": "Medie–Înaltă (50-70%)",
+                "description": "Trandafirii miniaturali preferă umiditatea medie. Pulverizarea periodică a frunzelor este benefică, dar evită să uzi florile.",
+                "tip": "Un mediu cu umiditate scăzută poate atrage dăunători precum păianjenii roșii."
+            },
+            "temp_details": {
+                "title": "Temperatură 🌡️",
+                "level": "15–26°C",
+                "description": "Preferă temperaturile moderate și nu tolerează curenții de aer. Poate fi ținut afară în timpul verii, dar trebuie adus în interior toamna.",
+                "tip": "Variațiile bruște de temperatură pot afecta înflorirea."
+            },
+            "soil_details": {
+                "title": "Sol 🌱",
+                "level": "Bogat în nutrienți",
+                "description": "Folosește un amestec de sol bogat în materie organică și bine drenat. Adaugă compost sau fertilizator lichid în timpul sezonului de creștere.",
+                "tip": "Repotarea anuală, primăvara, este benefică pentru sănătatea plantei."
+            },
+            "feeding_details": {
+                "title": "Fertilizare 🍽️",
+                "level": "La 1–2 săpt. (vară)",
+                "description": "Fertilizează cu un îngrășământ special pentru trandafiri (bogat în fosfor) la fiecare 1-2 săptămâni, în timpul sezonului de creștere.",
+                "tip": "Optează pentru un îngrășământ granular cu eliberare lentă pentru a simplifica procesul."
+            },
+            "propagation_details": {
+                "title": "Înmulțire ✂️",
+                "level": "Mediu, prin butași de tulpină",
+                "description": "Se înmulțește prin butași de tulpină. Taie o tulpină sănătoasă de 10-15 cm și planteaz-o în sol umed. Menține solul umed și acoperă butașul pentru a menține umiditatea.",
+                "tip": "Cel mai bun moment pentru înmulțire este primăvara, după prima rundă de înflorire."
+            },
+            "common_problems": {
+                "title": "Probleme comune ⚠️",
+                "level": "Afide și putregai",
+                "description": "Trandafirii sunt susceptibili la afide, păianjeni roșii și boli fungice precum putregaiul. Asigură o bună circulație a aerului și monitorizează dăunătorii.",
+                "tip": "Îndepărtează frunzele bolnave și folosește un fungicid."
+            }
+        },
+        "classification": {
+            "kingdom": "Plantae",
+            "subkingdom": "Tracheobionta",
+            "superdivision": "Spermatophyta",
+            "division": "Magnoliophyta",
+            "class": "Magnoliopsida",
+            "subclass": "Rosidae",
+            "order": "Rosales",
+            "family": "Rosaceae",
+            "genus": "Rosa",
+            "species": "Rosa chinensis minima"
+        }
+    }
+]

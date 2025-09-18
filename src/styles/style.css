@@ -1,0 +1,1282 @@
+/* ----------------------------------- */
+/* 1. Variabile CSS & Temă             */
+/* ----------------------------------- */
+
+:root {
+    /* Font */
+    --font-body: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial;
+
+    /* Culori - Tema Întunecată (implicită) */
+    --bg: #11151b;
+    --bg-subtle: #191f2b;
+    --text: #e2e8f0;
+    --muted: #8899ac;
+    --accent-1: #4CAF50; 
+    --accent-2: #FBC02D; 
+    --accent-3: #fcd34d; 
+    --accent-green: #22c55e;
+    --accent-yellow: #facc15;
+    --accent-red: #ef4444;
+
+    /* Gradiente */
+    --gradient-primary: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+    --gradient-difficulty-med: linear-gradient(135deg, #facc15, #eab308);
+    --gradient-difficulty-hard: linear-gradient(135deg, #f87171, #ef4444);
+
+    /* Umbre, Radius, Spațiere */
+    --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, .05);
+    --shadow-md: 0 0.25rem 0.75rem rgba(0, 0, 0, .15);
+    --shadow-lg: 0 0.625rem 1.875rem rgba(0, 0, 0, .35);
+    --radius-small: 0.5rem;
+    --radius-medium: 1rem;
+    --radius-large: 1.5rem;
+    --gap: 1.25rem;
+}
+
+/* Culori - Tema Luminoasă */
+@media (prefers-color-scheme: light) {
+    :root {
+        --bg: #f8fafc;
+        --bg-subtle: #ffffff;
+        --text: #0f172a;
+        --muted: #64748b;
+        --accent-1: #4CAF50;
+        --accent-2: #FBC02D;
+        --accent-3: #f59e0b;
+        --shadow-md: 0 0.25rem 0.75rem rgba(2, 6, 23, .05);
+        --shadow-lg: 0 0.625rem 1.875rem rgba(2, 6, 23, .08);
+    }
+}
+:root.light {
+    --bg: #f8fafc;
+    --bg-subtle: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --accent-1: #4CAF50;
+    --accent-2: #FBC02D;
+    --accent-3: #f59e0b;
+    --shadow-md: 0 0.25rem 0.75rem rgba(2, 6, 23, .05);
+    --shadow-lg: 0 0.625rem 1.875rem rgba(2, 6, 23, .08);
+}
+
+/* ----------------------------------- */
+/* 2. Stiluri de bază & Layout         */
+/* ----------------------------------- */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+}
+
+.container {
+    max-width: 85rem;
+    margin: 0 auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    opacity: 0;
+    transform: translateY(1.25rem);
+    transition: opacity 0.8s 0.8s ease, transform 0.8s 0.8s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.container.loaded {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+h1, h3 {
+    letter-spacing: -0.5px;
+}
+h1 {
+    font-size: clamp(1.25rem, 2vw + 0.75rem, 1.75rem);
+    margin: 0;
+    letter-spacing: -0.2px;
+}
+
+.muted {
+    color: var(--muted);
+    font-size: 0.875rem;
+}
+
+.sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+#background-emojis {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.emoji-circle {
+    position: absolute;
+    font-size: 15rem;
+    opacity: 0.08;
+    filter: blur(10px);
+    transition: transform 0.8s cubic-bezier(.2, .8, .2, 1);
+}
+
+/* ----------------------------------- */
+/* 3. Componente UI                    */
+/* ----------------------------------- */
+
+.input, .select, .control-btn {
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-small);
+    background: var(--bg-subtle);
+    color: var(--text);
+    border: 1px solid var(--bg-subtle);
+    outline: none;
+    transition: all 0.2s ease-out;
+    box-shadow: var(--shadow-sm);
+    font-size: 0.9375rem;
+}
+
+.input, .select {
+    width: 100%;
+}
+
+.input::placeholder {
+    color: var(--muted);
+}
+
+.input:focus, .select:focus, .control-btn:focus {
+    border-color: var(--accent-1);
+    box-shadow: 0 0 0 2px var(--accent-1);
+}
+
+.select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="%239ca3af" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.btn {
+    all: unset;
+    cursor: pointer;
+    border-radius: var(--radius-small);
+    text-align: center;
+    padding: 0.5rem;
+    font-weight: 500;
+    background: var(--bg-subtle);
+    color: var(--text);
+    transition: all 0.2s ease-out;
+    box-shadow: var(--shadow-sm);
+}
+.btn:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.tag-button {
+    all: unset;
+    cursor: pointer;
+    padding: 0.5rem 0.875rem;
+    border-radius: var(--radius-small);
+    background: var(--bg-subtle);
+    color: var(--muted);
+    border: 1px solid var(--bg-subtle);
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
+}
+.tag-button:hover {
+    background: var(--bg);
+}
+.tag-button.active {
+    background: var(--gradient-primary);
+    color: white;
+    border-color: transparent;
+    font-weight: 500;
+}
+.tag-button.active:hover {
+    transform: none;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Butoane mai mici si secundare */
+.copy-btn, .nav-arrow {
+    all: unset;
+    cursor: pointer;
+    font-weight: 500;
+    background: var(--bg-subtle);
+    color: var(--text);
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s ease-out;
+    border: 1px solid var(--bg-subtle);
+    padding: 0.5rem 0.875rem;
+    border-radius: var(--radius-small);
+}
+.copy-btn:hover, .nav-arrow:hover {
+    background: var(--gradient-primary);
+    color: #fff;
+}
+.copy-btn:active, .nav-arrow:active {
+    transform: scale(0.98);
+}
+.copy-btn.success {
+    background: var(--accent-green);
+    color: #fff;
+    transform: scale(1.02);
+    animation: copiedPulse 0.5s ease;
+}
+.nav-arrow {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+}
+
+/* 1. ANIMATII PENTRU BUTOANELE PRINCIPALE (GRADIENT) */
+.btn:hover {
+    transform: translateY(-0.15rem);
+    box-shadow: var(--shadow-lg);
+}
+
+/* 2. ANIMATII PENTRU BUTOANELE DE TAGURI */
+.tag-button:hover:not(.active) {
+    transform: translateY(-0.1rem);
+    box-shadow: var(--shadow-sm);
+    background: var(--bg);
+}
+
+/* 3. ANIMATII PENTRU BUTOANELE SECUNDARE (COPY, NAV) */
+.copy-btn:hover,
+.nav-arrow:hover {
+    transform: translateY(-0.1rem);
+    box-shadow: var(--shadow-md);
+}
+
+/* 4. TRANZITII GENERALE PENTRU TOATE BUTOANELE */
+/* Adaugă această tranziție pe butoane pentru un efect fluid */
+.btn, .tag-button, .copy-btn, .nav-arrow {
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, background 0.2s ease;
+}
+
+/* ----------------------------------- */
+/* 4. Header & Controale               */
+/* ----------------------------------- */
+
+header {
+    display: flex;
+    flex-direction: inherit;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    padding-bottom: 0.75rem;
+    background: none;
+    backdrop-filter: blur(12px);
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.search-sort-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
+    gap: 0.75rem;
+}
+
+.tag-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.control {
+    position: relative;
+}
+
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    align-self: flex-end;
+    margin-top: -3rem;
+}
+
+/* ----------------------------------- */
+/* 5. Main Content & Card              */
+/* ----------------------------------- */
+
+main {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.375rem;
+    margin-top: 0.5rem;
+}
+main::-webkit-scrollbar {
+    width: 0.5rem;
+}
+main::-webkit-scrollbar-track {
+    background: transparent;
+}
+main::-webkit-scrollbar-thumb {
+    background: var(--bg-subtle);
+    border-radius: 999px;
+}
+main::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
+    gap: var(--gap);
+    margin-top: 1.125rem;
+    transition: opacity 0.2s ease-in-out;
+}
+.grid.fade-out {
+    opacity: 0;
+}
+
+.card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-large);
+    background: var(--bg-subtle);
+    border: 1px solid var(--bg-subtle);
+    box-shadow: var(--shadow-md);
+    transform: translateY(0.375rem);
+    opacity: 0;
+    transition: transform 0.5s cubic-bezier(.2, .8, .2, 1), opacity 0.5s, box-shadow 0.2s;
+    cursor: pointer;
+}
+.card.visible {
+    transform: translateY(0);
+    opacity: 1;
+}
+.card:hover {
+    transform: translateY(-0.25rem) scale(1.01);
+    box-shadow: var(--shadow-lg);
+}
+
+.thumb {
+    aspect-ratio: 4/3;
+    background-size: cover;
+    background-position: center;
+    overflow: hidden;
+    border-bottom: 1px solid var(--bg);
+}
+.thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.content {
+    padding: 0.875rem;
+}
+.name {
+    font-weight: 700;
+    font-size: 1.125rem;
+    margin: 0 0 0.25rem;
+}
+.latin {
+    font-style: italic;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    margin: 0 0 0.625rem;
+}
+.tags {
+    display: flex;
+    gap: 0.375rem;
+    flex-wrap: wrap;
+}
+.tag {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-small);
+    background: var(--bg);
+    color: var(--muted);
+    border: 1px solid var(--bg-subtle);
+}
+.card-title-header {
+    display: flex;              /* Activează Flexbox */
+    justify-content: space-between; /* Împinge elementele la capete (stânga/dreapta) */
+    align-items: center;        /* Aliniază vertical pe centru */
+    gap: 0.5rem;                /* Adaugă un mic spațiu între ele */
+}
+
+.card-info-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+.toxicity-indicator {
+    padding: 0.25rem 0.5rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.toxicity-indicator.safe {
+    background-color: var(--accent-green);
+    color: white;
+}
+.toxicity-indicator.low-risk {
+    background-color: var(--accent-yellow);
+    color: white;
+}
+.toxicity-indicator.toxic {
+    background-color: var(--accent-red);
+    color: white;
+}
+.toxicity-indicator.very-toxic {
+    background-color: #dc2626;
+    color: white;
+}
+.toxicity-indicator.unknown {
+    background-color: var(--muted-color);
+    color: black;
+}
+
+.difficulty-bar {
+    display: flex;
+    gap: 0.125rem;
+    margin-top: 0.25rem;
+}
+.difficulty-level {
+    height: 0.375rem;
+    width: 1.25rem;
+    border-radius: 999px;
+    background: var(--bg);
+}
+.difficulty-level.active {
+    background: var(--gradient-primary);
+}
+.difficulty-level.medium {
+    background: var(--gradient-difficulty-med);
+}
+.difficulty-level.hard {
+    background: var(--gradient-difficulty-hard);
+}
+
+.empty-state img{
+   height: 200px;
+   width: 200px;
+}
+
+/* ----------------------------------- */
+/* 6. Modal & Animații                 */
+/* ----------------------------------- */
+
+dialog {
+    border: none;
+    border-radius: var(--radius-large);
+    background: var(--bg-subtle);
+    color: var(--text);
+    width: min(56.25rem, 92vw);
+    box-shadow: var(--shadow-lg);
+    padding: 0;
+    position: relative;
+}
+dialog::-webkit-scrollbar {
+    width: 0.5rem;
+}
+dialog::-webkit-scrollbar-track {
+    background: transparent;
+}
+dialog::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border-radius: 999px;
+}
+dialog::-webkit-scrollbar-thumb:hover {
+    background: var(--muted);
+}
+dialog::backdrop {
+    background: rgba(15, 23, 42, .7);
+    backdrop-filter: blur(0.375rem);
+    animation: fadeIn 0.2s ease-out;
+}
+.modal {
+    display: grid;
+    grid-template-columns: 22.5rem 1fr;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    align-items: start;
+}
+.modal .hero {
+    border-radius: var(--radius-medium);
+    overflow: hidden;
+    background: var(--gradient-primary);
+    aspect-ratio: 4/3;
+    box-shadow: var(--shadow-md);
+}
+.modal-hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transform: scale(0.95);
+    opacity: 0;
+    transition: transform 0.4s ease-out, opacity 0.4s ease-out;
+}
+dialog[open] .modal-hero-image {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.close {
+    all: unset;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    font-weight: 900;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--muted);
+    transition: color 0.2s;
+    z-index: 10;
+}
+.close:hover {
+    color: var(--text);
+}
+
+.kv {
+    display: grid;
+    grid-template-columns: 8.75rem 1fr;
+    gap: 0.5rem 0.875rem;
+    margin-top: 0.625rem;
+    font-size: 0.875rem;
+}
+.modal .chips {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.625rem;
+}
+.chip {
+    padding: 0.375rem 0.625rem;
+    border-radius: var(--radius-small);
+    background: var(--bg);
+    color: var(--muted);
+    border: 1px solid var(--bg);
+    font-size: 0.75rem;
+}
+
+.tooltip {
+    position: absolute;
+    top: -2.25rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(0.625rem);
+    background: var(--bg);
+    color: var(--text);
+    padding: 0.375rem 0.625rem;
+    font-size: 0.75rem;
+    border-radius: 0.375rem;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    box-shadow: var(--shadow-md);
+}
+.tooltip.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.375rem;
+}
+.modal-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.375rem;
+}
+.modal-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid var(--muted);
+    padding-bottom: 0.5rem;
+    margin-top: 1rem;
+}
+.modal-tab-btn {
+    all: unset;
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--muted);
+    transition: color 0.2s;
+    border-bottom: 2px solid transparent;
+}
+.modal-tab-btn:hover {
+    color: var(--text);
+}
+.modal-tab-btn.active {
+    color: var(--accent-1);
+    border-bottom: 2px solid var(--accent-1);
+}
+.modal-tab-content {
+    display: none;
+    animation: fadeInTab 0.4s ease-out;
+}
+.modal-tab-content.active {
+    display: block;
+}
+
+.care-section {
+    margin-bottom: 1.5rem;
+}
+.care-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+.care-section p {
+    margin: 0;
+}
+.care-section ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0;
+}
+.care-section li {
+    font-size: 0.875rem;
+    color: var(--muted);
+}
+
+/* ----------------------------------- */
+/* 7. Animații & Intro                 */
+/* ----------------------------------- */
+
+#intro {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(circle at 10% 10%, var(--accent-1) 0%, transparent 70%), radial-gradient(circle at 90% 90%, var(--accent-2) 0%, transparent 70%);
+    background-color: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 1s ease, transform 1s ease;
+    overflow: hidden;
+}
+.intro-logo {
+    opacity: 0;
+    transform: scale(0.8);
+    animation: intro-fade-in 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    will-change: opacity, transform;
+    filter: drop-shadow(0 0.625rem 1.25rem rgba(0,0,0,0.2));
+}
+.intro-logo-image {
+    max-width: 12.5rem;
+    height: auto;
+    display: block;
+}
+#intro.out {
+    animation: intro-slide-out 0.8s cubic-bezier(0.6, 0.05, 0.4, 0.95) forwards;
+    pointer-events: none;
+}
+
+#intro.hidden {
+    opacity: 0;
+}
+
+
+@keyframes intro-fade-in {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+@keyframes intro-slide-out {
+    to { transform: translateY(-100vh); }
+}
+@keyframes fadeIn {
+    from { opacity: 0 }
+    to { opacity: 1 }
+}
+@keyframes fadeInTab {
+    from { opacity: 0; transform: translateY(0.5rem); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes copiedPulse {
+    0% { transform: scale(1); opacity: .8 }
+    50% { transform: scale(1.05); opacity: 1 }
+    100% { transform: scale(1.02); opacity: 1 }
+}
+
+/* ----------------------------------- */
+/* 8. Media Queries & Responsivitate  */
+/* ----------------------------------- */
+
+@media (min-width: 48.75rem) {
+    header {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}
+@media(max-width: 48.75rem) {
+    .theme-toggle {
+        margin-top: 0;
+    }
+    .modal {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1rem;
+    }
+    .modal .hero {
+        height: 12.5rem;
+        width: 100%;
+    }
+    .kv {
+        grid-template-columns: 1fr;
+    }
+    .modal-nav {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
+/* ----------------------------------- */
+/* 9. Tabele                           */
+/* ----------------------------------- */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 2rem;
+    border-radius: var(--radius-large);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+}
+table thead tr {
+    background: var(--bg);
+    color: var(--text);
+    text-align: left;
+}
+table th, table td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--bg);
+}
+table th {
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+table tbody tr {
+    background: var(--bg-subtle);
+    transition: background 0.2s ease-in-out;
+}
+table tbody tr:hover {
+    background: color-mix(in srgb, var(--bg-subtle) 90%, var(--muted));
+}
+
+
+/* --- Stiluri pentru Meniul Retractabil (FAB) --- */
+
+
+.fab-container {
+    position: fixed;
+    bottom: 2rem;
+    left: 2rem;
+    z-index: 1000;
+    /* NOU: Containerul principal devine contextul de poziționare */
+    width: 3.5rem;
+    height: 3.5rem;
+}
+
+.fab-button {
+    all: unset;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: var(--shadow-lg);
+    transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+    color: white;
+}
+
+.fab-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.fab-button svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+/* MODIFICAT: Butonul principal este poziționat absolut */
+#fab-main {
+    position: absolute;
+    inset: 0; /* Ocupă tot spațiul containerului */
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    z-index: 2; /* Este deasupra opțiunilor când meniul e închis */
+}
+
+/* MODIFICAT: Containerul de opțiuni este și el poziționat absolut */
+.fab-options {
+    position: absolute;
+    inset: 0; /* Pornește din același loc cu butonul principal */
+    z-index: 1; /* Este în spatele butonului principal când meniul e închis */
+}
+
+/* Opțiunile meniului (bulele mici) */
+.fab-option {
+    position: absolute; /* Fiecare opțiune este absolută față de container */
+    bottom: 0;
+    left: 0;
+    width: 3rem;
+    height: 3rem;
+    background: var(--bg-subtle);
+    color: var(--text);
+    
+    /* Starea inițială: invizibile și neinteractive */
+    opacity: 0;
+    transform: scale(0.5);
+    pointer-events: none;
+    transition: all 0.2s ease-out;
+}
+
+/* Starea deschisă: animația de apariție */
+.fab-container.open .fab-options {
+    pointer-events: all; /* Permite click-ul pe tot containerul de opțiuni */
+}
+
+.fab-container.open .fab-option {
+    opacity: 1;
+    pointer-events: all; /* Permite click-ul pe fiecare bulă */
+}
+
+/* MODIFICAT: Animația acum mută opțiunile în sus, fiind mai explicită */
+.fab-container.open .fab-option:nth-child(1) {
+    transform: translateY(-4.5rem); /* 3rem (înălțime) + 1.5rem (gap) */
+    transition-delay: 0.1s;
+}
+.fab-container.open .fab-option:nth-child(2) {
+    transform: translateY(-8.5rem); /* Prima bulă + înălțimea ei + gap */
+    transition-delay: 0.05s;
+}
+
+/* Rotește iconița principală la deschidere */
+.fab-container.open #fab-main {
+    transform: rotate(45deg);
+}
+
+
+/* Switch */
+.switch {
+    position: relative;
+    width: 3.25rem;
+    height: 1.875rem;
+    border-radius: 999px;
+    background: var(--bg-subtle);
+    border: none;
+    box-shadow: none;
+    cursor: pointer;
+    transition: background 0.25s ease-in-out;
+}
+.knob {
+    position: absolute;
+    top: 0.15rem;
+    left: 0.15rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 999px;
+    background: var(--muted);
+    transition: transform 0.25s ease-in-out, background 0.25s ease-in-out;
+}
+.switch.on .knob {
+    transform: translateX(1.375rem);
+    background: var(--gradient-primary);
+}
+
+
+/* --- Stiluri pentru ascunderea filtrelor de tag-uri --- */
+
+.tag-filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer; /* Permite click-ul pe tot header-ul */
+}
+
+.toggle-btn {
+    all: unset;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.2s ease;
+}
+
+.toggle-btn:hover {
+    background-color: var(--bg);
+}
+
+.toggle-btn svg {
+    transition: transform 0.3s ease;
+}
+
+/* Rotește săgeata când filtrele sunt închise */
+.toggle-btn.collapsed svg {
+    transform: rotate(180deg);
+}
+
+/* Logica de ascundere/afișare */
+#tag-filter-buttons {
+    transition: all 0.3s ease-in-out;
+    overflow: hidden;
+    max-height: 500px; /* O valoare mare, suficientă pentru a afișa toate tag-urile */
+    opacity: 1;
+}
+
+#tag-filter-buttons.collapsed {
+    max-height: 0;
+    opacity: 0;
+    margin-top: 0; /* Elimină marginea când este ascuns */
+}
+
+
+/* --- Stiluri pentru Modalul FAQ (Varianta Modern & Crisp v3, fără borduri) --- */
+
+.faq-container {
+    margin-top: 1.5rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Emoji blurat pe fundal */
+.faq-container::before {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 20rem;
+    font-weight: 900;
+    color: var(--bg-subtle);
+    opacity: 0.1;
+    filter: blur(15px);
+    z-index: -1;
+}
+
+.faq-section h4 {
+    margin-bottom: 1rem;
+    color: var(--accent-2);
+    font-weight: 700;
+    letter-spacing: -0.2px;
+    border: none;
+}
+
+/* Fiecare item este un "card" semi-transparent - bordura a fost eliminată */
+.faq-item {
+    background-color: color-mix(in srgb, var(--bg-subtle) 80%, transparent);
+    backdrop-filter: blur(5px);
+    border-radius: var(--radius-medium);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease; /* Modificat: fără border-color */
+    box-shadow: var(--shadow-sm); /* Umbră subtilă implicită */
+}
+
+.faq-question {
+    font-weight: 500;
+    font-size: 1.05rem;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    transition: color 0.2s ease;
+}
+
+.faq-question::-webkit-details-marker {
+    display: none;
+}
+
+.faq-question:hover {
+    color: var(--accent-1);
+}
+
+/* Iconiță chevron (săgeată) rafinată */
+.faq-question::after {
+    content: '';
+    display: block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-bottom: 2px solid var(--muted);
+    border-right: 2px solid var(--muted);
+    transform: rotate(45deg);
+    transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), border-color 0.2s ease;
+}
+
+/* Stiluri pentru starea "deschis" a cardului */
+.faq-item[open] {
+    background-color: color-mix(in srgb, var(--bg-subtle) 90%, transparent); /* Un pic mai opac la deschidere */
+    box-shadow: var(--shadow-md); /* Efect de "card" ridicat la deschidere */
+}
+
+.faq-item[open] > .faq-question {
+    font-weight: 600;
+    color: var(--text);
+}
+
+.faq-item[open] > .faq-question::after {
+    transform: rotate(225deg);
+    border-color: var(--accent-1); /* Săgeata capătă culoarea de accent */
+}
+
+/* Stil pentru răspuns, cu spațiere mai bună */
+.faq-answer {
+    color: var(--muted);
+    line-height: 1.7;
+    padding: 0 1.25rem 1.25rem;
+    animation: fadeInTab 0.4s ease-out;
+}
+
+#faq-modal .modal-content-wrapper {
+    padding: 1rem 1.5rem 1.5rem;
+}
+
+/* style.css */
+
+/* --- Stiluri pentru Sistemul de Notificări --- */
+
+.notification-container {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem; /* 12px */
+    z-index: 9999;
+    width: max-content;
+    max-width: 90%;
+}
+
+/* Poziționare */
+.notification-container--bottom-right { bottom: 1.25rem; right: 1.25rem; }
+.notification-container--bottom-left { bottom: 1.25rem; left: 1.25rem; }
+.notification-container--top-right { top: 1.25rem; right: 1.25rem; }
+.notification-container--top-left { top: 1.25rem; left: 1.25rem; }
+
+/* Stilul de bază al unei notificări */
+.notification {
+    background: var(--bg-subtle);
+    color: var(--text);
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-medium);
+    box-shadow: var(--shadow-lg);
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 250px;
+    
+    /* Animația de intrare/ieșire */
+    opacity: 0;
+    transform: translateX(100%);
+    transition: all 0.4s cubic-bezier(0.21, 1.02, 0.73, 1);
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* Stiluri pentru tipuri diferite */
+.notification--success { background-color: #2e7d32; color: #fff; }
+.notification--error { background-color: #c62828; color: #fff; }
+.notification--warning { background-color: #ed6c02; color: #000; }
+.notification--info { background-color: #0288d1; color: #fff; }
+
+/* Butonul de închidere */
+.notification__close-btn {
+    all: unset;
+    cursor: pointer;
+    background: transparent;
+    color: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+}
+
+.notification__close-btn:hover {
+    opacity: 1;
+}
+
+/* --- Stiluri pentru Skeleton Loading (Bazate pe Tema existentă) --- */
+
+.skeleton-grid {
+    display: grid;
+    /* Folosim exact aceeași configurație ca grila principală */
+    grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
+    gap: var(--gap);
+    margin-top: 1.125rem;
+}
+
+.skeleton-card {
+    /* Folosim variabilele tale pentru un aspect consistent */
+    background: var(--bg-subtle);
+    border-radius: var(--radius-large);
+    box-shadow: var(--shadow-md);
+    overflow: hidden; /* Necesar pentru animație și aspect */
+    position: relative; /* Context pentru pseudo-elementul de animație */
+}
+
+/* Animația de "shimmer" (strălucire) */
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* Pseudo-elementul care creează efectul de lumină în mișcare */
+.skeleton-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Gradientul este bazat pe culoarea de fundal pentru un efect subtil */
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    transform: translateX(-100%);
+    animation: shimmer 1.5s infinite;
+}
+
+/* Placeholder-ul pentru imaginea plantei */
+.skeleton-card .skeleton-image {
+    /* Folosim aspect-ratio pentru a se potrivi perfect cu ".thumb" */
+    aspect-ratio: 4/3;
+    /* Culoarea este fundalul principal, pentru un contrast subtil cu fundalul cardului */
+    background-color: var(--bg);
+}
+
+.skeleton-card .skeleton-content {
+    /* Folosim același padding ca la cardul real */
+    padding: 0.875rem;
+}
+
+/* Placeholder-ul pentru titlul plantei */
+.skeleton-card .skeleton-title {
+    height: 1.125rem; /* Aproximăm înălțimea titlului (.name) */
+    width: 70%;
+    margin-bottom: 0.5rem; /* Similar cu marginile reale */
+    background-color: var(--bg);
+    border-radius: var(--radius-small); /* Folosim variabilele tale */
+}
+
+/* Placeholder-ul pentru textul secundar (numele latin) */
+.skeleton-card .skeleton-text {
+    height: 0.8125rem; /* Aproximăm înălțimea textului (.latin) */
+    width: 50%;
+    background-color: var(--bg);
+    border-radius: var(--radius-small);
+}
+
+/* --- Stiluri pentru Sistemul de Favorite --- */
+
+/* Butonul de Favorite de pe fiecare card */
+.favorite-btn {
+    all: unset;
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 3; /* Deasupra link-ului cardului */
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.favorite-btn:hover {
+    transform: scale(1.1);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.favorite-btn svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke: white;
+    stroke-width: 2;
+    fill: transparent; /* Inimă goală implicit */
+    transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+/* Starea "activă" când o plantă este favorită */
+.favorite-btn.active svg {
+    fill: #ef4444; /* Inimă plină, roșie */
+    stroke: #ef4444;
+}
+
+/* Stilul pentru butonul de filtru din header */
+.btn-favorite {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.btn-favorite.active {
+    background: var(--gradient-primary);
+    color: white;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-favorite.active svg {
+    fill: white;
+}

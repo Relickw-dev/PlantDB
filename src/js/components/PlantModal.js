@@ -2,10 +2,10 @@ import { createElement, formatValue, dispatchEvent } from '../utils/helpers.js';
 import { CUSTOM_EVENTS, COPY_STATUS, NAVIGATION } from '../utils/constants.js';
 import { BaseModal } from './BaseModal.js';
 import { showNotification } from './NotificationService.js';
-import { handleError } from '../core/errorHandler.js'; // ADAUGAT
+import { handleError } from '../core/errorHandler.js';
 
 // --- Subcomponente (Helpers de Randare) ---
-// Aceste funcții rămân neschimbate, deoarece sunt deja granulare și reutilizabile.
+
 function createTagElement(tag) {
     return createElement("span", { className: "chip", text: `#${tag}` });
 }
@@ -17,17 +17,34 @@ function createKeyValue(label, value) {
     ];
 }
 
-function createCareSection({ title, description, tip }) {
-    if (!title || !description) return null;
-    const children = [
-        createElement("h4", { text: title }),
-        createElement("p", { text: description })
-    ];
-    if (tip) {
-        children.push(createElement("ul", {
-            children: [createElement("li", { text: tip })],
-        }));
+/**
+ * NOU: Funcție generalizată pentru a crea orice secțiune cu titlu.
+ * Înlocuiește createCareSection și createExtraInfoSection.
+ * @param {string} title - Titlul secțiunii.
+ * @param {string | string[] | {description: string, tip: string}} content - Conținutul de afișat.
+ * @returns {HTMLElement | null} Elementul DOM al secțiunii sau null.
+ */
+function createTitledSection(title, content) {
+    if (!title || !content || (Array.isArray(content) && content.length === 0)) return null;
+
+    const children = [createElement("h4", { text: title })];
+
+    if (typeof content === 'string') {
+        children.push(createElement("p", { text: content }));
+    } else if (Array.isArray(content)) {
+        const listItems = content.map(item => createElement("li", { text: item }));
+        children.push(createElement("ul", { className: "info-list", children: listItems }));
+    } else if (typeof content === 'object' && content.description) {
+        children.push(createElement("p", { text: content.description }));
+        if (content.tip) {
+            children.push(createElement("ul", {
+                children: [createElement("li", { text: content.tip })],
+            }));
+        }
+    } else {
+        return null; // Nu randa nimic dacă formatul conținutului nu este recunoscut
     }
+
     return createElement("div", {
         className: "care-section",
         children: children,
@@ -70,25 +87,6 @@ function createClassificationTable(classification) {
     return null;
 }
 
-function createExtraInfoSection(title, content) {
-    if (!title || !content || (Array.isArray(content) && content.length === 0)) return null;
-    const children = [];
-    if (typeof content === 'string') {
-        children.push(createElement("p", { text: content }));
-    } else if (Array.isArray(content)) {
-        const listItems = content.map(item => createElement("li", { text: item }));
-        children.push(createElement("ul", { className: "info-list", children: listItems }));
-    }
-    return createElement("div", {
-        className: "care-section",
-        children: [
-            createElement("h4", { text: title }),
-            ...children
-        ]
-    });
-}
-
-
 export class PlantModal extends BaseModal {
     #elements = {};
     #currentPlant = null;
@@ -122,7 +120,7 @@ export class PlantModal extends BaseModal {
         this.#currentPlant = plant;
         this.#resetInternalState();
         this.#updateHeader(plant);
-        this.#updateContent(plant); // Această metodă va fi acum mult mai simplă
+        this.#updateContent(plant);
         this.#updateNavigation(adjacentPlants, plant);
         this.#updateCopyButton(copyStatus);
         this.open();
@@ -130,10 +128,6 @@ export class PlantModal extends BaseModal {
 
     // --- METODE PRIVATE DE REFACTORIZARE ---
 
-    /**
-     * MODIFICARE: Creează conținutul pentru tab-ul "Detalii".
-     * @returns {DocumentFragment}
-     */
     #renderDetailsTab(plant) {
         const fragment = document.createDocumentFragment();
         const toxicityText = plant.toxicity ? `🐱 ${formatValue(plant.toxicity.cats)}, 🐶 ${formatValue(plant.toxicity.dogs)}` : undefined;
@@ -149,27 +143,29 @@ export class PlantModal extends BaseModal {
     }
 
     /**
-     * MODIFICARE: Creează conținutul pentru tab-ul "Ghid Îngrijire".
-     * @returns {DocumentFragment}
+     * MODIFICAT: Folosește noua funcție generalizată.
      */
     #renderCareGuideTab(plant) {
         const fragment = document.createDocumentFragment();
-        const careSections = plant.care_guide ? Object.values(plant.care_guide).map(createCareSection).filter(Boolean) : [];
-        fragment.append(...careSections);
+        if (plant.care_guide) {
+            const careSections = Object.values(plant.care_guide)
+                .map(guide => createTitledSection(guide.title, { description: guide.description, tip: guide.tip }))
+                .filter(Boolean);
+            fragment.append(...careSections);
+        }
         return fragment;
     }
 
     /**
-     * MODIFICARE: Creează conținutul pentru tab-ul "Extra Info".
-     * @returns {DocumentFragment}
+     * MODIFICAT: Folosește noua funcție generalizată.
      */
     #renderExtraInfoTab(plant) {
         const fragment = document.createDocumentFragment();
         const extraSections = [
-            createExtraInfoSection("☀️ Îngrijire Sezonieră (Creștere)", plant.seasonal_care?.growing_season),
-            createExtraInfoSection("❄️ Îngrijire Sezonieră (Repaus)", plant.seasonal_care?.dormant_season),
-            createExtraInfoSection("🐞 Dăunători Comuni", plant.common_pests),
-            createExtraInfoSection("💡 Curiozități", plant.quick_facts)
+            createTitledSection("☀️ Îngrijire Sezonieră (Creștere)", plant.seasonal_care?.growing_season),
+            createTitledSection("❄️ Îngrijire Sezonieră (Repaus)", plant.seasonal_care?.dormant_season),
+            createTitledSection("🐞 Dăunători Comuni", plant.common_pests),
+            createTitledSection("💡 Curiozități", plant.quick_facts)
         ].filter(Boolean);
 
         if (extraSections.length > 0) {
@@ -180,10 +176,6 @@ export class PlantModal extends BaseModal {
         return fragment;
     }
     
-    /**
-     * MODIFICARE: Creează conținutul pentru tab-ul "Clasificare".
-     * @returns {DocumentFragment|HTMLElement}
-     */
     #renderClassificationTab(plant) {
         const classificationTable = createClassificationTable(plant.classification);
         if (classificationTable) {
@@ -192,20 +184,12 @@ export class PlantModal extends BaseModal {
         return createElement("p", { text: "Informațiile de clasificare nu sunt disponibile." });
     }
 
-    // --- METODE PRINCIPALE (MODIFICATE și EXISTENTE) ---
-
-    /**
-     * REFACTORIZAT: Metoda principală este acum mult mai curată și doar orchestrează
-     * apelarea funcțiilor specializate pentru fiecare tab.
-     */
     #updateContent(plant) {
-        // Generează conținutul pentru fiecare tab folosind noile metode
         const detailsContent = this.#renderDetailsTab(plant);
         const careGuideContent = this.#renderCareGuideTab(plant);
         const extraInfoContent = this.#renderExtraInfoTab(plant);
         const classificationContent = this.#renderClassificationTab(plant);
 
-        // Actualizează DOM-ul într-un singur loc
         this.#elements.tags.replaceChildren(...(plant.tags || []).map(createTagElement));
         this.#elements.details.replaceChildren(detailsContent);
         this.#elements.careGuide.replaceChildren(careGuideContent);
@@ -262,7 +246,7 @@ export class PlantModal extends BaseModal {
                 showNotification("Link-ul a fost copiat în clipboard!", { type: 'success' });
             }
         } catch (err) {
-            handleError(err, "partajarea sau copierea link-ului"); // MODIFICAT
+            handleError(err, "partajarea sau copierea link-ului");
         }
     }
 

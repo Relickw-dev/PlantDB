@@ -5,14 +5,38 @@ import { loadAndProcessPlantsData, loadFaqData, fetchPlantDetails } from '../ser
 import { showNotification } from '../components/NotificationService.js';
 import { TIMINGS, NAVIGATION, COPY_STATUS, SORT_KEYS } from '../utils/constants.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
-import { getAdjacentPlants } from '../services/plantLogic.js'; // <-- MODIFICAT: Import nou
+import { getAdjacentPlants } from '../services/plantLogic.js';
 import * as favoriteService from '../services/favoriteService.js';
 import { handleError } from './errorHandler.js';
 
 
 let copyStatusTimeoutId = null;
 
-// --- NOU: Funcții Helper & Gestionarea Erorilor ---
+// --- NOU: Funcție centralizată pentru gestionarea stării modalelor ---
+/**
+ * O funcție privată care actualizează starea pentru ambele modale,
+ * asigurând că doar unul poate fi activ la un moment dat.
+ * @param {object|null} plantData - Obiectul pentru modalul plantei sau null.
+ * @param {boolean} isFaqOpen - Starea de vizibilitate pentru modalul FAQ.
+ */
+function setModalState(plantData = null, isFaqOpen = false) {
+    const newState = {
+        modalPlant: plantData,
+        isFaqOpen: isFaqOpen,
+    };
+
+    // Asigură exclusivitatea: dacă un modal se deschide, celălalt se închide.
+    if (plantData) {
+        newState.isFaqOpen = false;
+    }
+    if (isFaqOpen) {
+        newState.modalPlant = null;
+    }
+
+    updateState(newState);
+}
+
+// --- Funcții Helper & Gestionarea Erorilor ---
 
 /**
  * Încarcă detaliile complete pentru o plantă.
@@ -186,8 +210,7 @@ export function selectRandomPlant() {
 }
 
 /**
- * Deschide modalul pentru o plantă specifică.
- * @param {number} plantId - ID-ul plantei.
+ * MODIFICAT: Deschide modalul pentru o plantă specifică folosind noul helper.
  */
 export async function openPlantModal(plantId) {
     const current = await loadPlantDetails(plantId);
@@ -200,17 +223,15 @@ export async function openPlantModal(plantId) {
     );
     const { prev, next } = getAdjacentPlants(current, visiblePlants);
     
-    updateState({
-        modalPlant: { current, prev, next },
-        isFaqOpen: false
-    });
+    // Apelăm funcția centralizată
+    setModalState({ current, prev, next });
 }
 
 /**
- * Închide modalul plantei.
+ * MODIFICAT: Închide modalul plantei folosind noul helper.
  */
 export function closeModal() {
-    updateState({ modalPlant: null });
+    setModalState(null);
 }
 
 /**
@@ -230,6 +251,9 @@ export async function navigateModal(direction) {
 
 // --- Acțiuni FAQ & Utilitare ---
 
+/**
+ * MODIFICAT: Deschide modalul FAQ folosind noul helper.
+ */
 export async function openFaqModal() {
     const { isFaqDataLoaded, isFaqLoadFailed } = getState();
     
@@ -239,21 +263,26 @@ export async function openFaqModal() {
     }
     
     if (isFaqDataLoaded) {
-        updateState({ isFaqOpen: true, modalPlant: null });
+        // Apelăm funcția centralizată
+        setModalState(null, true);
         return;
     }
     
     try {
         const faqData = await loadFaqData();
-        updateState({ faqData, isFaqDataLoaded: true, isFaqOpen: true, modalPlant: null });
+        updateState({ faqData, isFaqDataLoaded: true }); // Încărcăm datele
+        setModalState(null, true); // Apoi deschidem modalul
     } catch (err) {
         handleError(err, "încărcarea datelor FAQ");
         updateState({ isFaqLoadFailed: true });
     }
 }
 
+/**
+ * MODIFICAT: Închide modalul FAQ folosind noul helper.
+ */
 export function closeFaqModal() {
-    updateState({ isFaqOpen: false });
+    setModalState(null, false);
 }
 
 export async function copyPlantDetails() {

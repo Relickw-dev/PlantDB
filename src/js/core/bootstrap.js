@@ -5,6 +5,7 @@ import { TagFilter } from '../components/TagFilter.js';
 import { FaqModal } from '../components/FaqModal.js';
 import { FabMenu } from '../components/FabMenu.js';
 import { TagToggle } from '../components/TagToggle.js';
+import { Tooltip } from '../components/Tooltip.js'; // <-- ADAUGĂ ACEST IMPORT
 
 /**
  * Găsește și validează elementele esențiale din DOM.
@@ -48,6 +49,7 @@ export function initComponents(domElements) {
         faqModal: new FaqModal(),
         fabMenu: new FabMenu('#fab-container'),
         tagToggle: new TagToggle('.tag-filter-header'),
+        tooltip: new Tooltip(`#${domElements.tooltip.id}`),
     };
 }
 

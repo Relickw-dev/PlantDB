@@ -8,63 +8,6 @@ import { getStateFromURL } from '../services/urlService.js';
 import { getState } from './state.js';
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 
-// --- NOU: Logica pentru Tooltip ---
-let currentTooltipTarget = null;
-
-/**
- * Poziționează tooltip-ul relativ la elementul țintă.
- * @param {HTMLElement} target - Elementul care declanșează tooltip-ul.
- * @param {HTMLElement} tooltip - Elementul tooltip.
- */
-function positionTooltip(target, tooltip) {
-    if (!target || !tooltip) return;
-
-    const targetRect = target.getBoundingClientRect();
-    const tooltipRect = tooltip.getBoundingClientRect();
-    const margin = 10;
-
-    let top = targetRect.top - tooltipRect.height - margin;
-    let left = targetRect.left + (targetRect.width / 2) - (tooltipRect.width / 2);
-
-    if (left < margin) left = margin;
-    if (left + tooltipRect.width > window.innerWidth - margin) {
-        left = window.innerWidth - tooltipRect.width - margin;
-    }
-    if (top < margin) {
-        top = targetRect.bottom + margin;
-    }
-
-    tooltip.style.top = `${top}px`;
-    tooltip.style.left = `${left}px`;
-}
-
-/**
- * Afișează tooltip-ul.
- * @param {MouseEvent} e - Evenimentul de mouseover.
- * @param {HTMLElement} tooltipElement - Elementul DOM al tooltip-ului.
- */
-function showTooltip(e, tooltipElement) {
-    const target = e.target.closest('[data-tooltip]');
-    if (!target) return;
-
-    currentTooltipTarget = target;
-    tooltipElement.textContent = currentTooltipTarget.getAttribute('data-tooltip');
-    tooltipElement.classList.add('visible');
-    tooltipElement.setAttribute('aria-hidden', 'false');
-    positionTooltip(currentTooltipTarget, tooltipElement);
-}
-
-/**
- * Ascunde tooltip-ul.
- * @param {HTMLElement} tooltipElement - Elementul DOM al tooltip-ului.
- */
-function hideTooltip(tooltipElement) {
-    if (!currentTooltipTarget) return;
-    currentTooltipTarget = null;
-    tooltipElement.classList.remove('visible');
-    tooltipElement.setAttribute('aria-hidden', 'true');
-}
-
 
 // --- Funcții Helper pentru gestionarea evenimentelor ---
 
@@ -185,12 +128,6 @@ export function bindEventListeners(dom) {
 
     // Delegare la nivel de body
     document.body.addEventListener('click', handleBodyClick);
-
-    // NOU: Evenimente pentru tooltip
-    document.body.addEventListener('mouseover', (e) => showTooltip(e, dom.tooltip));
-    document.body.addEventListener('mouseout', () => hideTooltip(dom.tooltip));
-    window.addEventListener('scroll', () => hideTooltip(dom.tooltip), { capture: true });
-
 
     // Evenimente custom
     dom.tagFilterContainer.addEventListener(CUSTOM_EVENTS.TAG_SELECTED, (e) => actions.selectTag(e.detail.tag));

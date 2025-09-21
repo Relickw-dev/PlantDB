@@ -31,10 +31,10 @@ export function getStateFromURL(location = window.location) {
 
     if (query) state.query = query;
     if (sortOrder) state.sortOrder = sortOrder;
-    
-    // Transformăm string-ul din URL (ex: "tag1,tag2") înapoi în array
+
+    // <-- MODIFICAT: Decodăm fiecare tag individual pentru a gestiona virgulele
     if (tagParam) {
-        state.activeTags = tagParam.split(',');
+        state.activeTags = tagParam.split(',').map(tag => decodeURIComponent(tag));
     }
 
     if (hash && hash.startsWith(HASH_PREFIXES.PLANT)) {
@@ -58,18 +58,19 @@ export function updateURLFromState(state, location = window.location, history = 
 
     if (state.query) params.set(URL_PARAMS.QUERY, state.query);
     if (state.sortOrder !== SORT_KEYS.AZ) params.set(URL_PARAMS.SORT, state.sortOrder);
-    
-    // Transformăm array-ul de tag-uri active într-un singur string, separat prin virgulă
+
+    // <-- MODIFICAT: Codăm fiecare tag individual înainte de a le uni
     if (state.activeTags && state.activeTags.length > 0) {
-        params.set(URL_PARAMS.TAG, state.activeTags.join(','));
+        const encodedTags = state.activeTags.map(tag => encodeURIComponent(tag)).join(',');
+        params.set(URL_PARAMS.TAG, encodedTags);
     }
 
     const hash = buildHashFromState(state);
-    
+
     const url = new URL(location.href);
     url.search = params.toString();
     url.hash = hash;
-    
+
     const newUrl = url.toString();
 
     if (location.href !== newUrl) {

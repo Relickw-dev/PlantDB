@@ -20,6 +20,10 @@ export const SORT_KEYS = Object.freeze ({
     TOX_DESC: 'tox-desc',
     DIFF_ASC: 'diff-asc',
     DIFF_DESC: 'diff-desc',
+    AIR_ASC: 'air-asc',
+    AIR_DESC: 'air-desc',
+    GROWTH_ASC: 'growth-asc',
+    GROWTH_DESC: 'growth-desc',
 });
 
 // Numele evenimentelor custom emise de componentele UI
@@ -64,7 +68,7 @@ export const PET_KEYWORDS = Object.freeze (['pisica', 'pisici', 'caine', 'caini'
 export const TIMINGS = Object.freeze ({
     SEARCH_DEBOUNCE: 300,
     INTRO_DELAY: 1200,
-    COPY_RESET_DELAY: 2500,
+    COPY_RESET_DELAY: 300,
     DEBOUNCE_DEFAULT: 300,
     THROTTLE_DEFAULT: 300,
     GRID_ANIMATION_DURATION: 200,
@@ -119,6 +123,9 @@ export const DEFAULT_STATE = Object.freeze({
     activeTags: [],
     modalPlant: null,
     isFaqOpen: false,
+    faqData: null,
+    isFaqDataLoaded: false,
+    isFaqLoadFailed: false,
     copyStatus: 'idle',
     favoriteIds: [],
     favoritesFilterActive: false,

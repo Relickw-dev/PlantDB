@@ -41,14 +41,15 @@ function createFaqItem({ question, answer }) {
  */
 export class FaqModal extends BaseModal{
     #contentContainer;
-    #closeButton;
+    // <-- ELIMINAT: #closeButton nu mai este necesar aici
 
     constructor() {
-        super('faq-modal');
-        this.#contentContainer = document.getElementById('faq-content');
-        this.#closeButton = document.getElementById('faq-close-btn');
+        super('faq-modal'); // Păstrăm ID-ul pentru BaseModal
+        // Căutăm containerul relativ la elementul principal al modalului
+        this.#contentContainer = this._modalElement.querySelector('#faq-content');
 
-        this.#closeButton?.addEventListener('click', () => this.close());
+        // <-- ELIMINAT: Evenimentul de click pe close este acum gestionat de BaseModal
+        // și propagat ca un eveniment custom pe care main.js îl va asculta.
     }
 
     /**
@@ -57,7 +58,7 @@ export class FaqModal extends BaseModal{
      */
     populate(faqData) {
         if (!this.#contentContainer) return;
-        this.#contentContainer.innerHTML = ""; 
+        this.#contentContainer.innerHTML = "";
 
         if (!faqData) {
             this.#contentContainer.textContent = "Conținutul FAQ nu a putut fi încărcat.";

@@ -48,7 +48,6 @@ class NotificationService {
 
         const container = this.#ensureContainer(position);
         
-        // Creăm elementul de notificare și îi adăugăm clasele CSS corespunzătoare
         const notifElement = createElement('div', {
             className: `notification notification--${type}`,
             children: [createElement('span', { text: message })]
@@ -66,29 +65,39 @@ class NotificationService {
 
         container.appendChild(notifElement);
 
-        // --- AICI ESTE MODIFICAREA FINALĂ ---
-        // Folosim un setTimeout minim pentru a garanta că browserul randează elementul
-        // înainte de a adăuga clasa `.show`, asigurând astfel că animația CSS pornește.
-        setTimeout(() => {
+        // <-- OPTIMIZARE: Folosim requestAnimationFrame în loc de setTimeout
+        // pentru a asigura o animație mai fluidă și eficientă.
+        requestAnimationFrame(() => {
             notifElement.classList.add('show');
-        }, 10);
+        });
 
         if (duration > 0) {
             setTimeout(() => this.#remove(notifElement), duration);
         }
     }
 
-    /**
-     * Elimină o notificare de pe ecran cu o animație de ieșire.
-     * @param {HTMLElement} notifElement - Elementul de notificare de eliminat.
-     * @private
-     */
+    // src/js/components/NotificationService.js
+
     #remove(notifElement) {
+        // Durata animației de ieșire din CSS este de 400ms.
+        // Setăm un cronometru de siguranță care se va executa după 500ms.
+        const fallbackTimeout = setTimeout(() => {
+            notifElement.remove();
+        }, 500);
+
+        // Adăugăm event listener-ul pentru 'transitionend'.
+        // Când animația se termină corect, acesta se va executa.
+        notifElement.addEventListener('transitionend', () => {
+            // Anulăm cronometrul de siguranță, deoarece nu mai este necesar.
+            clearTimeout(fallbackTimeout);
+            // Eliminăm elementul din DOM.
+            notifElement.remove();
+        }, { once: true }); // { once: true } asigură că listener-ul se auto-elimină după execuție.
+
+        // Inițiem animația de ieșire prin eliminarea clasei 'show'.
         notifElement.classList.remove('show');
-        notifElement.addEventListener('transitionend', () => notifElement.remove(), { once: true });
     }
 }
 
-// Exportăm o singură instanță a serviciului pentru a fi folosită în toată aplicația.
 const notificationService = new NotificationService();
-export const showNotification = notificationService.show.bind(notificationService);
+export const showNotification = notificationService.show;

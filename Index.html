@@ -8,8 +8,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="src/styles/style.css">
-    <script src="https://cdn.jsdelivr.net/npm/memoize-one@6.0.0/dist/memoize-one.js"></script>
-    <script src="https://unpkg.com/morphdom@2.7.0/dist/morphdom-umd.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/memoize-one@6.0.0/dist/memoize-one.js"  crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/morphdom@2.7.0/dist/morphdom-umd.js"  crossorigin="anonymous"></script>
     <script type="module" src="src/js/main.js" defer></script>
 </head>
 <body>
@@ -45,6 +45,8 @@
                             <option value="diff-desc">Dificultate (grea la ușoară)</option>
                             <option value="air-asc">Purificare Aer (mică la mare)</option>
                             <option value="air-desc">Purificare Aer (mare la mică)</option>
+                            <option value="growth-asc">Creștere (lentă la rapidă)</option>
+                            <option value="growth-desc">Creștere (rapidă la lentă)</option>
                         </select>
                     </div>
                     <button id="reset" class="btn">Reset</button>
@@ -77,7 +79,7 @@
     </div>
 
     <dialog id="faq-modal">
-        <button id="faq-close-btn" class="close" aria-label="Închide fereastra">&times;</button>
+        <button id="faq-close-btn" class="close" aria-label="Închide fereastra" data-close-modal>&times;</button>
         <div class="modal-content-wrapper">
             <div class="modal-header">
                 <h3>Întrebări Frecvente (FAQ)</h3>
@@ -87,7 +89,7 @@
         </div>
     </dialog>
     <dialog id="modal">
-        <button id="closeBtn" class="close" aria-label="Închide fereastra">
+        <button id="closeBtn" class="close" aria-label="Închide fereastra" data-close-modal>
             &times;
         </button>
         <div class="modal">
@@ -107,7 +109,13 @@
                 <div class="modal-tabs">
                     <button class="modal-tab-btn active" data-target="details-tab">Detalii</button>
                     <button class="modal-tab-btn" data-target="care-tab">Ghid de Îngrijire</button>
+                    <button class="modal-tab-btn" data-target="extra-tab">Extra</button>
                     <button class="modal-tab-btn" data-target="classification-tab">Clasificare</button>
+                </div>
+
+                <div id="extra-tab" class="modal-tab-content">
+                    <div id="extra-info-content">
+                        </div>
                 </div>
 
                 <div id="details-tab" class="modal-tab-content active">
@@ -129,8 +137,11 @@
                     <button id="prevBtn" class="nav-arrow" aria-label="Planta precedentă">
                         <span>&larr;</span> <span id="prevPlantName"></span>
                     </button>
-                    <div style="position: relative;">
+                    <div class="modal-actions">
                         <button id="copyBtn" class="copy-btn">Copiază detalii</button>
+                        <button id="shareBtn" class="btn-icon" aria-label="Partajează planta">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="12" y1="2" x2="12" y2="15"></line></svg>
+                        </button>
                         <span id="copyTooltip" class="tooltip">Copiat!</span>
                     </div>
                     <button id="nextBtn" class="nav-arrow" aria-label="Planta următoare">
@@ -146,16 +157,18 @@
             <button class="fab-button fab-option" data-action="toggle-theme" aria-label="Schimbă tema">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
             </button>
-            
+
             <button class="fab-button fab-option" data-action="show-faq" aria-label="Întrebări frecvente">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
             </button>
         </div>
-        
+
         <button id="fab-main" class="fab-button" aria-label="Deschide meniul">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
     </div>
-    
+
+    <div id="app-tooltip" class="app-tooltip" role="tooltip" aria-hidden="true"></div>
+
 </body>
 </html>

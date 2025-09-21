@@ -358,6 +358,7 @@ main::-webkit-scrollbar-thumb:hover {
 
 .grid {
     display: grid;
+    overflow: hidden;
     grid-template-columns: repeat(auto-fill, minmax(14.5rem, 1fr));
     gap: var(--gap);
     margin-top: 1.125rem;
@@ -369,7 +370,6 @@ main::-webkit-scrollbar-thumb:hover {
 
 .card {
     position: relative;
-    overflow: hidden;
     border-radius: var(--radius-large);
     background: var(--bg-subtle);
     border: 1px solid var(--bg-subtle);
@@ -553,6 +553,14 @@ dialog::backdrop {
     opacity: 0;
     transition: transform 0.4s ease-out, opacity 0.4s ease-out;
 }
+
+.modal-actions {
+    position: relative;
+    display: flex;
+    gap: 0.5rem; /* Spațiu între butonul de copiere și cel de partajare */
+    align-items: center;
+}
+
 dialog[open] .modal-hero-image {
     transform: scale(1);
     opacity: 1;
@@ -1279,4 +1287,85 @@ table tbody tr:hover {
 
 .btn-favorite.active svg {
     fill: white;
+}
+
+/* --- Stiluri Adăugate pentru Butonul de Partajare --- */
+
+/* Un stil generic pentru butoanele care conțin doar o iconiță */
+.btn-icon {
+    all: unset;
+    cursor: pointer;
+    font-weight: 500;
+    background: var(--bg-subtle);
+    color: var(--text);
+    box-shadow: var(--shadow-md);
+    transition: all 0.2s ease-out;
+    border: 1px solid var(--bg-subtle);
+    padding: 0.625rem; /* Padding egal pentru a forma un pătrat */
+    border-radius: var(--radius-small);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon:hover {
+    background: var(--gradient-primary);
+    color: #fff;
+    transform: translateY(-0.1rem);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-icon:active {
+    transform: scale(0.98);
+}
+
+/* --- PATCH PENTRU LISTE IN MODAL --- */
+
+.info-list {
+
+    margin-top: 0.5rem;
+}
+
+.info-list li {
+    list-style: disc;
+    color: var(--text); /* Folosește culoarea principală a textului (nu cea estompată) */
+    font-size: 0.875rem;
+    margin-bottom: 0.35rem; /* Adaugă un mic spațiu între itemi */
+    margin-left: 2rem
+}
+/* --- 10. Stiluri pentru Tooltip Global (v3 - JS Powered) --- */
+
+.app-tooltip {
+    /* Poziționare fixă față de fereastră */
+    position: fixed;
+    
+    /* Stiluri vizuale */
+    background: var(--bg);
+    color: var(--text);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-small);
+    box-shadow: var(--shadow-lg); /* Umbră mai pronunțată */
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    max-width: 250px;
+    white-space: normal;
+    
+    /* Animație și stare inițială */
+    opacity: 0;
+    transform: translateY(8px); /* Pornește de puțin mai jos */
+    pointer-events: none; /* Esențial pentru a nu bloca cursorul */
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 9999; /* Asigură că este deasupra oricărui alt element */
+}
+
+.app-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0); /* Animație de ridicare la afișare */
+}
+
+/* Nu mai avem nevoie de regulile ::after sau :hover aici */
+/* Am păstrat cursorul de ajutor pentru elementele care pot avea tooltip */
+[data-tooltip] {
+    cursor: help;
 }

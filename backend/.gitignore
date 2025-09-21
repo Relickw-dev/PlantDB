@@ -1,0 +1,5 @@
+# Dependențe
+/node_modules
+
+# Fișier de variabile de mediu
+.env

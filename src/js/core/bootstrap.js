@@ -22,6 +22,9 @@ function queryDOMElements() {
         plantModal: "#modal",
         showFavoritesBtn: "#showFavoritesBtn",
         fabContainer: "#fab-container",
+        appContainer: ".container",
+        intro: "#intro",
+        tooltip: "#app-tooltip",
     };
 
     const elements = {};

@@ -80,3 +80,29 @@ export function getSortedAndFilteredPlants(plants, query, activeTags, sortOrder,
 
     return sorted;
 }
+
+/**
+ * NOU: Calculează plantele adiacente (precedentă/următoare) pentru navigație.
+ * @param {object} plant - Planta curentă.
+ * @param {Array} visiblePlants - Lista de plante vizibile (deja filtrate și sortate).
+ * @returns {{prev: object, next: object}}
+ */
+export function getAdjacentPlants(plant, visiblePlants) {
+    if (!plant || visiblePlants.length < 2) {
+        return { prev: plant, next: plant };
+    }
+    
+    const currentIndex = visiblePlants.findIndex(p => p.id === plant.id);
+    if (currentIndex === -1) {
+        return { prev: plant, next: plant };
+    }
+
+    // Navigare circulară corectată
+    const prevIndex = (currentIndex - 1 + visiblePlants.length) % visiblePlants.length;
+    const nextIndex = (currentIndex + 1) % visiblePlants.length;
+    
+    return { 
+        prev: visiblePlants[prevIndex], 
+        next: visiblePlants[nextIndex] 
+    };
+}

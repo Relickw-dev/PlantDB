@@ -5,6 +5,7 @@ import { loadAndProcessPlantsData, loadFaqData, fetchPlantDetails } from '../ser
 import { showNotification } from '../components/NotificationService.js';
 import { TIMINGS, NAVIGATION, COPY_STATUS, SORT_KEYS } from '../utils/constants.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
+import { getAdjacentPlants } from '../services/plantLogic.js'; // <-- MODIFICAT: Import nou
 import * as favoriteService from '../services/favoriteService.js';
 import { handleError } from './errorHandler.js';
 
@@ -14,57 +15,29 @@ let copyStatusTimeoutId = null;
 // --- NOU: Funcții Helper & Gestionarea Erorilor ---
 
 /**
- * Încarcă detaliile complete pentru o plantă și actualizează cache-ul de plante din state.
+ * Încarcă detaliile complete pentru o plantă.
+ * NU mai modifică starea globală a listei de plante.
  * @param {number} plantId - ID-ul plantei de încărcat.
  * @returns {Promise<object|null>} Obiectul plantei cu detalii complete sau null dacă apare o eroare.
  */
-async function loadAndCachePlantDetails(plantId) {
+async function loadPlantDetails(plantId) {
     const { plants } = getState();
-    let plantData = plants.find((p) => p.id == plantId);
+    const plantSummary = plants.find((p) => p.id == plantId);
 
-    // Verificăm dacă detaliile sunt deja încărcate
-    if (plantData && plantData.care_guide) {
-        return plantData;
+    // Verificăm dacă planta de bază există
+    if (!plantSummary) {
+        handleError(new Error(`Planta cu ID #${plantId} nu a fost găsită în lista inițială.`), 'încărcarea detaliilor');
+        return null;
     }
     
     try {
         const detailedData = await fetchPlantDetails(plantId);
-        plantData = { ...plantData, ...detailedData };
-
-        // Actualizăm array-ul de plante cu noile detalii
-        const updatedPlants = plants.map(p => p.id === plantId ? plantData : p);
-        updateState({ plants: updatedPlants }); // Actualizăm cache-ul global
-
-        return plantData;
+        // Combinăm datele de bază cu cele detaliate
+        return { ...plantSummary, ...detailedData };
     } catch (error) {
         handleError(error, `încărcarea detaliilor pentru planta #${plantId}`);
         return null;
     }
-}
-
-/**
- * Calculează plantele adiacente (precedentă/următoare) pentru navigație.
- * @param {object} plant - Planta curentă.
- * @param {object} state - Starea curentă a aplicației.
- * @returns {{prev: object, next: object}}
- */
-function getAdjacentPlants(plant, state) {
-    if (!plant) return { prev: null, next: null };
-
-    const visiblePlants = getMemoizedSortedAndFilteredPlants(
-        state.plants, state.query, state.activeTags,
-        state.sortOrder, state.favoritesFilterActive, state.favoriteIds
-    );
-    
-    if (visiblePlants.length < 2) return { prev: plant, next: plant };
-    
-    const currentIndex = visiblePlants.findIndex(p => p.id == plant.id);
-    if (currentIndex === -1) return { prev: plant, next: plant };
-    
-    const prev = visiblePlants.at(currentIndex - 1);
-    const next = visiblePlants[(currentIndex + 1) % visiblePlants.length];
-    
-    return { prev, next };
 }
 
 /**
@@ -79,13 +52,18 @@ function getStateWithUpdatedNav(currentState, newFilterState) {
         return potentialNextState;
     }
     
-    const { prev, next } = getAdjacentPlants(potentialNextState.modalPlant.current, potentialNextState);
+    // Obținem lista vizibilă de plante pe baza noii stări
+    const visiblePlants = getMemoizedSortedAndFilteredPlants(
+        potentialNextState.plants, potentialNextState.query, potentialNextState.activeTags,
+        potentialNextState.sortOrder, potentialNextState.favoritesFilterActive, potentialNextState.favoriteIds
+    );
+    const { prev, next } = getAdjacentPlants(potentialNextState.modalPlant.current, visiblePlants);
 
     return { ...potentialNextState, modalPlant: { ...potentialNextState.modalPlant, prev, next } };
 }
 
 
-// --- Acțiuni Publice ---
+// --- Acțiuni Publice (Restul fișierului rămâne similar, dar cu logica de navigație actualizată) ---
 
 /**
  * Încarcă datele inițiale ale aplicației (lista de plante și tag-uri).
@@ -112,10 +90,14 @@ export async function initialize(initialState = {}) {
     let faqState = {};
 
     if (initialState.modalPlantId) {
-        const current = await loadAndCachePlantDetails(initialState.modalPlantId);
+        const current = await loadPlantDetails(initialState.modalPlantId);
         if (current) {
-            const stateWithPlant = { ...getState(), ...initialState, modalPlant: { current } };
-            const { prev, next } = getAdjacentPlants(current, stateWithPlant);
+            const state = getState();
+            const visiblePlants = getMemoizedSortedAndFilteredPlants(
+                state.plants, initialState.query || "", initialState.activeTags || [],
+                initialState.sortOrder || SORT_KEYS.AZ, state.favoritesFilterActive, state.favoriteIds
+            );
+            const { prev, next } = getAdjacentPlants(current, visiblePlants);
             modalData = { current, prev, next };
         }
     }
@@ -208,11 +190,15 @@ export function selectRandomPlant() {
  * @param {number} plantId - ID-ul plantei.
  */
 export async function openPlantModal(plantId) {
-    const current = await loadAndCachePlantDetails(plantId);
+    const current = await loadPlantDetails(plantId);
     if (!current) return; // Eroarea a fost deja gestionată
 
     const state = getState();
-    const { prev, next } = getAdjacentPlants(current, state);
+    const visiblePlants = getMemoizedSortedAndFilteredPlants(
+        state.plants, state.query, state.activeTags,
+        state.sortOrder, state.favoritesFilterActive, state.favoriteIds
+    );
+    const { prev, next } = getAdjacentPlants(current, visiblePlants);
     
     updateState({
         modalPlant: { current, prev, next },
@@ -238,7 +224,6 @@ export async function navigateModal(direction) {
     const targetPlant = direction === NAVIGATION.NEXT ? state.modalPlant.next : state.modalPlant.prev;
     if (!targetPlant || targetPlant.id === state.modalPlant.current.id) return;
 
-    // Reutilizăm logica de deschidere, care va încărca și detaliile dacă este necesar
     await openPlantModal(targetPlant.id);
 }
 

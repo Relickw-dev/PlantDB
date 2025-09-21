@@ -12,7 +12,6 @@
         "backend/node_modules": true
     },
     "hide-files.files": [
-        "backend/.gitignore",
         "backend/plant_database.mwb",
         "backend/package-lock.json",
         "backend/node_modules"

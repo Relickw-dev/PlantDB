@@ -1,6 +1,5 @@
 import { createPlantCard } from './PlantCard.js';
 import { createElement } from '../utils/helpers.js';
-import { PET_KEYWORDS } from '../utils/constants.js';
 
 /**
  * O clasă care gestionează randarea și interacțiunile pentru grila de plante.
@@ -47,21 +46,11 @@ export class PlantGrid {
     };
 
     /**
-     * Creează și afișează o stare goală când nu sunt găsite plante.
-     * Afișează mesaje contextuale în funcție de filtrele active.
+     * MODIFICAT: Creează și afișează o stare goală.
+     * Acum primește direct mesajul și imaginea, fără a mai conține logică.
      * @private
      */
-    #createEmptyState(query, favoritesFilterActive = false) {
-        let message = 'Nu am găsit nicio plantă. Încearcă o altă căutare sau resetează filtrele.';
-        let imgSrc = "assets/icons/empty.svg"; // Asigură-te că acest fișier există
-
-        if (favoritesFilterActive) {
-            message = 'Nu ai adăugat nicio plantă la favorite. Apasă pe inimă pentru a crea colecția ta!';
-        } else if (PET_KEYWORDS.some(kw => query.toLowerCase().includes(kw))) {
-            message = 'Am găsit doar plante sigure pentru prietenii tăi blănoși! 🐾';
-            // Ar fi ideal să ai o iconiță specifică, ex: "assets/icons/pet-friendly.svg"
-        }
-
+    #createEmptyState({ message, imgSrc }) {
         const emptyStateElement = createElement("div", {
             className: "empty-state",
             children: [
@@ -102,16 +91,17 @@ export class PlantGrid {
     }
 
     /**
-     * Randează grila de plante sau stările corespunzătoare (încărcare, goală).
+     * MODIFICAT: Randează grila sau starea goală pe baza noilor props.
      */
-    render({ plants, query, isLoading, favoriteIds = [], favoritesFilterActive = false }) {
+    render({ plants, isLoading, favoriteIds = [], emptyStateContent = null }) {
         if (isLoading) {
             this.#createSkeletonState();
             return;
         }
 
-        if (plants.length === 0) {
-            this.#createEmptyState(query, favoritesFilterActive);
+        if (plants.length === 0 && emptyStateContent) {
+            // Folosim direct obiectul `emptyStateContent` primit ca prop
+            this.#createEmptyState(emptyStateContent);
             return;
         }
 
@@ -134,8 +124,6 @@ export class PlantGrid {
             // --- PATCH APLICAT: Logica avansată pentru a preveni re-randarea inutilă ---
             onBeforeElUpdated: (fromEl, toEl) => {
                 // REGULA 1: Protejează butonul de favorit.
-                // Dacă elementul este un buton de favorit, îi actualizăm doar clasa
-                // și prevenim morphdom să-i modifice copiii (SVG-ul), evitând un "flicker".
                 if (fromEl.dataset.id?.startsWith('fav-btn-')) {
                     if (fromEl.className !== toEl.className) {
                         fromEl.className = toEl.className;
@@ -144,8 +132,6 @@ export class PlantGrid {
                 }
 
                 // REGULA 2: Protejează imaginile deja încărcate.
-                // Dacă o imagine are deja un atribut `src` (adică a fost încărcată),
-                // nu o înlocuim, pentru a evita o reîncărcare inutilă.
                 if (fromEl.tagName === 'IMG' && fromEl.hasAttribute('src')) {
                     return false;
                 }

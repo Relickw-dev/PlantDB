@@ -2,8 +2,27 @@ import { subscribe } from './state.js';
 import { debounce } from '../utils/helpers.js';
 import { updateURLFromState } from '../services/urlService.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
-import { TIMINGS } from '../utils/constants.js';
+import { TIMINGS, PET_KEYWORDS } from '../utils/constants.js'; // Am adăugat PET_KEYWORDS
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
+
+/**
+ * ADAUGAT: O funcție helper pentru a determina conținutul stării goale.
+ * @param {object} state - Starea curentă a aplicației.
+ * @returns {{message: string, imgSrc: string}}
+ */
+function getEmptyStateContent(state) {
+    const { query, favoritesFilterActive } = state;
+    let message = 'Nu am găsit nicio plantă. Încearcă o altă căutare sau resetează filtrele.';
+    let imgSrc = "assets/icons/empty.svg";
+
+    if (favoritesFilterActive) {
+        message = 'Nu ai adăugat nicio plantă la favorite. Apasă pe inimă pentru a crea colecția ta!';
+    } else if (PET_KEYWORDS.some(kw => query.toLowerCase().includes(kw))) {
+        message = 'Am găsit doar plante sigure pentru prietenii tăi blănoși! 🐾';
+    }
+
+    return { message, imgSrc };
+}
 
 
 /**
@@ -19,7 +38,7 @@ export function syncStateToUI(elements, components) {
 
     subscribe((currentState, oldState) => {
 
-        // --- 1. Sincronizarea Grilei de Plante --- (Rămâne neschimbată)
+        // --- 1. Sincronizarea Grilei de Plante ---
         const hasGridContentChanged =
             currentState.isLoading !== oldState.isLoading ||
             currentState.query !== oldState.query ||
@@ -42,12 +61,15 @@ export function syncStateToUI(elements, components) {
                     currentState.favoritesFilterActive,
                     currentState.favoriteIds
                 );
+                
                 components.plantGrid.render({
                     plants: visiblePlants,
-                    query: currentState.query,
                     isLoading: currentState.isLoading,
                     favoriteIds: currentState.favoriteIds,
-                    favoritesFilterActive: currentState.favoritesFilterActive
+                    // Dacă nu sunt plante, generăm conținutul stării goale
+                    emptyStateContent: visiblePlants.length === 0 && !currentState.isLoading
+                        ? getEmptyStateContent(currentState) 
+                        : null
                 });
             };
             
@@ -63,7 +85,7 @@ export function syncStateToUI(elements, components) {
             }
         }
 
-        // --- 2. Sincronizarea Filtrului de Tag-uri --- (Rămâne neschimbată)
+        // --- 2. Sincronizarea Filtrului de Tag-uri ---
         const haveTagsChanged = currentState.allUniqueTags.length !== oldState.allUniqueTags.length ||
                                 JSON.stringify(currentState.activeTags) !== JSON.stringify(oldState.activeTags);
 
@@ -74,7 +96,7 @@ export function syncStateToUI(elements, components) {
             });
         }
         
-        // --- 3. Sincronizarea Controalelor (Input, Select) --- (Rămâne neschimbată)
+        // --- 3. Sincronizarea Controalelor (Input, Select) ---
         if (currentState.query !== oldState.query && elements.searchInput.value !== currentState.query) {
             elements.searchInput.value = currentState.query;
         }
@@ -87,7 +109,6 @@ export function syncStateToUI(elements, components) {
 
         // --- 4. Sincronizarea Modalului de Plantă ---
         if (currentState.modalPlant && currentState.modalPlant.current) {
-            // Această parte (deschiderea) este corectă
             ensurePlantModalIsLoaded().then(modal => {
                 modal.render({
                     plant: currentState.modalPlant.current,
@@ -96,10 +117,7 @@ export function syncStateToUI(elements, components) {
                 });
             });
         } 
-        // MODIFICARE: Aici este corecția bug-ului.
-        // Condiția corectă este: dacă starea nouă NU are modal, dar cea veche AVEA.
         else if (!currentState.modalPlant && oldState.modalPlant) {
-            // Asigurăm că avem instanța modalului pentru a-l putea închide.
             ensurePlantModalIsLoaded().then(modal => {
                 modal.close();
             }).catch(err => {
@@ -107,7 +125,7 @@ export function syncStateToUI(elements, components) {
             });
         }
 
-        // --- 5. Sincronizarea Modalului FAQ --- (Rămâne neschimbată)
+        // --- 5. Sincronizarea Modalului FAQ ---
         if (currentState.faqData && currentState.faqData !== oldState.faqData) {
             components.faqModal.populate(currentState.faqData);
         }
@@ -115,7 +133,7 @@ export function syncStateToUI(elements, components) {
             currentState.isFaqOpen ? components.faqModal.open() : components.faqModal.close();
         }
 
-        // --- 6. Sincronizarea URL-ului --- (Rămâne neschimbată)
+        // --- 6. Sincronizarea URL-ului ---
         if (isInitialized) {
             debouncedUpdateURL(currentState);
         }

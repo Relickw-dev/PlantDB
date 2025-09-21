@@ -69,7 +69,8 @@ export async function loadInitialData() {
     } catch (err) {
         console.error("[actions] Eroare la încărcarea datelor inițiale:", err);
         showNotification("Datele plantelor nu au putut fi încărcate.", { type: "error" });
-        updateState({ plants: [], allUniqueTags: [], isLoading: false });
+        // Adaugă o stare de eroare
+        updateState({ plants: [], isLoading: false, hasError: true }); 
     }
 }
 
@@ -139,11 +140,23 @@ export function selectTag(tag) {
 }
 
 export function resetFilters() {
-    updateState({
-        query: "", sortOrder: SORT_KEYS.AZ, activeTags: [], favoritesFilterActive: false,
-        ...getStateWithUpdatedNav(getState(), { query: "", sortOrder: SORT_KEYS.AZ, activeTags: [], favoritesFilterActive: false })
-    });
+    // Definește clar starea dorită pentru filtre într-un singur obiect.
+    const resetFilterState = {
+        query: "", 
+        sortOrder: SORT_KEYS.AZ, 
+        activeTags: [], 
+        favoritesFilterActive: false // Asigură explicit resetarea filtrului de favorite
+    };
+
+    // Obține starea finală completă, care include și logica de navigație
+    // actualizată dacă un modal este deschis.
+    const finalState = getStateWithUpdatedNav(getState(), resetFilterState);
+    
+    // Actualizează starea aplicației cu obiectul final, curat.
+    updateState(finalState);
 }
+
+// ... restul codului
 
 export function selectRandomPlant() {
     const state = getState();

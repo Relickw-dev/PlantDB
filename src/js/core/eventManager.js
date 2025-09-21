@@ -6,16 +6,8 @@ import { CUSTOM_EVENTS, TIMINGS, FAB_ACTIONS, THEME } from '../utils/constants.j
 import { applyTheme } from '../components/ThemeToggle.js';
 import { getStateFromURL } from '../services/urlService.js';
 import { getState } from './state.js';
+import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 
-// Variabilă pentru instanța modalului încărcat dinamic
-let plantModalInstance = null;
-
-async function ensurePlantModalIsLoaded() {
-    if (plantModalInstance) return plantModalInstance;
-    const { PlantModal } = await import('../components/PlantModal.js');
-    plantModalInstance = new PlantModal();
-    return plantModalInstance;
-}
 
 // O funcție helper pentru a gestiona acțiunile care necesită modalul
 const handleAsyncModalAction = async (actionCallback) => {
@@ -28,34 +20,59 @@ const handleAsyncModalAction = async (actionCallback) => {
 };
 
 /**
+ * MODIFICARE: Logica de click pentru carduri și butoane de favorit a fost mutată aici.
+ * Acesta este noul handler centralizat pentru click-uri.
+ */
+function handleBodyClick(e) {
+    const target = e.target;
+
+    // Cazul 1: S-a dat click pe un buton de favorit de pe un card.
+    const favoriteBtn = target.closest('.favorite-btn');
+    if (favoriteBtn && favoriteBtn.dataset.plantId) {
+        // Oprim propagarea pentru a nu declanșa și click-ul pe card.
+        e.stopPropagation(); 
+        const plantId = parseInt(favoriteBtn.dataset.plantId, 10);
+        if (!isNaN(plantId)) {
+            actions.toggleFavorite(plantId);
+        }
+        return; // Am gestionat evenimentul, ieșim.
+    }
+
+    // Cazul 2: S-a dat click pe un card de plantă.
+    const card = target.closest(".card[data-id]");
+    if (card) {
+        const plantId = parseInt(card.dataset.id, 10);
+        if (!isNaN(plantId)) {
+            handleAsyncModalAction(() => actions.openPlantModal(plantId));
+        }
+        return; // Am gestionat evenimentul, ieșim.
+    }
+}
+
+
+/**
  * Atașează toate event listener-ele necesare aplicației.
  * @param {Object} elements - Referințele către elementele DOM.
  */
 export function bindEventListeners(elements) {
+    // --- Evenimente pe controale specifice (rămân neschimbate) ---
     elements.searchInput.addEventListener('input', debounce((e) => actions.search(e.target.value), TIMINGS.SEARCH_DEBOUNCE));
     elements.sortSelect.addEventListener('change', (e) => actions.changeSortOrder(e.target.value));
     elements.resetButton.addEventListener('click', () => actions.resetFilters());
     elements.showFavoritesBtn.addEventListener('click', () => actions.toggleFavoritesFilter());
     elements.randomBtn.addEventListener('click', () => handleAsyncModalAction(actions.selectRandomPlant));
 
-    // Event Delegation pentru grilă
+    // --- MODIFICARE: Folosim delegare la nivel de body pentru click-uri ---
+    document.body.addEventListener('click', handleBodyClick);
+
+    // --- MODIFICARE: Listener-ul direct pe gridContainer a fost ELIMINAT ---
+    /*
     elements.gridContainer.addEventListener('click', (e) => {
-        const favoriteBtn = e.target.closest('.favorite-btn');
-        if (favoriteBtn) {
-            e.stopPropagation();
-            const plantId = parseInt(favoriteBtn.dataset.plantId, 10);
-            if (!isNaN(plantId)) actions.toggleFavorite(plantId);
-            return;
-        }
-
-        const card = e.target.closest(".card[data-id]");
-        if (card) {
-            const plantId = parseInt(card.dataset.id, 10);
-            handleAsyncModalAction(() => actions.openPlantModal(plantId));
-        }
+        // ... vechea logică a fost mutată în handleBodyClick ...
     });
+    */
 
-    // Evenimente custom
+    // --- Evenimente custom (rămân pe componentele lor pentru claritate) ---
     elements.tagFilterContainer.addEventListener(CUSTOM_EVENTS.TAG_SELECTED, (e) => actions.selectTag(e.detail.tag));
     elements.faqModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, () => actions.closeFaqModal());
     elements.plantModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, () => actions.closeModal());

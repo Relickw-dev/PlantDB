@@ -3,21 +3,8 @@ import { debounce } from '../utils/helpers.js';
 import { updateURLFromState } from '../services/urlService.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
 import { TIMINGS } from '../utils/constants.js';
+import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 
-// Stochează instanța modalului încărcată dinamic pentru a evita re-importarea.
-let plantModalInstance = null;
-
-/**
- * Încarcă dinamic componenta PlantModal la prima utilizare.
- * @returns {Promise<PlantModal>} Instanța componentei.
- */
-async function ensurePlantModalIsLoaded() {
-    if (plantModalInstance) return plantModalInstance;
-    // Folosim dynamic import pentru a încărca fișierul doar la nevoie
-    const { PlantModal } = await import('../components/PlantModal.js');
-    plantModalInstance = new PlantModal();
-    return plantModalInstance;
-}
 
 /**
  * Conectează starea la UI, asigurând că interfața reflectă întotdeauna starea curentă.
@@ -30,11 +17,9 @@ export function syncStateToUI(elements, components) {
     let isInitialized = false;
     const debouncedUpdateURL = debounce(updateURLFromState, 300);
 
-    // Ne abonăm la schimbările de stare.
-    // Acest callback va fi executat de fiecare dată când `updateState` este apelat.
     subscribe((currentState, oldState) => {
 
-        // --- 1. Sincronizarea Grilei de Plante ---
+        // --- 1. Sincronizarea Grilei de Plante --- (Rămâne neschimbată)
         const hasGridContentChanged =
             currentState.isLoading !== oldState.isLoading ||
             currentState.query !== oldState.query ||
@@ -66,7 +51,6 @@ export function syncStateToUI(elements, components) {
                 });
             };
             
-            // Adaugă o animație de fade doar dacă se schimbă filtrele, nu și la încărcarea inițială.
             const isContentTransition = hasGridContentChanged && !currentState.isLoading && !oldState.isLoading;
             if (isContentTransition) {
                 elements.gridContainer.classList.add('fade-out');
@@ -79,7 +63,7 @@ export function syncStateToUI(elements, components) {
             }
         }
 
-        // --- 2. Sincronizarea Filtrului de Tag-uri ---
+        // --- 2. Sincronizarea Filtrului de Tag-uri --- (Rămâne neschimbată)
         const haveTagsChanged = currentState.allUniqueTags.length !== oldState.allUniqueTags.length ||
                                 JSON.stringify(currentState.activeTags) !== JSON.stringify(oldState.activeTags);
 
@@ -89,8 +73,8 @@ export function syncStateToUI(elements, components) {
                 activeTags: currentState.activeTags,
             });
         }
-
-        // --- 3. Sincronizarea Controalelor (Input, Select) ---
+        
+        // --- 3. Sincronizarea Controalelor (Input, Select) --- (Rămâne neschimbată)
         if (currentState.query !== oldState.query && elements.searchInput.value !== currentState.query) {
             elements.searchInput.value = currentState.query;
         }
@@ -103,6 +87,7 @@ export function syncStateToUI(elements, components) {
 
         // --- 4. Sincronizarea Modalului de Plantă ---
         if (currentState.modalPlant && currentState.modalPlant.current) {
+            // Această parte (deschiderea) este corectă
             ensurePlantModalIsLoaded().then(modal => {
                 modal.render({
                     plant: currentState.modalPlant.current,
@@ -110,12 +95,19 @@ export function syncStateToUI(elements, components) {
                     copyStatus: currentState.copyStatus
                 });
             });
-        } else if (plantModalInstance && oldState.modalPlant) {
-            // Închide modalul doar dacă a existat anterior
-            plantModalInstance.close();
+        } 
+        // MODIFICARE: Aici este corecția bug-ului.
+        // Condiția corectă este: dacă starea nouă NU are modal, dar cea veche AVEA.
+        else if (!currentState.modalPlant && oldState.modalPlant) {
+            // Asigurăm că avem instanța modalului pentru a-l putea închide.
+            ensurePlantModalIsLoaded().then(modal => {
+                modal.close();
+            }).catch(err => {
+                console.error("Nu s-a putut obține instanța modalului pentru a-l închide.", err);
+            });
         }
 
-        // --- 5. Sincronizarea Modalului FAQ ---
+        // --- 5. Sincronizarea Modalului FAQ --- (Rămâne neschimbată)
         if (currentState.faqData && currentState.faqData !== oldState.faqData) {
             components.faqModal.populate(currentState.faqData);
         }
@@ -123,14 +115,12 @@ export function syncStateToUI(elements, components) {
             currentState.isFaqOpen ? components.faqModal.open() : components.faqModal.close();
         }
 
-        // --- 6. Sincronizarea URL-ului ---
-        // Actualizează URL-ul doar după ce aplicația a fost complet inițializată.
+        // --- 6. Sincronizarea URL-ului --- (Rămâne neschimbată)
         if (isInitialized) {
             debouncedUpdateURL(currentState);
         }
     });
 
-    // Returnează o funcție care permite setarea flag-ului de inițializare
     return (status) => {
         isInitialized = status;
     };

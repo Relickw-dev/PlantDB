@@ -1,3 +1,5 @@
+// src/js/core/actions.js
+
 import { getState, updateState } from './state.js';
 import { loadAndProcessPlantsData, loadFaqData, fetchPlantDetails } from '../services/plantService.js';
 import { showNotification } from '../components/NotificationService.js';
@@ -7,249 +9,274 @@ import * as favoriteService from '../services/favoriteService.js';
 
 let copyStatusTimeoutId = null;
 
+// --- NOU: Funcții Helper & Gestionarea Erorilor ---
+
 /**
- * ADAUGAT: O funcție helper centralizată pentru a asigura că detaliile complete
- * ale unei plante sunt încărcate înainte de afișare.
- * @param {number} plantId - ID-ul plantei de verificat/încărcat.
- * @param {Array<object>} currentPlants - Array-ul curent de plante din state.
- * @returns {Promise<{plantData: object, updatedPlants: Array<object>}>} Obiectul cu planta completă și noul array de plante actualizat.
+ * Gestionează erorile apărute în acțiuni într-un mod centralizat.
+ * @param {Error} error - Obiectul erorii.
+ * @param {string} context - Contextul în care a apărut eroarea (ex: 'încărcarea datelor').
  */
-async function ensureDetailedPlantData(plantId, currentPlants) {
-    let plantData = currentPlants.find((p) => p.id == plantId);
-    if (!plantData) {
-        throw new Error(`Planta cu ID-ul ${plantId} nu a fost găsită.`);
-    }
-
-    // Verificăm dacă detaliile (ex: care_guide) sunt deja încărcate.
-    if (plantData.care_guide) {
-        return { plantData, updatedPlants: currentPlants }; // Returnează datele existente.
-    }
-
-    // Dacă nu, le preluăm de la server.
-    const detailedData = await fetchPlantDetails(plantId);
-    plantData = { ...plantData, ...detailedData };
-
-    // Actualizăm array-ul de plante cu noile detalii (pentru cache).
-    const updatedPlants = currentPlants.map(p => p.id === plantId ? plantData : p);
-    return { plantData, updatedPlants };
+function errorHandler(error, context) {
+    console.error(`[actions] Eroare la ${context}:`, error);
+    showNotification(`Eroare la ${context}: ${error.message || 'Operațiunea a eșuat.'}`, { type: 'error' });
 }
 
+/**
+ * Încarcă detaliile complete pentru o plantă și actualizează cache-ul de plante din state.
+ * @param {number} plantId - ID-ul plantei de încărcat.
+ * @returns {Promise<object|null>} Obiectul plantei cu detalii complete sau null dacă apare o eroare.
+ */
+async function loadAndCachePlantDetails(plantId) {
+    const { plants } = getState();
+    let plantData = plants.find((p) => p.id == plantId);
 
-function getAdjacentPlants(plant, plantList) {
-    if (!plant || plantList.length < 2) return { prev: plant, next: plant };
-    const currentIndex = plantList.findIndex(p => p.id == plant.id);
+    // Verificăm dacă detaliile sunt deja încărcate
+    if (plantData && plantData.care_guide) {
+        return plantData;
+    }
+    
+    try {
+        const detailedData = await fetchPlantDetails(plantId);
+        plantData = { ...plantData, ...detailedData };
+
+        // Actualizăm array-ul de plante cu noile detalii
+        const updatedPlants = plants.map(p => p.id === plantId ? plantData : p);
+        updateState({ plants: updatedPlants }); // Actualizăm cache-ul global
+
+        return plantData;
+    } catch (error) {
+        errorHandler(error, `încărcarea detaliilor pentru planta #${plantId}`);
+        return null;
+    }
+}
+
+/**
+ * Calculează plantele adiacente (precedentă/următoare) pentru navigație.
+ * @param {object} plant - Planta curentă.
+ * @param {object} state - Starea curentă a aplicației.
+ * @returns {{prev: object, next: object}}
+ */
+function getAdjacentPlants(plant, state) {
+    if (!plant) return { prev: null, next: null };
+
+    const visiblePlants = getMemoizedSortedAndFilteredPlants(
+        state.plants, state.query, state.activeTags,
+        state.sortOrder, state.favoritesFilterActive, state.favoriteIds
+    );
+    
+    if (visiblePlants.length < 2) return { prev: plant, next: plant };
+    
+    const currentIndex = visiblePlants.findIndex(p => p.id == plant.id);
     if (currentIndex === -1) return { prev: plant, next: plant };
-
-    const prev = plantList.at(currentIndex - 1);
-    const next = plantList[(currentIndex + 1) % plantList.length];
+    
+    const prev = visiblePlants.at(currentIndex - 1);
+    const next = visiblePlants[(currentIndex + 1) % visiblePlants.length];
+    
     return { prev, next };
 }
 
+/**
+ * Recalculează navigația pentru modal atunci când filtrele se schimbă.
+ * @param {object} currentState - Starea curentă.
+ * @param {object} newFilterState - Modificările de filtru propuse.
+ * @returns {object} Starea finală, incluzând navigația actualizată.
+ */
 function getStateWithUpdatedNav(currentState, newFilterState) {
-    if (!currentState.modalPlant) {
-        return newFilterState;
-    }
-
     const potentialNextState = { ...currentState, ...newFilterState };
-    const visiblePlants = getMemoizedSortedAndFilteredPlants(
-        potentialNextState.plants, potentialNextState.query, potentialNextState.activeTags,
-        potentialNextState.sortOrder, potentialNextState.favoritesFilterActive, potentialNextState.favoriteIds
-    );
-    const { prev, next } = getAdjacentPlants(potentialNextState.modalPlant.current, visiblePlants);
+    if (!potentialNextState.modalPlant) {
+        return potentialNextState;
+    }
+    
+    const { prev, next } = getAdjacentPlants(potentialNextState.modalPlant.current, potentialNextState);
 
-    return { ...newFilterState, modalPlant: { ...potentialNextState.modalPlant, prev, next } };
+    return { ...potentialNextState, modalPlant: { ...potentialNextState.modalPlant, prev, next } };
 }
 
+
+// --- Acțiuni Publice ---
+
+/**
+ * Încarcă datele inițiale ale aplicației (lista de plante și tag-uri).
+ */
 export async function loadInitialData() {
     try {
+        updateState({ isLoading: true });
         const plantsData = await loadAndProcessPlantsData();
         const allTags = plantsData.flatMap((p) => p.tags || []);
         const uniqueTags = [...new Set(allTags)].sort();
         updateState({ plants: plantsData, allUniqueTags: uniqueTags, isLoading: false });
     } catch (err) {
-        console.error("[actions] Eroare la încărcarea datelor inițiale:", err);
-        showNotification("Datele plantelor nu au putut fi încărcate.", { type: "error" });
-        // Adaugă o stare de eroare
-        updateState({ plants: [], isLoading: false, hasError: true }); 
+        errorHandler(err, "încărcarea datelor inițiale");
+        updateState({ isLoading: false, hasError: true });
     }
 }
 
 /**
- * MODIFICAT: Funcția initialize va folosi acum helper-ul pentru a încărca detaliile
- * complete dacă un ID de plantă este prezent în URL.
+ * Inițializează starea aplicației pe baza parametrilor din URL.
+ * @param {object} [initialState={}] - Starea extrasă din URL.
  */
 export async function initialize(initialState = {}) {
-    let { plants } = getState(); // Folosim let pentru a putea actualiza referința
     let modalData = null;
-    let faqDataResult = null;
+    let faqState = {};
 
-    if (initialState.modalPlantId && plants.length > 0) {
-        try {
-            // Asigurăm încărcarea datelor complete la pornire
-            const { plantData: current, updatedPlants } = await ensureDetailedPlantData(initialState.modalPlantId, plants);
-            plants = updatedPlants; // Actualizăm referința locală la lista de plante
-
-            const visiblePlants = getMemoizedSortedAndFilteredPlants(
-                plants, initialState.query || "", initialState.activeTags || [],
-                initialState.sortOrder || SORT_KEYS.AZ, false, []
-            );
-            const { prev, next } = getAdjacentPlants(current, visiblePlants);
+    if (initialState.modalPlantId) {
+        const current = await loadAndCachePlantDetails(initialState.modalPlantId);
+        if (current) {
+            const stateWithPlant = { ...getState(), ...initialState, modalPlant: { current } };
+            const { prev, next } = getAdjacentPlants(current, stateWithPlant);
             modalData = { current, prev, next };
-        } catch (error) {
-            console.error("Eroare la inițializarea modalului din URL:", error);
-            showNotification("Planta specificată în URL nu a putut fi încărcată.", { type: 'error' });
-            modalData = null;
         }
     }
 
     if (initialState.isFaqOpen) {
-        faqDataResult = await loadFaqData();
+        const faqData = await loadFaqData();
+        if(faqData) {
+            faqState = { faqData, isFaqDataLoaded: true };
+        }
     }
-
+    
     updateState({
-        plants, // Salvăm lista de plante potențial actualizată
         query: initialState.query || "",
         sortOrder: initialState.sortOrder || SORT_KEYS.AZ,
         activeTags: initialState.activeTags || [],
         modalPlant: modalData,
-        isFaqOpen: !!faqDataResult,
-        faqData: faqDataResult,
-        isFaqDataLoaded: !!faqDataResult,
+        isFaqOpen: !!faqState.faqData && initialState.isFaqOpen,
+        ...faqState
     });
 }
 
+/**
+ * Actualizează interogarea de căutare.
+ * @param {string} query - Textul căutat.
+ */
 export function search(query) {
-    const newState = getStateWithUpdatedNav(getState(), { query });
-    updateState(newState);
+    updateState(getStateWithUpdatedNav(getState(), { query }));
 }
 
+/**
+ * Schimbă ordinea de sortare a plantelor.
+ * @param {string} order - Noua cheie de sortare.
+ */
 export function changeSortOrder(order) {
-    const newState = getStateWithUpdatedNav(getState(), { sortOrder: order });
-    updateState(newState);
+    updateState(getStateWithUpdatedNav(getState(), { sortOrder: order }));
 }
 
+/**
+ * Adaugă, elimină sau resetează tag-urile active.
+ * @param {string} tag - Tag-ul selectat.
+ */
 export function selectTag(tag) {
     const { activeTags } = getState();
-    let newTags = tag === "" ? [] : [...activeTags];
-    if (tag !== "") {
+    let newTags;
+    
+    if (tag === "") { // Resetare tag-uri
+        newTags = [];
+    } else {
+        newTags = [...activeTags];
         const tagIndex = newTags.indexOf(tag);
         tagIndex > -1 ? newTags.splice(tagIndex, 1) : newTags.push(tag);
     }
-    const newState = getStateWithUpdatedNav(getState(), { activeTags: newTags });
-    updateState(newState);
+
+    updateState(getStateWithUpdatedNav(getState(), { activeTags: newTags }));
 }
 
+/**
+ * Resetează toate filtrele la starea implicită.
+ */
 export function resetFilters() {
-    // Definește clar starea dorită pentru filtre într-un singur obiect.
-    const resetFilterState = {
-        query: "", 
-        sortOrder: SORT_KEYS.AZ, 
-        activeTags: [], 
-        favoritesFilterActive: false // Asigură explicit resetarea filtrului de favorite
+    const resetState = {
+        query: "",
+        sortOrder: SORT_KEYS.AZ,
+        activeTags: [],
+        favoritesFilterActive: false
     };
-
-    // Obține starea finală completă, care include și logica de navigație
-    // actualizată dacă un modal este deschis.
-    const finalState = getStateWithUpdatedNav(getState(), resetFilterState);
-    
-    // Actualizează starea aplicației cu obiectul final, curat.
-    updateState(finalState);
+    updateState(getStateWithUpdatedNav(getState(), resetState));
 }
 
-// ... restul codului
-
+/**
+ * Deschide modalul pentru o plantă aleatorie din setul vizibil.
+ */
 export function selectRandomPlant() {
     const state = getState();
     const visiblePlants = getMemoizedSortedAndFilteredPlants(
         state.plants, state.query, state.activeTags, state.sortOrder, state.favoritesFilterActive, state.favoriteIds
     );
+
     if (visiblePlants.length === 0) {
         showNotification("Nu s-au găsit plante conform filtrelor tale.", { type: "info" });
         return;
     }
+    
     const randomPlant = visiblePlants[Math.floor(Math.random() * visiblePlants.length)];
     openPlantModal(randomPlant.id);
 }
 
 /**
- * MODIFICAT: openPlantModal folosește acum helper-ul centralizat.
+ * Deschide modalul pentru o plantă specifică.
+ * @param {number} plantId - ID-ul plantei.
  */
 export async function openPlantModal(plantId) {
-    try {
-        const state = getState();
-        const { plantData, updatedPlants } = await ensureDetailedPlantData(plantId, state.plants);
+    const current = await loadAndCachePlantDetails(plantId);
+    if (!current) return; // Eroarea a fost deja gestionată
 
-        const visiblePlants = getMemoizedSortedAndFilteredPlants(
-            updatedPlants, state.query, state.activeTags, state.sortOrder, state.favoritesFilterActive, state.favoriteIds
-        );
-        const { prev, next } = getAdjacentPlants(plantData, visiblePlants);
-
-        updateState({
-            plants: updatedPlants, // Actualizăm starea globală cu noile date
-            modalPlant: { current: plantData, prev, next },
-            isFaqOpen: false
-        });
-    } catch (error) {
-        console.error("Eroare la deschiderea modalului:", error);
-        showNotification("Detaliile plantei nu au putut fi încărcate.", { type: "error" });
-    }
+    const state = getState();
+    const { prev, next } = getAdjacentPlants(current, state);
+    
+    updateState({
+        modalPlant: { current, prev, next },
+        isFaqOpen: false
+    });
 }
 
+/**
+ * Închide modalul plantei.
+ */
 export function closeModal() {
     updateState({ modalPlant: null });
 }
 
-export async function openFaqModal() {
-    const { isFaqDataLoaded, isFaqLoadFailed } = getState();
-    if (isFaqLoadFailed) {
-        showNotification("Conținutul FAQ nu este disponibil.", { type: "error" });
-        return;
-    }
-    if (isFaqDataLoaded) {
-        updateState({ isFaqOpen: true, modalPlant: null });
-        return;
-    }
-    const faqData = await loadFaqData();
-    if (faqData) {
-        updateState({ faqData, isFaqDataLoaded: true, isFaqOpen: true, modalPlant: null });
-    } else {
-        updateState({ isFaqLoadFailed: true });
-        showNotification("Conținutul FAQ nu a putut fi încărcat.", { type: "error" });
-    }
-}
-
-export function closeFaqModal() {
-    updateState({ isFaqOpen: false });
-}
-
 /**
- * MODIFICAT: navigateModal a devenit async și folosește helper-ul pentru
- * a încărca datele pentru planta următoare/precedentă.
+ * Navighează la planta următoare sau precedentă în modal.
+ * @param {'next'|'prev'} direction - Direcția de navigare.
  */
 export async function navigateModal(direction) {
     const state = getState();
     if (!state.modalPlant?.current) return;
 
     const targetPlant = direction === NAVIGATION.NEXT ? state.modalPlant.next : state.modalPlant.prev;
-    if (!targetPlant) return;
+    if (!targetPlant || targetPlant.id === state.modalPlant.current.id) return;
 
-    try {
-        // Asigurăm încărcarea datelor complete pentru noua plantă
-        const { plantData: newCurrent, updatedPlants } = await ensureDetailedPlantData(targetPlant.id, state.plants);
+    // Reutilizăm logica de deschidere, care va încărca și detaliile dacă este necesar
+    await openPlantModal(targetPlant.id);
+}
 
-        const visiblePlants = getMemoizedSortedAndFilteredPlants(
-            updatedPlants, state.query, state.activeTags, state.sortOrder, state.favoritesFilterActive, state.favoriteIds
-        );
-        const { prev, next } = getAdjacentPlants(newCurrent, visiblePlants);
 
-        updateState({
-            plants: updatedPlants, // Actualizăm cache-ul global
-            modalPlant: { current: newCurrent, prev, next }
-        });
-    } catch (error) {
-        console.error("Eroare la navigarea în modal:", error);
-        showNotification("Următoarea plantă nu a putut fi încărcată.", { type: "error" });
+// --- Acțiuni FAQ & Utilitare ---
+
+export async function openFaqModal() {
+    const { isFaqDataLoaded, isFaqLoadFailed } = getState();
+    
+    if (isFaqLoadFailed) {
+        showNotification("Conținutul FAQ nu este disponibil.", { type: "error" });
+        return;
     }
+    
+    if (isFaqDataLoaded) {
+        updateState({ isFaqOpen: true, modalPlant: null });
+        return;
+    }
+    
+    try {
+        const faqData = await loadFaqData();
+        updateState({ faqData, isFaqDataLoaded: true, isFaqOpen: true, modalPlant: null });
+    } catch (err) {
+        errorHandler(err, "încărcarea datelor FAQ");
+        updateState({ isFaqLoadFailed: true });
+    }
+}
+
+export function closeFaqModal() {
+    updateState({ isFaqOpen: false });
 }
 
 export async function copyPlantDetails() {
@@ -266,16 +293,19 @@ export async function copyPlantDetails() {
         await navigator.clipboard.writeText(textToCopy);
         updateState({ copyStatus: COPY_STATUS.SUCCESS });
     } catch (err) {
-        console.error("Eroare la copiere:", err);
+        errorHandler(err, "copierea detaliilor");
         updateState({ copyStatus: COPY_STATUS.ERROR });
     } finally {
         copyStatusTimeoutId = setTimeout(() => {
-            if (['success', 'error'].includes(getState().copyStatus)) {
+            if (getState().copyStatus !== COPY_STATUS.IDLE) {
                 updateState({ copyStatus: COPY_STATUS.IDLE });
             }
         }, TIMINGS.COPY_RESET_DELAY);
     }
 }
+
+
+// --- Acțiuni Favorite ---
 
 export function loadFavorites() {
     updateState({ favoriteIds: favoriteService.getFavorites() });
@@ -291,6 +321,5 @@ export function toggleFavorite(plantId) {
 
 export function toggleFavoritesFilter() {
     const { favoritesFilterActive } = getState();
-    const newState = getStateWithUpdatedNav(getState(), { favoritesFilterActive: !favoritesFilterActive });
-    updateState(newState);
+    updateState(getStateWithUpdatedNav(getState(), { favoritesFilterActive: !favoritesFilterActive }));
 }

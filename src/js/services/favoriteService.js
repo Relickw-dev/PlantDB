@@ -1,3 +1,5 @@
+import { handleError } from '../core/errorHandler.js'; // ADAUGAT
+
 // Cheia unică folosită pentru a stoca favoritele în localStorage.
 const FAVORITES_KEY = 'plantAppFavorites';
 
@@ -9,7 +11,6 @@ const FAVORITES_KEY = 'plantAppFavorites';
 export function getFavorites() {
     const favoritesJSON = localStorage.getItem(FAVORITES_KEY);
 
-    // Dacă nu există nicio intrare, returnăm un array gol.
     if (!favoritesJSON) {
         return [];
     }
@@ -17,24 +18,15 @@ export function getFavorites() {
     try {
         const parsedFavorites = JSON.parse(favoritesJSON);
 
-        // --- PATCH APLICAT: Validare suplimentară a tipului de date ---
-        // Verificăm dacă datele parsate sunt un array. Acest lucru previne
-        // erorile dacă localStorage conține un JSON valid, dar care nu este un array.
         if (!Array.isArray(parsedFavorites)) {
             throw new Error("Datele favoritelor nu sunt stocate ca un array.");
         }
 
-        // Ne asigurăm că toate elementele din array sunt numere.
         return parsedFavorites.filter(id => typeof id === 'number');
 
     } catch (error) {
-        console.error("Eroare la parsarea sau validarea favoritelor din localStorage:", error);
-
-        // --- PATCH APLICAT: Auto-corectare ---
-        // Dacă datele sunt corupte sau invalide, le ștergem pentru a preveni erori viitoare.
+        handleError(error, "parsarea datelor de favorite"); // MODIFICAT
         localStorage.removeItem(FAVORITES_KEY);
-
-        // Returnăm un array gol ca fallback sigur.
         return [];
     }
 }

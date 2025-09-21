@@ -3,15 +3,17 @@
 // --- Importuri ---
 import * as actions from './core/actions.js';
 import { bootstrapApp } from './core/bootstrap.js';
-import { bindEventListeners, unbindEventListeners } from './core/eventManager.js'; // Am adăugat unbindEventListeners
+import { bindEventListeners, unbindEventListeners } from './core/eventManager.js';
 import { syncStateToUI } from './core/uiSync.js';
 import { showNotification } from './components/NotificationService.js';
 import { getStateFromURL } from './services/urlService.js';
 import { initializeTheme } from './components/ThemeToggle.js';
 import { TIMINGS } from './utils/constants.js';
+import { handleError, initializeGlobalErrorHandler } from './core/errorHandler.js';
+
 
 /**
- * NOU: O clasă dedicată pentru a gestiona sistemul de tooltip-uri.
+ * O clasă dedicată pentru a gestiona sistemul de tooltip-uri.
  * Încapsulează logica și elementul DOM, eliminând dependențele globale.
  */
 class TooltipService {
@@ -114,26 +116,6 @@ function runIntroAnimation() {
     });
 }
 
-
-/**
- * NOU: Funcție centralizată pentru gestionarea erorilor critice de la pornire.
- * @param {Error} error - Obiectul erorii.
- * @param {string} context - Contextul în care a apărut eroarea (ex: 'inițializare').
- */
-function handleCriticalError(error, context) {
-    console.error(`A apărut o eroare CRITICĂ la ${context}:`, error);
-
-    // Înlăturăm ecranul de intro dacă a rămas blocat
-    const intro = document.getElementById("intro");
-    if (intro) intro.remove();
-    
-    // Afișăm o notificare persistentă utilizatorului
-    showNotification(
-        `Eroare la ${context}: ${error.message || 'Aplicația nu a putut porni.'}`,
-        { type: "error", duration: 0, dismissible: true }
-    );
-}
-
 /**
  * Funcția principală care inițializează întreaga aplicație.
  * @returns {Object} Un obiect cu o funcție `destroy` pentru cleanup.
@@ -145,6 +127,7 @@ async function main() {
     try {
         // --- Pasul 1: Inițializează și preia elementele DOM și componentele ---
         const { dom, components } = bootstrapApp();
+        initializeGlobalErrorHandler();
 
         // --- Pasul 2: Inițializează funcționalități independente ---
         initializeTheme();
@@ -172,7 +155,7 @@ async function main() {
         setInitialized(true);
 
     } catch (err) {
-        handleCriticalError(err, 'inițializarea aplicației');
+        handleError(err, 'inițializarea aplicației');
     }
     
     /**

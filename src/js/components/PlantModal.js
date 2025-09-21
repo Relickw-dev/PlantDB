@@ -2,6 +2,7 @@ import { createElement, formatValue, dispatchEvent } from '../utils/helpers.js';
 import { CUSTOM_EVENTS, COPY_STATUS, NAVIGATION } from '../utils/constants.js';
 import { BaseModal } from './BaseModal.js';
 import { showNotification } from './NotificationService.js';
+import { handleError } from '../core/errorHandler.js'; // ADAUGAT
 
 // --- Subcomponente (Helpers de Randare) ---
 // Aceste funcții rămân neschimbate, deoarece sunt deja granulare și reutilizabile.
@@ -261,8 +262,7 @@ export class PlantModal extends BaseModal {
                 showNotification("Link-ul a fost copiat în clipboard!", { type: 'success' });
             }
         } catch (err) {
-            console.error("Eroare la partajare sau copiere:", err);
-            showNotification("Acțiunea nu a putut fi finalizată.", { type: 'error' });
+            handleError(err, "partajarea sau copierea link-ului"); // MODIFICAT
         }
     }
 

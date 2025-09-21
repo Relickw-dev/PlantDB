@@ -6,20 +6,12 @@ import { showNotification } from '../components/NotificationService.js';
 import { TIMINGS, NAVIGATION, COPY_STATUS, SORT_KEYS } from '../utils/constants.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
 import * as favoriteService from '../services/favoriteService.js';
+import { handleError } from './errorHandler.js';
+
 
 let copyStatusTimeoutId = null;
 
 // --- NOU: Funcții Helper & Gestionarea Erorilor ---
-
-/**
- * Gestionează erorile apărute în acțiuni într-un mod centralizat.
- * @param {Error} error - Obiectul erorii.
- * @param {string} context - Contextul în care a apărut eroarea (ex: 'încărcarea datelor').
- */
-function errorHandler(error, context) {
-    console.error(`[actions] Eroare la ${context}:`, error);
-    showNotification(`Eroare la ${context}: ${error.message || 'Operațiunea a eșuat.'}`, { type: 'error' });
-}
 
 /**
  * Încarcă detaliile complete pentru o plantă și actualizează cache-ul de plante din state.
@@ -45,7 +37,7 @@ async function loadAndCachePlantDetails(plantId) {
 
         return plantData;
     } catch (error) {
-        errorHandler(error, `încărcarea detaliilor pentru planta #${plantId}`);
+        handleError(error, `încărcarea detaliilor pentru planta #${plantId}`);
         return null;
     }
 }
@@ -106,7 +98,7 @@ export async function loadInitialData() {
         const uniqueTags = [...new Set(allTags)].sort();
         updateState({ plants: plantsData, allUniqueTags: uniqueTags, isLoading: false });
     } catch (err) {
-        errorHandler(err, "încărcarea datelor inițiale");
+        handleError(err, "încărcarea datelor inițiale");
         updateState({ isLoading: false, hasError: true });
     }
 }
@@ -270,7 +262,7 @@ export async function openFaqModal() {
         const faqData = await loadFaqData();
         updateState({ faqData, isFaqDataLoaded: true, isFaqOpen: true, modalPlant: null });
     } catch (err) {
-        errorHandler(err, "încărcarea datelor FAQ");
+        handleError(err, "încărcarea datelor FAQ");
         updateState({ isFaqLoadFailed: true });
     }
 }
@@ -293,7 +285,7 @@ export async function copyPlantDetails() {
         await navigator.clipboard.writeText(textToCopy);
         updateState({ copyStatus: COPY_STATUS.SUCCESS });
     } catch (err) {
-        errorHandler(err, "copierea detaliilor");
+        handleError(err, "copierea detaliilor");
         updateState({ copyStatus: COPY_STATUS.ERROR });
     } finally {
         copyStatusTimeoutId = setTimeout(() => {

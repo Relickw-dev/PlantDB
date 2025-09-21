@@ -4,6 +4,8 @@ import { updateURLFromState } from '../services/urlService.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
 import { TIMINGS, PET_KEYWORDS } from '../utils/constants.js'; // Am adăugat PET_KEYWORDS
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
+import { handleError } from './errorHandler.js'; // ADAUGAT
+
 
 /**
  * ADAUGAT: O funcție helper pentru a determina conținutul stării goale.
@@ -115,13 +117,13 @@ export function syncStateToUI(elements, components) {
                     adjacentPlants: { prev: currentState.modalPlant.prev, next: currentState.modalPlant.next },
                     copyStatus: currentState.copyStatus
                 });
-            });
+            }).catch(err => handleError(err, 'încărcarea modalului de plantă')); // MODIFICAT
         } 
         else if (!currentState.modalPlant && oldState.modalPlant) {
             ensurePlantModalIsLoaded().then(modal => {
                 modal.close();
             }).catch(err => {
-                console.error("Nu s-a putut obține instanța modalului pentru a-l închide.", err);
+                handleError(err, "închiderea modalului de plantă"); // MODIFICAT
             });
         }
 

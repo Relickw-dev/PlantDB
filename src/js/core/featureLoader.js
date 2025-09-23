@@ -6,7 +6,7 @@ const FEATURE_NAMES = [
     'plants',
     'favorites',
     'faq',
-    // 'theme' // Comentat pentru a-l dezactiva temporar, de exemplu
+    'theme'
 ];
 
 /**

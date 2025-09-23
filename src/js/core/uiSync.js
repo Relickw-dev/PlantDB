@@ -1,84 +1,96 @@
 // src/js/core/uiSync.js
 
-import { subscribe } from './state.js';
+import store from '../store/index.js';
 import { debounce } from '../utils/helpers.js';
 import { updateURLFromState } from '../services/urlService.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
-import { TIMINGS, PET_KEYWORDS } from '../utils/constants.js';
+import { PET_KEYWORDS } from '../utils/constants.js';
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 import { handleError } from './errorHandler.js';
 
-// --- Funcții Helper de Sincronizare ---
-
 function getEmptyStateContent(state) {
-    const { query, favoritesFilterActive } = state;
-    if (favoritesFilterActive) {
-        return { message: 'Nu ai adăugat nicio plantă la favorite. Apasă pe inimă pentru a crea colecția ta!', imgSrc: "assets/icons/empty.svg" };
-    }
+    const { query } = state.plants;
+    // const { favoritesFilterActive } = state.favorites;
+
+    // if (favoritesFilterActive) {
+    //     return { message: 'Nu ai adăugat nicio plantă la favorite...', imgSrc: "assets/icons/empty.svg" };
+    // }
     if (PET_KEYWORDS.some(kw => query.toLowerCase().includes(kw))) {
         return { message: 'Am găsit doar plante sigure pentru prietenii tăi blănoși! 🐾', imgSrc: "assets/icons/empty.svg" };
     }
-    return { message: 'Nu am găsit nicio plantă. Încearcă o altă căutare sau resetează filtrele.', imgSrc: "assets/icons/empty.svg" };
+    return { message: 'Nu am găsit nicio plantă. Încearcă o altă căutare.', imgSrc: "assets/icons/empty.svg" };
 }
 
-function syncGrid(currentState, oldState, components, elements) {
+function syncGrid(currentState, oldState, components) {
+    const current = currentState.plants;
+    const old = oldState.plants || {};
+    // const favorites = currentState.favorites || {};
+
     const needsRender = 
-        currentState.isLoading !== oldState.isLoading ||
-        currentState.query !== oldState.query ||
-        JSON.stringify(currentState.activeTags) !== JSON.stringify(oldState.activeTags) ||
-        currentState.sortOrder !== oldState.sortOrder ||
-        currentState.favoritesFilterActive !== oldState.favoritesFilterActive ||
-        JSON.stringify(currentState.favoriteIds) !== JSON.stringify(oldState.favoriteIds) ||
-        currentState.plants.length !== oldState.plants.length;
+        current.isLoading !== old.isLoading ||
+        current.query !== old.query ||
+        JSON.stringify(current.activeTags) !== JSON.stringify(old.activeTags) ||
+        current.sortOrder !== old.sortOrder ||
+        current.all.length !== (old.all || []).length;
+        // favorites.filterActive !== (old.favorites || {}).filterActive ||
+        // JSON.stringify(favorites.ids) !== JSON.stringify((old.favorites || {}).ids);
 
     if (!needsRender) return;
 
     const visiblePlants = getMemoizedSortedAndFilteredPlants(
-        currentState.plants, currentState.query, currentState.activeTags,
-        currentState.sortOrder, currentState.favoritesFilterActive, currentState.favoriteIds
+        current.all, current.query, current.activeTags, current.sortOrder
+        // favorites.filterActive, favorites.ids
     );
     
     components.plantGrid.render({
         plants: visiblePlants,
-        isLoading: currentState.isLoading,
-        favoriteIds: currentState.favoriteIds,
-        emptyStateContent: visiblePlants.length === 0 && !currentState.isLoading 
+        isLoading: current.isLoading,
+        // favoriteIds: favorites.ids,
+        emptyStateContent: visiblePlants.length === 0 && !current.isLoading 
             ? getEmptyStateContent(currentState) 
             : null
     });
 }
 
 function syncControls(currentState, oldState, elements) {
-    if (currentState.query !== oldState.query && elements.searchInput.value !== currentState.query) {
-        elements.searchInput.value = currentState.query;
+    const current = currentState.plants;
+    const old = oldState.plants || {};
+
+    if (current.query !== old.query && elements.searchInput.value !== current.query) {
+        elements.searchInput.value = current.query;
     }
-    if (currentState.sortOrder !== oldState.sortOrder) {
-        elements.sortSelect.value = currentState.sortOrder;
+    if (current.sortOrder !== old.sortOrder) {
+        elements.sortSelect.value = current.sortOrder;
     }
-    if (currentState.favoritesFilterActive !== oldState.favoritesFilterActive) {
-        elements.showFavoritesBtn.classList.toggle('active', currentState.favoritesFilterActive);
-    }
+    // const favorites = currentState.favorites || {};
+    // elements.showFavoritesBtn.classList.toggle('active', favorites.filterActive);
 }
 
 function syncTagFilter(currentState, oldState, components) {
-    if (currentState.allUniqueTags.length !== oldState.allUniqueTags.length ||
-        JSON.stringify(currentState.activeTags) !== JSON.stringify(oldState.activeTags)) {
+    const current = currentState.plants;
+    const old = oldState.plants || {};
+
+    if (current.allUniqueTags.length !== (old.allUniqueTags || []).length ||
+        JSON.stringify(current.activeTags) !== JSON.stringify(old.activeTags)) {
         components.tagFilter.render({
-            allTags: currentState.allUniqueTags,
-            activeTags: currentState.activeTags,
+            allTags: current.allUniqueTags,
+            activeTags: current.activeTags,
         });
     }
 }
 
 function syncModals(currentState, oldState, components) {
-    // Sincronizare Modal Plantă
-    if (currentState.modalPlant !== oldState.modalPlant) {
+    const currentPlants = currentState.plants;
+    const oldPlants = oldState.plants || {};
+
+    // Plant Modal Sync
+    if (currentPlants.modalPlant !== oldPlants.modalPlant) {
         ensurePlantModalIsLoaded().then(modal => {
-            if (currentState.modalPlant && currentState.modalPlant.current) {
+            if (currentPlants.modalPlant && currentPlants.modalPlant.current) {
                 modal.render({
-                    plant: currentState.modalPlant.current,
-                    adjacentPlants: { prev: currentState.modalPlant.prev, next: currentState.modalPlant.next },
-                    copyStatus: currentState.copyStatus
+                    plant: currentPlants.modalPlant.current,
+                    adjacentPlants: { prev: currentPlants.modalPlant.prev, next: currentPlants.modalPlant.next },
+                    copyStatus: currentPlants.copyStatus
                 });
             } else {
                 modal.close();
@@ -86,35 +98,29 @@ function syncModals(currentState, oldState, components) {
         }).catch(err => handleError(err, 'sincronizarea modalului de plantă'));
     }
 
-    // Sincronizare Modal FAQ
-    if (currentState.isFaqOpen !== oldState.isFaqOpen) {
-        if (currentState.isFaqOpen) {
-            if (currentState.faqData) components.faqModal.populate(currentState.faqData);
-            components.faqModal.open();
-        } else {
-            components.faqModal.close();
-        }
-    }
+    // FAQ Modal Sync
+    // const currentFaq = currentState.faq || {};
+    // const oldFaq = oldState.faq || {};
+
+    // if (currentFaq.isOpen !== oldFaq.isOpen) {
+    //     if (currentFaq.isOpen) {
+    //         if (currentFaq.data) components.faqModal.populate(currentFaq.data);
+    //         components.faqModal.open();
+    //     } else {
+    //         components.faqModal.close();
+    //     }
+    // }
 }
 
-// --- Funcția Principală de Sincronizare ---
-
 export function syncStateToUI(elements, components) {
-    let isInitialized = false;
-    const debouncedUpdateURL = debounce(updateURLFromState, TIMINGS.DEBOUNCE_DEFAULT);
+    const debouncedUpdateURL = debounce(updateURLFromState, 300);
 
-    subscribe((currentState, oldState) => {
-        syncGrid(currentState, oldState, components, elements);
+    store.subscribe((currentState, oldState) => {
+        syncGrid(currentState, oldState, components);
         syncControls(currentState, oldState, elements);
         syncTagFilter(currentState, oldState, components);
         syncModals(currentState, oldState, components);
-
-        if (isInitialized) {
-            debouncedUpdateURL(currentState);
-        }
+        
+        // debouncedUpdateURL(currentState); // URL Sync needs to be adapted for the new state shape
     });
-
-    return (status) => {
-        isInitialized = status;
-    };
 }

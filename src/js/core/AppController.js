@@ -12,8 +12,9 @@ import { TIMINGS } from '../utils/constants.js';
 import { handleError, initializeGlobalErrorHandler } from './errorHandler.js';
 import { fetchAllPlants, loadFaqData } from '../services/plantService.js';
 import { processAllPlants } from '../services/plantLogic.js';
-import * as favoriteService from '../services/favoriteService.js';
+import * as favoriteActions from '../features/favorites/favoritesActions.js';
 import { openPlantModal } from '../features/plants/plantsActions.js';
+import { openFaq } from '../features/faq/faqActions.js';
 
 export class AppController {
     #dom;
@@ -59,8 +60,7 @@ export class AppController {
             }
         });
 
-        const favoriteIds = favoriteService.getFavorites();
-        store.dispatch({ type: actionTypes.SET_FAVORITE_IDS, payload: favoriteIds });
+        favoriteActions.loadFavorites();
     }
 
     async #initializeStateFromURL() {
@@ -81,13 +81,7 @@ export class AppController {
         }
 
         if (initialState.isFaqOpen) {
-            try {
-                const faqData = await loadFaqData();
-                store.dispatch({ type: actionTypes.SET_FAQ_DATA, payload: faqData });
-                store.dispatch({ type: actionTypes.OPEN_FAQ });
-            } catch(err) {
-                handleError(err, 'încărcarea datelor FAQ din URL');
-            }
+           await store.dispatch(openFaq());
         }
     }
 

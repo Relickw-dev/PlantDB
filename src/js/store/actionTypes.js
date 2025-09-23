@@ -1,25 +1,26 @@
 // src/js/store/actionTypes.js
 
-export const actionTypes = object.freeze({
-    // actions for plants feature
-    set_query: 'plants/setquery',
-    set_sort_order: 'plants/setsortorder',
-    set_active_tags: 'plants/setactivetags',
-    reset_filters: 'plants/resetfilters',
-    set_modal_plant: 'plants/setmodalplant',
-    close_modal: 'plants/closemodal',
-    set_copy_status: 'plants/setcopystatus',
+export const actionTypes = Object.freeze({
+    // Actions for plants feature
+    SET_QUERY: 'plants/setQuery',
+    SET_SORT_ORDER: 'plants/setSortOrder',
+    SET_ACTIVE_TAGS: 'plants/setActiveTags',
+    RESET_FILTERS: 'plants/resetFilters',
+    SET_MODAL_PLANT: 'plants/setModalPlant',
+    CLOSE_MODAL: 'plants/closeModal',
+    SET_COPY_STATUS: 'plants/setCopyStatus',
     
-    // actions for favorites feature (we'll create this later)
-    set_favorite_ids: 'favorites/setids',
-    toggle_favorites_filter: 'favorites/togglefilter',
+    // Actions for favorites feature
+    SET_FAVORITE_IDS: 'favorites/setIds',
+    TOGGLE_FAVORITES_FILTER: 'favorites/toggleFilter',
 
-    // actions for faq feature
-    open_faq: 'faq/open',
-    close_faq: 'faq/close',
-    set_faq_data: 'faq/setdata',
+    // Actions for faq feature
+    OPEN_FAQ: 'faq/open',
+    CLOSE_FAQ: 'faq/close',
+    SET_FAQ_DATA: 'faq/setData',
+    SET_FAQ_ERROR: 'faq/setError',
 
-    // app-wide actions
-    set_initial_data: 'app/setinitialdata',
-    set_is_loading: 'app/setisloading',
+    // App-wide actions
+    SET_INITIAL_DATA: 'app/setInitialData',
+    SET_IS_LOADING: 'app/setIsLoading',
 });

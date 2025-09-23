@@ -1,5 +1,5 @@
 // src/js/features/faq/faqReducer.js
-import { actiontypes} from '../../store/actionTypes.js';
+import { actionTypes} from '../../store/actionTypes.js';
 
 const initialState = {
     isOpen: false,

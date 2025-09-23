@@ -1,5 +1,5 @@
 // src/js/features/favorites/favoritesReducer.js
-import { actiontypes } from '../../store/actionTypes.js';
+import { actionTypes } from '../../store/actionTypes.js';
 
 const initialState = {
     ids: [],

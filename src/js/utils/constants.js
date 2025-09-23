@@ -116,20 +116,25 @@ export const FAB_ACTIONS = Object.freeze ({
 
 // Definește structura și valorile implicite ale stării aplicației.
 export const DEFAULT_STATE = Object.freeze({
-    isLoading: true,
-    plants: [],
-    allUniqueTags: [],
-    query: "",
-    sortOrder: SORT_KEYS.AZ,
-    activeTags: [],
-    modalPlant: null,
-    isFaqOpen: false,
-    faqData: null,
-    isFaqDataLoaded: false,
-    isFaqLoadFailed: false,
-    copyStatus: 'idle',
-    favoriteIds: [],
-    favoritesFilterActive: false,
+    plants: {
+        all: [],
+        allUniqueTags: [],
+        isLoading: true,
+        query: "",
+        sortOrder: 'az',
+        activeTags: [],
+        modalPlant: null,
+        copyStatus: 'idle',
+    },
+    favorites: {
+        ids: [],
+        filterActive: false,
+    },
+    faq: {
+        isOpen: false,
+        data: null,
+        loadFailed: false,
+    }
 });
 
 export const TOXICITY_MAP = Object.freeze({

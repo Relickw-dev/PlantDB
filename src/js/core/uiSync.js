@@ -12,9 +12,7 @@ function getEmptyStateContent(state) {
     const { query } = state.plants;
     // const { favoritesFilterActive } = state.favorites;
 
-    // if (favoritesFilterActive) {
-    //     return { message: 'Nu ai adăugat nicio plantă la favorite...', imgSrc: "assets/icons/empty.svg" };
-    // }
+    // if (favoritesFilterActive) { ... }
     if (PET_KEYWORDS.some(kw => query.toLowerCase().includes(kw))) {
         return { message: 'Am găsit doar plante sigure pentru prietenii tăi blănoși! 🐾', imgSrc: "assets/icons/empty.svg" };
     }
@@ -26,6 +24,7 @@ function syncGrid(currentState, oldState, components) {
     const old = oldState.plants || {};
     // const favorites = currentState.favorites || {};
 
+    // Verificăm dacă o rerandare este necesară
     const needsRender = 
         current.isLoading !== old.isLoading ||
         current.query !== old.query ||
@@ -38,7 +37,7 @@ function syncGrid(currentState, oldState, components) {
     if (!needsRender) return;
 
     const visiblePlants = getMemoizedSortedAndFilteredPlants(
-        current.all, current.query, current.activeTags, current.sortOrder
+        current.all, current.query, current.activeTags, current.sortOrder,
         // favorites.filterActive, favorites.ids
     );
     
@@ -83,7 +82,6 @@ function syncModals(currentState, oldState, components) {
     const currentPlants = currentState.plants;
     const oldPlants = oldState.plants || {};
 
-    // Plant Modal Sync
     if (currentPlants.modalPlant !== oldPlants.modalPlant) {
         ensurePlantModalIsLoaded().then(modal => {
             if (currentPlants.modalPlant && currentPlants.modalPlant.current) {
@@ -98,22 +96,14 @@ function syncModals(currentState, oldState, components) {
         }).catch(err => handleError(err, 'sincronizarea modalului de plantă'));
     }
 
-    // FAQ Modal Sync
-    // const currentFaq = currentState.faq || {};
-    // const oldFaq = oldState.faq || {};
-
-    // if (currentFaq.isOpen !== oldFaq.isOpen) {
-    //     if (currentFaq.isOpen) {
-    //         if (currentFaq.data) components.faqModal.populate(currentFaq.data);
-    //         components.faqModal.open();
-    //     } else {
-    //         components.faqModal.close();
-    //     }
-    // }
+    // Aici va veni logica pentru modalul FAQ
 }
 
 export function syncStateToUI(elements, components) {
-    const debouncedUpdateURL = debounce(updateURLFromState, 300);
+    const debouncedUpdateURL = debounce((state) => {
+        // Adaptare necesară pentru noua structură a stării
+        // updateURLFromState(state);
+    }, 300);
 
     store.subscribe((currentState, oldState) => {
         syncGrid(currentState, oldState, components);
@@ -121,6 +111,6 @@ export function syncStateToUI(elements, components) {
         syncTagFilter(currentState, oldState, components);
         syncModals(currentState, oldState, components);
         
-        // debouncedUpdateURL(currentState); // URL Sync needs to be adapted for the new state shape
+        // debouncedUpdateURL(currentState);
     });
 }

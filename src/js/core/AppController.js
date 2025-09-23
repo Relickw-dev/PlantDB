@@ -11,7 +11,7 @@ import { initializeTheme } from '../ui/ThemeToggle.js';
 import { TIMINGS } from '../utils/constants.js';
 import { handleError, initializeGlobalErrorHandler } from './errorHandler.js';
 import { fetchAllPlants, loadFaqData } from '../services/plantService.js';
-import { processAllPlants } from '../services/plantLogic.js';
+import { processAllPlants } from '../features/plants/plantsLogic.js';
 import * as favoriteService from '../services/favoriteService.js';
 import { openPlantModal } from '../features/plants/plantsActions.js';
 
@@ -30,13 +30,11 @@ export class AppController {
             if (!this.#dom.intro || !this.#dom.appContainer) {
                 return resolve();
             }
-
             const onAnimationEnd = () => {
                 this.#dom.intro.classList.add('hidden');
                 this.#dom.intro.addEventListener('transitionend', () => this.#dom.intro.remove(), { once: true });
                 resolve();
             };
-            
             setTimeout(() => {
                 this.#dom.intro.classList.add("out");
                 this.#dom.appContainer.classList.add("loaded");
@@ -50,7 +48,6 @@ export class AppController {
         
         const rawPlantsData = await fetchAllPlants(); 
         const processedPlants = processAllPlants(rawPlantsData);
-
         const allTags = processedPlants.flatMap((p) => p.tags || []);
         const uniqueTags = [...new Set(allTags)].sort();
         
@@ -63,8 +60,7 @@ export class AppController {
         });
 
         const favoriteIds = favoriteService.getFavorites();
-        // Aici vom dispeceriza o acțiune pentru favorite când creăm modulul respectiv
-        // store.dispatch({ type: actionTypes.SET_FAVORITE_IDS, payload: favoriteIds });
+        store.dispatch({ type: actionTypes.SET_FAVORITE_IDS, payload: favoriteIds });
     }
 
     async #initializeStateFromURL() {

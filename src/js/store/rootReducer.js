@@ -1,11 +1,12 @@
 // src/js/store/rootReducer.js
-import { plantsreducer } from '../features/plants/plantsreducer.js';
-// vom adăuga aici și alți reduceri pe viitor (ex: favoritesreducer)
+import { plantsReducer } from '../features/plants/plantsReducer.js';
+import { favoritesReducer } from '../features/favorites/favoritesReducer.js';
+import { faqReducer } from '../features/faq/faqReducer.js';
 
-export function rootreducer(state = {}, action) {
+export function rootReducer(state = {}, action) {
     return {
-        // fiecare reducer este responsabil pentru o "felie" (slice) din starea globală
-        plants: plantsreducer(state.plants, action),
-        // favorites: favoritesReducer(state.favorites, action),
+        plants: plantsReducer(state.plants, action),
+        favorites: favoritesReducer(state.favorites, action),
+        faq: faqReducer(state.faq, action),
     };
 }

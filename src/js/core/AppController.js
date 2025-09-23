@@ -55,8 +55,7 @@ export class AppController {
                     feature.bindEvents(this.#dom, this.#store);
                 }
             });
-            // Pasăm store-ul către funcția de sincronizare
-            syncStateToUI(this.#dom, this.#components, this.#store);
+           
 
             // Încărcăm favoritele salvate la pornire
             this.#store.dispatch(loadFavorites());
@@ -64,6 +63,9 @@ export class AppController {
             await this.#runIntroAnimation();
             await this.#loadCoreData();
             await this.#initializeStateFromURL();
+
+             // Pasăm store-ul către funcția de sincronizare
+            syncStateToUI(this.#dom, this.#components, this.#store);
 
             showNotification("Ghidul de plante este gata! 🪴", { type: "success" });
             this.#isInitialized = true;

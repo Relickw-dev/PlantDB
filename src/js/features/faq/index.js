@@ -19,8 +19,8 @@ export default {
     
     // O funcție care leagă evenimentele specifice acestui feature
     bindEvents: (dom, store) => {
-        // Ascultă evenimentul de închidere de la modal
-        dom.faqModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, faqActions.closeFaq);
+        // CORECTAT: Acum apelul este învelit în store.dispatch()
+        dom.faqModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, () => store.dispatch(faqActions.closeFaq()));
 
         // Ascultă acțiunea de pe FAB menu
         dom.fabContainer.addEventListener('fab-action', (e) => {

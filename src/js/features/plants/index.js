@@ -3,16 +3,22 @@ import { plantsReducer } from './plantsReducer.js';
 import * as plantsActions from './plantsActions.js';
 import { CUSTOM_EVENTS } from '../../utils/constants.js';
 import { ensurePlantModalIsLoaded } from '../../utils/dynamicLoader.js';
+import { debounce } from '../../utils/helpers.js'; // Am adăugat import pentru debounce
 
 export default {
     name: 'plants',
     reducer: plantsReducer,
     bindEvents: (dom, store) => {
         // --- Controale principale ---
-        const debouncedSearch = (value) => store.dispatch(plantsActions.setQuery(value));
+        // Folosim o funcție debounced pentru a nu supraîncărca store-ul la fiecare tastă apăsată
+        const debouncedSearch = debounce((value) => store.dispatch(plantsActions.setQuery(value)), 300);
+        
         dom.searchInput.addEventListener('input', (e) => debouncedSearch(e.target.value));
         dom.sortSelect.addEventListener('change', (e) => store.dispatch(plantsActions.setSortOrder(e.target.value)));
+        
+        // CORECTAT: Acum butonul de reset va funcționa corect
         dom.resetButton.addEventListener('click', () => store.dispatch(plantsActions.resetFilters()));
+        
         dom.randomBtn.addEventListener('click', () => store.dispatch(plantsActions.selectRandomPlant()));
         
         // --- Filtre de tag-uri ---

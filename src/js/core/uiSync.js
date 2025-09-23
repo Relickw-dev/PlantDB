@@ -116,7 +116,6 @@ function syncModals(currentState, oldState, components) {
 }
 
 function syncTheme(currentState, oldState) {
-    // Verificăm dacă starea pentru temă există înainte de a o accesa
     if (!currentState.theme) return;
 
     const currentTheme = currentState.theme.current;
@@ -130,13 +129,20 @@ function syncTheme(currentState, oldState) {
 export function syncStateToUI(elements, components, store) {
     const debouncedUpdateURL = debounce(updateURLFromState, 300);
 
-    store.subscribe((currentState, oldState) => {
+    // O funcție centrală care actualizează toate părțile UI-ului
+    const updateUI = (currentState, oldState) => {
         syncGrid(currentState, oldState, components);
         syncControls(currentState, oldState, elements);
         syncTagFilter(currentState, oldState, components);
         syncModals(currentState, oldState, components);
         syncTheme(currentState, oldState);
-        
         debouncedUpdateURL(currentState);
-    });
+    };
+
+    // Abonează-te la schimbările viitoare
+    store.subscribe(updateUI);
+
+    // **CORECTAT**: Realizează o primă actualizare manuală a UI-ului
+    // Folosim un obiect gol ca `oldState` pentru a forța o randare completă.
+    updateUI(store.getState(), {});
 }

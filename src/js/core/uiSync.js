@@ -10,9 +10,11 @@ import { handleError } from './errorHandler.js';
 
 function getEmptyStateContent(state) {
     const { query } = state.plants;
-    // const { favoritesFilterActive } = state.favorites;
+    const { filterActive } = state.favorites;
 
-    // if (favoritesFilterActive) { ... }
+    if (filterActive) {
+        return { message: 'Nu ai adăugat nicio plantă la favorite. Apasă pe inimă pentru a crea colecția ta!', imgSrc: "assets/icons/empty.svg" };
+    }
     if (PET_KEYWORDS.some(kw => query.toLowerCase().includes(kw))) {
         return { message: 'Am găsit doar plante sigure pentru prietenii tăi blănoși! 🐾', imgSrc: "assets/icons/empty.svg" };
     }
@@ -20,56 +22,59 @@ function getEmptyStateContent(state) {
 }
 
 function syncGrid(currentState, oldState, components) {
-    const current = currentState.plants;
-    const old = oldState.plants || {};
-    // const favorites = currentState.favorites || {};
+    const currentPlants = currentState.plants;
+    const oldPlants = oldState.plants || {};
+    const currentFavorites = currentState.favorites;
+    const oldFavorites = oldState.favorites || {};
 
-    // Verificăm dacă o rerandare este necesară
     const needsRender = 
-        current.isLoading !== old.isLoading ||
-        current.query !== old.query ||
-        JSON.stringify(current.activeTags) !== JSON.stringify(old.activeTags) ||
-        current.sortOrder !== old.sortOrder ||
-        current.all.length !== (old.all || []).length;
-        // favorites.filterActive !== (old.favorites || {}).filterActive ||
-        // JSON.stringify(favorites.ids) !== JSON.stringify((old.favorites || {}).ids);
+        currentPlants.isLoading !== oldPlants.isLoading ||
+        currentPlants.query !== oldPlants.query ||
+        JSON.stringify(currentPlants.activeTags) !== JSON.stringify(oldPlants.activeTags) ||
+        currentPlants.sortOrder !== oldPlants.sortOrder ||
+        currentPlants.all.length !== (oldPlants.all || []).length ||
+        currentFavorites.filterActive !== oldFavorites.filterActive ||
+        JSON.stringify(currentFavorites.ids) !== JSON.stringify(oldFavorites.ids);
 
     if (!needsRender) return;
 
     const visiblePlants = getMemoizedSortedAndFilteredPlants(
-        current.all, current.query, current.activeTags, current.sortOrder,
-        // favorites.filterActive, favorites.ids
+        currentPlants.all, currentPlants.query, currentPlants.activeTags, currentPlants.sortOrder,
+        currentFavorites.filterActive, currentFavorites.ids
     );
     
     components.plantGrid.render({
         plants: visiblePlants,
-        isLoading: current.isLoading,
-        // favoriteIds: favorites.ids,
-        emptyStateContent: visiblePlants.length === 0 && !current.isLoading 
+        isLoading: currentPlants.isLoading,
+        favoriteIds: currentFavorites.ids,
+        emptyStateContent: visiblePlants.length === 0 && !currentPlants.isLoading 
             ? getEmptyStateContent(currentState) 
             : null
     });
 }
 
 function syncControls(currentState, oldState, elements) {
-    const current = currentState.plants;
-    const old = oldState.plants || {};
+    const currentPlants = currentState.plants;
+    const oldPlants = oldState.plants || {};
+    const currentFavorites = currentState.favorites;
+    const oldFavorites = oldState.favorites || {};
 
-    if (current.query !== old.query && elements.searchInput.value !== current.query) {
-        elements.searchInput.value = current.query;
+    if (currentPlants.query !== oldPlants.query && elements.searchInput.value !== currentPlants.query) {
+        elements.searchInput.value = currentPlants.query;
     }
-    if (current.sortOrder !== old.sortOrder) {
-        elements.sortSelect.value = current.sortOrder;
+    if (currentPlants.sortOrder !== oldPlants.sortOrder) {
+        elements.sortSelect.value = currentPlants.sortOrder;
     }
-    // const favorites = currentState.favorites || {};
-    // elements.showFavoritesBtn.classList.toggle('active', favorites.filterActive);
+    if (currentFavorites.filterActive !== oldFavorites.filterActive) {
+        elements.showFavoritesBtn.classList.toggle('active', currentFavorites.filterActive);
+    }
 }
 
 function syncTagFilter(currentState, oldState, components) {
     const current = currentState.plants;
     const old = oldState.plants || {};
 
-    if (current.allUniqueTags.length !== (old.allUniqueTags || []).length ||
+    if (JSON.stringify(current.allUniqueTags) !== JSON.stringify(old.allUniqueTags) ||
         JSON.stringify(current.activeTags) !== JSON.stringify(old.activeTags)) {
         components.tagFilter.render({
             allTags: current.allUniqueTags,
@@ -81,8 +86,11 @@ function syncTagFilter(currentState, oldState, components) {
 function syncModals(currentState, oldState, components) {
     const currentPlants = currentState.plants;
     const oldPlants = oldState.plants || {};
+    const currentFaq = currentState.faq;
+    const oldFaq = oldState.faq || {};
 
-    if (currentPlants.modalPlant !== oldPlants.modalPlant) {
+    // Sincronizare Modal Plantă
+    if (currentPlants.modalPlant !== oldPlants.modalPlant || currentPlants.copyStatus !== oldPlants.copyStatus) {
         ensurePlantModalIsLoaded().then(modal => {
             if (currentPlants.modalPlant && currentPlants.modalPlant.current) {
                 modal.render({
@@ -96,14 +104,19 @@ function syncModals(currentState, oldState, components) {
         }).catch(err => handleError(err, 'sincronizarea modalului de plantă'));
     }
 
-    // Aici va veni logica pentru modalul FAQ
+    // Sincronizare Modal FAQ
+    if (currentFaq.isOpen !== oldFaq.isOpen) {
+        if (currentFaq.isOpen) {
+            if (currentFaq.data) components.faqModal.populate(currentFaq.data);
+            components.faqModal.open();
+        } else {
+            components.faqModal.close();
+        }
+    }
 }
 
 export function syncStateToUI(elements, components) {
-    const debouncedUpdateURL = debounce((state) => {
-        // Adaptare necesară pentru noua structură a stării
-        // updateURLFromState(state);
-    }, 300);
+    const debouncedUpdateURL = debounce(updateURLFromState, 300);
 
     store.subscribe((currentState, oldState) => {
         syncGrid(currentState, oldState, components);
@@ -111,6 +124,6 @@ export function syncStateToUI(elements, components) {
         syncTagFilter(currentState, oldState, components);
         syncModals(currentState, oldState, components);
         
-        // debouncedUpdateURL(currentState);
+        debouncedUpdateURL(currentState);
     });
 }

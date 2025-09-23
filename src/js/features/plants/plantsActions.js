@@ -4,7 +4,7 @@ import store from '../../store/index.js';
 import { actionTypes } from '../../store/actionTypes.js';
 import { fetchPlantDetails } from '../../services/plantService.js';
 import { getMemoizedSortedAndFilteredPlants } from '../../services/memoizedLogic.js';
-import { getAdjacentPlants } from '../../services/plantLogic.js';
+import { getAdjacentPlants } from '../../services/plantLogic.js'; // <-- CALEA A FOST CORECTATĂ AICI
 import { handleError } from '../../core/errorHandler.js';
 import { showNotification } from '../../components/NotificationService.js';
 import { SORT_KEYS } from '../../utils/constants.js';
@@ -12,23 +12,23 @@ import { SORT_KEYS } from '../../utils/constants.js';
 // --- Acțiuni Sincrone (Creatori de Acțiuni) ---
 
 export const setQuery = (query) => {
-    store.dispatch({ type: actionTypes.SET_QUERY, payload: query });
+    store.dispatch({ type: actiontypes.SET_QUERY, payload: query });
 };
 
 export const setSortOrder = (order) => {
-    store.dispatch({ type: actionTypes.SET_SORT_ORDER, payload: order });
+    store.dispatch({ type: actiontypes.SET_SORT_ORDER, payload: order });
 };
 
 export const resetFilters = () => {
-    store.dispatch({ type: actionTypes.RESET_FILTERS });
+    store.dispatch({ type: actiontypes.RESET_FILTERS });
 };
 
 export const closeModal = () => {
-    store.dispatch({ type: actionTypes.CLOSE_MODAL });
+    store.dispatch({ type: actiontypes.CLOSE_MODAL });
 };
 
 export const selectTag = (tag) => {
-    const { activeTags } = store.getState().plants;
+    const { activeTags } = store.getstate().plants;
     let newTags;
     
     if (tag === "") {

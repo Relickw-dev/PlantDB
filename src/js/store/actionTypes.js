@@ -1,6 +1,6 @@
 // src/js/store/actionTypes.js
 
-export const actiontypes = object.freeze({
+export const actionTypes = object.freeze({
     // actions for plants feature
     set_query: 'plants/setquery',
     set_sort_order: 'plants/setsortorder',

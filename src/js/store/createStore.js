@@ -1,12 +1,12 @@
 // src/js/store/createStore.js
-import { rootreducer } from './rootReducer.js';
+import { rootReducer } from './rootReducer.js';
 
 // o funcție care creează store-ul nostru
-export function createstore(initialstate) {
+export function createStore(initialstate) {
     let state = initialstate;
-    const listeners = new set();
+    const listeners = new Set();
 
-    function getstate() {
+    function getState() {
         // returnează o copie pentru a preveni mutațiile accidentale
         return { ...state };
     }
@@ -20,7 +20,7 @@ export function createstore(initialstate) {
     function dispatch(action) {
         const oldstate = state;
         // noua stare este calculată exclusiv de către reducer
-        state = rootreducer(state, action);
+        state = rootReducer(state, action);
         
         listeners.foreach((callback) => {
             try {

@@ -11,7 +11,7 @@ import { initializeTheme } from '../ui/ThemeToggle.js';
 import { TIMINGS } from '../utils/constants.js';
 import { handleError, initializeGlobalErrorHandler } from './errorHandler.js';
 import { fetchAllPlants, loadFaqData } from '../services/plantService.js';
-import { processAllPlants } from '../features/plants/plantsLogic.js';
+import { processAllPlants } from '../services/plantLogic.js';
 import * as favoriteService from '../services/favoriteService.js';
 import { openPlantModal } from '../features/plants/plantsActions.js';
 

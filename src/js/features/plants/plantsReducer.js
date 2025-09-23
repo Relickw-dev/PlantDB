@@ -1,25 +1,25 @@
 // src/js/features/plants/plantsReducer.js
-import { actiontypes } from '../../store/actionTypes.js';
-import { default_state, sort_keys } from '../../utils/constants.js';
+import { actionTypes } from '../../store/actionTypes.js';
+import { DEFAULT_STATE, SORT_KEYS } from '../../utils/constants.js';
 
 // definim starea inițială doar pentru acest "slice"
-const initialstate = {
+const initialState = {
     all: [],
     alluniquetags: [],
-    isloading: true,
+    isLoading: true,
     query: "",
-    sortorder: sort_keys.az,
+    sortOrder: SORT_KEYS.az,
     activetags: [],
     modalplant: null,
     copystatus: 'idle',
 };
 
-export function plantsreducer(state = initialstate, action) {
+export function plantsReducer(state = initialState, action) {
     switch (action.type) {
-        case actiontypes.set_is_loading:
-            return { ...state, isloading: action.payload };
+        case actionTypes.set_is_loading:
+            return { ...state, isLoading: action.payload };
 
-        case actiontypes.set_initial_data:
+        case actionTypes.set_initial_data:
             return {
                 ...state,
                 all: action.payload.plants,
@@ -27,30 +27,30 @@ export function plantsreducer(state = initialstate, action) {
                 isloading: false,
             };
 
-        case actiontypes.set_query:
+        case actionTypes.set_query:
             return { ...state, query: action.payload };
         
-        case actiontypes.set_sort_order:
+        case actionTypes.set_sort_order:
             return { ...state, sortorder: action.payload };
 
-        case actiontypes.set_active_tags:
+        case actionTypes.set_active_tags:
             return { ...state, activetags: action.payload };
             
-        case actiontypes.reset_filters:
+        case actionTypes.reset_filters:
             return {
                 ...state,
                 query: "",
-                sortorder: sort_keys.az,
+                sortorder: SORT_KEYS.az,
                 activetags: [],
             };
         
-        case actiontypes.set_modal_plant:
+        case actionTypes.set_modal_plant:
             return { ...state, modalplant: action.payload };
 
-        case actiontypes.close_modal:
+        case actionTypes.close_modal:
             return { ...state, modalplant: null };
 
-        case actiontypes.set_copy_status:
+        case actionTypes.set_copy_status:
             return { ...state, copystatus: action.payload };
 
         default:

@@ -1,6 +1,5 @@
 // src/js/core/uiSync.js
 
-import store from '../store/index.js';
 import { debounce } from '../utils/helpers.js';
 import { updateURLFromState } from '../services/urlService.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
@@ -128,7 +127,7 @@ function syncTheme(currentState, oldState) {
     }
 }
 
-export function syncStateToUI(elements, components) {
+export function syncStateToUI(elements, components, store) {
     const debouncedUpdateURL = debounce(updateURLFromState, 300);
 
     store.subscribe((currentState, oldState) => {

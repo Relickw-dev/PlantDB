@@ -1,5 +1,4 @@
 // src/js/features/plants/plantsActions.js
-import store from '../../store/index.js';
 import { actionTypes } from '../../store/actionTypes.js';
 import { fetchPlantDetails } from '../../services/plantService.js';
 import { getMemoizedSortedAndFilteredPlants } from '../../services/memoizedLogic.js';
@@ -8,24 +7,16 @@ import { handleError } from '../../core/errorHandler.js';
 import { showNotification } from '../../components/NotificationService.js';
 import * as shareService from '../../services/shareService.js';
 
-export const setQuery = (query) => {
-    store.dispatch({ type: actionTypes.SET_QUERY, payload: query });
-};
+export const setQuery = (query) => ({ type: actionTypes.SET_QUERY, payload: query });
 
-export const setSortOrder = (order) => {
-    store.dispatch({ type: actionTypes.SET_SORT_ORDER, payload: order });
-};
+export const setSortOrder = (order) => ({ type: actionTypes.SET_SORT_ORDER, payload: order });
 
-export const resetFilters = () => {
-    store.dispatch({ type: actionTypes.RESET_FILTERS });
-};
+export const resetFilters = () => ({ type: actionTypes.RESET_FILTERS });
 
-export const closeModal = () => {
-    store.dispatch({ type: actionTypes.CLOSE_MODAL });
-};
+export const closeModal = () => ({ type: actionTypes.CLOSE_MODAL });
 
-export const selectTag = (tag) => {
-    const { activeTags } = store.getState().plants;
+export const selectTag = (tag) => (dispatch, getState) => {
+    const { activeTags } = getState().plants;
     let newTags;
     if (tag === "") {
         newTags = [];
@@ -34,7 +25,7 @@ export const selectTag = (tag) => {
         const tagIndex = newTags.indexOf(tag);
         tagIndex > -1 ? newTags.splice(tagIndex, 1) : newTags.push(tag);
     }
-    store.dispatch({ type: actionTypes.SET_ACTIVE_TAGS, payload: newTags });
+    dispatch({ type: actionTypes.SET_ACTIVE_TAGS, payload: newTags });
 };
 
 export const openPlantModal = (plantId) => {

@@ -27,12 +27,21 @@ function handleKeyboardNavigation(e, store) {
  * Atașează toți event listener-ii globali necesari aplicației.
  */
 export function bindEventListeners(dom, store) {
-    window.addEventListener('keydown', (e) => handleKeyboardNavigation(e, store));
+    // Stocăm handler-ul pentru a-l putea elimina ulterior
+    const keydownHandler = (e) => handleKeyboardNavigation(e, store);
+    window.addEventListener('keydown', keydownHandler);
+    
+    // Stocăm o referință la handler pe window pentru a-l putea accesa la unbind
+    window._keydownHandler = keydownHandler;
 }
+
 
 /**
  * Detașează toți event listener-ii pentru a preveni memory leaks.
  */
 export function unbindEventListeners() {
-    window.removeEventListener('keydown', handleKeyboardNavigation);
+    if (window._keydownHandler) {
+        window.removeEventListener('keydown', window._keydownHandler);
+        delete window._keydownHandler;
+    }
 }

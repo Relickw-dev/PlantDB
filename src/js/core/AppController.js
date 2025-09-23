@@ -8,12 +8,13 @@ import { syncStateToUI } from './uiSync.js';
 import { showNotification } from '../components/NotificationService.js';
 import { getStateFromURL } from '../services/urlService.js';
 import { initializeTheme } from '../ui/ThemeToggle.js';
-import { TIMINGS } from '../utils/constants.js';
+import { TIMINGS, DEFAULT_STATE } from '../utils/constants.js'; // Am adăugat DEFAULT_STATE
 import { handleError, initializeGlobalErrorHandler } from './errorHandler.js';
 import { fetchAllPlants } from '../services/plantService.js';
 import { processAllPlants } from '../services/plantLogic.js';
 import { openPlantModal } from '../features/plants/plantsActions.js';
 import { openFaq } from '../features/faq/faqActions.js';
+import { loadFavorites } from '../features/favorites/favoritesActions.js'; // Adăugat pentru a încărca favoritele
 
 export class AppController {
     #features;
@@ -37,7 +38,8 @@ export class AppController {
             this.#components = { ...baseComponents };
 
             const rootReducer = createRootReducer(this.#features);
-            this.#store = createStore({}, rootReducer);
+            // Inițializăm store-ul cu starea implicită
+            this.#store = createStore(DEFAULT_STATE, rootReducer);
 
             this.#features.forEach(feature => {
                 if (feature.initComponents) {
@@ -53,7 +55,11 @@ export class AppController {
                     feature.bindEvents(this.#dom, this.#store);
                 }
             });
+            // Pasăm store-ul către funcția de sincronizare
             syncStateToUI(this.#dom, this.#components, this.#store);
+
+            // Încărcăm favoritele salvate la pornire
+            this.#store.dispatch(loadFavorites());
 
             await this.#runIntroAnimation();
             await this.#loadCoreData();
@@ -66,7 +72,7 @@ export class AppController {
             handleError(err, 'inițializarea aplicației');
         }
     }
-
+    
     #runIntroAnimation() {
         return new Promise((resolve) => {
             if (!this.#dom.intro) return resolve();

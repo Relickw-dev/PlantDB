@@ -13,19 +13,12 @@ import { handleError } from './errorHandler.js';
 let copyStatusTimeoutId = null;
 
 // --- Funcție centralizată pentru gestionarea stării modalelor ---
-/**
- * O funcție privată care actualizează starea pentru ambele modale,
- * asigurând că doar unul poate fi activ la un moment dat.
- * @param {object|null} plantData - Obiectul pentru modalul plantei sau null.
- * @param {boolean} isFaqOpen - Starea de vizibilitate pentru modalul FAQ.
- */
 function setModalState(plantData = null, isFaqOpen = false) {
     const newState = {
         modalPlant: plantData,
         isFaqOpen: isFaqOpen,
     };
 
-    // Asigură exclusivitatea: dacă un modal se deschide, celălalt se închide.
     if (plantData) {
         newState.isFaqOpen = false;
     }
@@ -37,13 +30,6 @@ function setModalState(plantData = null, isFaqOpen = false) {
 }
 
 // --- Funcții Helper & Gestionarea Erorilor ---
-
-/**
- * Încarcă detaliile complete pentru o plantă.
- * NU mai modifică starea globală a listei de plante.
- * @param {number} plantId - ID-ul plantei de încărcat.
- * @returns {Promise<object|null>} Obiectul plantei cu detalii complete sau null dacă apare o eroare.
- */
 async function loadPlantDetails(plantId) {
     const { plants } = getState();
     const plantSummary = plants.find((p) => p.id == plantId);
@@ -62,12 +48,6 @@ async function loadPlantDetails(plantId) {
     }
 }
 
-/**
- * Recalculează navigația pentru modal atunci când filtrele se schimbă.
- * @param {object} currentState - Starea curentă.
- * @param {object} newFilterState - Modificările de filtru propuse.
- * @returns {object} Starea finală, incluzând navigația actualizată.
- */
 function getStateWithUpdatedNav(currentState, newFilterState) {
     const potentialNextState = { ...currentState, ...newFilterState };
     if (!potentialNextState.modalPlant) {
@@ -85,32 +65,19 @@ function getStateWithUpdatedNav(currentState, newFilterState) {
 
 
 // --- Acțiuni Publice ---
-
-/**
- * Actualizează interogarea de căutare.
- * @param {string} query - Textul căutat.
- */
 export function search(query) {
     updateState(getStateWithUpdatedNav(getState(), { query }));
 }
 
-/**
- * Schimbă ordinea de sortare a plantelor.
- * @param {string} order - Noua cheie de sortare.
- */
 export function changeSortOrder(order) {
     updateState(getStateWithUpdatedNav(getState(), { sortOrder: order }));
 }
 
-/**
- * Adaugă, elimină sau resetează tag-urile active.
- * @param {string} tag - Tag-ul selectat.
- */
 export function selectTag(tag) {
     const { activeTags } = getState();
     let newTags;
     
-    if (tag === "") { // Resetare tag-uri
+    if (tag === "") {
         newTags = [];
     } else {
         newTags = [...activeTags];
@@ -121,9 +88,6 @@ export function selectTag(tag) {
     updateState(getStateWithUpdatedNav(getState(), { activeTags: newTags }));
 }
 
-/**
- * Resetează toate filtrele la starea implicită.
- */
 export function resetFilters() {
     const resetState = {
         query: "",
@@ -134,9 +98,6 @@ export function resetFilters() {
     updateState(getStateWithUpdatedNav(getState(), resetState));
 }
 
-/**
- * Deschide modalul pentru o plantă aleatorie din setul vizibil.
- */
 export function selectRandomPlant() {
     const state = getState();
     const visiblePlants = getMemoizedSortedAndFilteredPlants(
@@ -152,12 +113,9 @@ export function selectRandomPlant() {
     openPlantModal(randomPlant.id);
 }
 
-/**
- * Deschide modalul pentru o plantă specifică.
- */
 export async function openPlantModal(plantId) {
     const current = await loadPlantDetails(plantId);
-    if (!current) return; // Eroarea a fost deja gestionată
+    if (!current) return;
 
     const state = getState();
     const visiblePlants = getMemoizedSortedAndFilteredPlants(
@@ -169,17 +127,10 @@ export async function openPlantModal(plantId) {
     setModalState({ current, prev, next });
 }
 
-/**
- * Închide modalul plantei.
- */
 export function closeModal() {
     setModalState(null);
 }
 
-/**
- * Navighează la planta următoare sau precedentă în modal.
- * @param {'next'|'prev'} direction - Direcția de navigare.
- */
 export async function navigateModal(direction) {
     const state = getState();
     if (!state.modalPlant?.current) return;
@@ -190,12 +141,6 @@ export async function navigateModal(direction) {
     await openPlantModal(targetPlant.id);
 }
 
-
-// --- Acțiuni FAQ & Utilitare ---
-
-/**
- * Deschide modalul FAQ.
- */
 export async function openFaqModal() {
     const { isFaqDataLoaded, isFaqLoadFailed } = getState();
     
@@ -219,9 +164,6 @@ export async function openFaqModal() {
     }
 }
 
-/**
- * Închide modalul FAQ.
- */
 export function closeFaqModal() {
     setModalState(null, false);
 }
@@ -251,9 +193,31 @@ export async function copyPlantDetails() {
     }
 }
 
+export async function sharePlantDetails() {
+    const plant = getState().modalPlant?.current;
+    if (!plant) return;
+
+    const shareData = {
+        title: plant.name,
+        text: `Uite ce plantă interesantă am găsit: ${plant.name}!`,
+        url: window.location.href
+    };
+
+    try {
+        if (navigator.share) {
+            await navigator.share(shareData);
+        } else {
+            await navigator.clipboard.writeText(window.location.href);
+            showNotification("Link-ul a fost copiat în clipboard!", { type: 'success' });
+        }
+    } catch (err) {
+        if (err.name !== 'AbortError') {
+            handleError(err, "partajarea detaliilor");
+        }
+    }
+}
 
 // --- Acțiuni Favorite ---
-
 export function loadFavorites() {
     updateState({ favoriteIds: favoriteService.getFavorites() });
 }

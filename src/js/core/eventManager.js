@@ -9,9 +9,7 @@ import { getState } from './state.js';
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 
 
-// --- NOU: Stocăm referințele la funcțiile handler pentru a le putea elimina corect ---
 const eventHandlers = {
-    // Folosim o funcție debounce stocată, nu una creată dinamic
     handleSearchInput: debounce((e) => actions.search(e.target.value), TIMINGS.SEARCH_DEBOUNCE),
     handleSortChange: (e) => actions.changeSortOrder(e.target.value),
     handleRandomClick: () => {
@@ -21,11 +19,11 @@ const eventHandlers = {
     handleFaqCloseRequest: actions.closeFaqModal,
     handleModalCloseRequest: actions.closeModal,
     handleModalNavigateRequest: (e) => actions.navigateModal(e.detail.direction),
-    handleModalCopyRequest: actions.copyPlantDetails
+    handleModalCopyRequest: actions.copyPlantDetails,
+    handleModalShareRequest: actions.sharePlantDetails
 };
 
-
-// --- Funcții Helper pentru gestionarea evenimentelor (rămân neschimbate) ---
+// --- Funcții Helper pentru gestionarea evenimentelor ---
 
 function handleFavoriteClick(target) {
     const plantId = parseInt(target.dataset.plantId, 10);
@@ -101,9 +99,6 @@ const handlePopState = () => actions.initialize(getStateFromURL());
 
 // --- Funcții principale de legare și dezlegare a evenimentelor ---
 
-/**
- * MODIFICAT: Atașează toți event listener-ele folosind referințe stocate.
- */
 export function bindEventListeners(dom) {
     dom.searchInput.addEventListener('input', eventHandlers.handleSearchInput);
     dom.sortSelect.addEventListener('change', eventHandlers.handleSortChange);
@@ -118,6 +113,7 @@ export function bindEventListeners(dom) {
     dom.plantModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, eventHandlers.handleModalCloseRequest);
     dom.plantModal.addEventListener(CUSTOM_EVENTS.NAVIGATE_REQUEST, eventHandlers.handleModalNavigateRequest);
     dom.plantModal.addEventListener(CUSTOM_EVENTS.COPY_REQUEST, eventHandlers.handleModalCopyRequest);
+    dom.plantModal.addEventListener(CUSTOM_EVENTS.SHARE_REQUEST, eventHandlers.handleModalShareRequest);
 
     dom.fabContainer.addEventListener('fab-action', handleFabAction);
 
@@ -125,9 +121,6 @@ export function bindEventListeners(dom) {
     window.addEventListener('keydown', handleKeyboardNavigation);
 }
 
-/**
- * MODIFICAT: Detașează toți event listener-ii folosind aceleași referințe.
- */
 export function unbindEventListeners(dom) {
     dom.searchInput.removeEventListener('input', eventHandlers.handleSearchInput);
     dom.sortSelect.removeEventListener('change', eventHandlers.handleSortChange);
@@ -137,12 +130,12 @@ export function unbindEventListeners(dom) {
     
     document.body.removeEventListener('click', handleBodyClick);
     
-    // Asigurăm eliminarea corectă pentru TOATE evenimentele custom
     dom.tagFilterContainer.removeEventListener(CUSTOM_EVENTS.TAG_SELECTED, eventHandlers.handleTagSelected);
     dom.faqModal.removeEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, eventHandlers.handleFaqCloseRequest);
     dom.plantModal.removeEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, eventHandlers.handleModalCloseRequest);
     dom.plantModal.removeEventListener(CUSTOM_EVENTS.NAVIGATE_REQUEST, eventHandlers.handleModalNavigateRequest);
     dom.plantModal.removeEventListener(CUSTOM_EVENTS.COPY_REQUEST, eventHandlers.handleModalCopyRequest);
+    dom.plantModal.removeEventListener(CUSTOM_EVENTS.SHARE_REQUEST, eventHandlers.handleModalShareRequest);
     
     dom.fabContainer.removeEventListener('fab-action', handleFabAction);
 

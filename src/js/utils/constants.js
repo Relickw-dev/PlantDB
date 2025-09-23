@@ -33,6 +33,7 @@ export const CUSTOM_EVENTS = Object.freeze ({
     CLOSE_REQUEST: 'close-request',
     NAVIGATE_REQUEST: 'navigate-request',
     COPY_REQUEST: 'copy-request',
+    SHARE_REQUEST: 'share-request',
 });
 
 // Parametrii folosiți în URL

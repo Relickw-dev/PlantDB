@@ -48,15 +48,11 @@ export class BaseModal {
     _bindBaseEvents() {
         if (this._modalElement.dataset.baseEventsAttached) return;
 
-        // <-- ADAUGAT: Listener pentru a gestiona click-ul pe butoanele de închidere
         this._modalElement.addEventListener('click', (e) => {
-            // Verificăm dacă elementul pe care s-a dat click (sau un părinte de-al său)
-            // are atributul special care indică acțiunea de închidere.
             if (e.target.closest('[data-close-modal]')) {
-                this.close(); // Apelăm funcția de închidere a modalului
+                this.close();
             }
         });
-
 
         // Gestionează închiderea la apăsarea tastei 'Escape' sau
         // după ce metoda .close() este apelată.
@@ -65,7 +61,7 @@ export class BaseModal {
              dispatchEvent(this._modalElement, CUSTOM_EVENTS.CLOSE_REQUEST);
              // Asigură sincronizarea stării (ex: aria-hidden), deși este redundant
              // aici, e o măsură de siguranță.
-             this.close();
+             // --- CORECTURĂ: Am eliminat `this.close()` de aici ---
         });
 
         this._modalElement.dataset.baseEventsAttached = 'true';

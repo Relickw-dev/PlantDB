@@ -54,19 +54,23 @@ function syncGrid(currentState, oldState, components) {
 }
 
 function syncControls(currentState, oldState, elements) {
-    const currentPlants = currentState.plants;
-    const oldPlants = oldState.plants || {};
-    const currentFavorites = currentState.favorites;
-    const oldFavorites = oldState.favorites || {};
+    const { searchInput, sortSelect, showFavoritesBtn } = elements;
+    const { plants: currentPlants, favorites: currentFavorites } = currentState;
 
-    if (currentPlants.query !== oldPlants.query && elements.searchInput.value !== currentPlants.query) {
-        elements.searchInput.value = currentPlants.query;
+    // --- CORECTURĂ: Asigurăm sincronizarea necondiționată a valorilor ---
+    // Verificăm dacă valoarea din DOM este diferită de cea din state înainte de a o modifica,
+    // pentru a evita manipulări DOM inutile, dar asigurăm că state-ul este sursa de adevăr.
+    if (searchInput.value !== currentPlants.query) {
+        searchInput.value = currentPlants.query;
     }
-    if (currentPlants.sortOrder !== oldPlants.sortOrder) {
-        elements.sortSelect.value = currentPlants.sortOrder;
+    if (sortSelect.value !== currentPlants.sortOrder) {
+        sortSelect.value = currentPlants.sortOrder;
     }
-    if (currentFavorites.filterActive !== oldFavorites.filterActive) {
-        elements.showFavoritesBtn.classList.toggle('active', currentFavorites.filterActive);
+    
+    // Logica pentru butonul de favorite rămâne aceeași
+    const isFilterActive = currentFavorites.filterActive;
+    if (showFavoritesBtn.classList.contains('active') !== isFilterActive) {
+        showFavoritesBtn.classList.toggle('active', isFilterActive);
     }
 }
 

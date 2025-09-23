@@ -1,7 +1,7 @@
 // src/js/core/actions.js
 
 import { getState, updateState } from './state.js';
-import { loadAndProcessPlantsData, loadFaqData, fetchPlantDetails } from '../services/plantService.js';
+import { loadFaqData, fetchPlantDetails } from '../services/plantService.js';
 import { showNotification } from '../components/NotificationService.js';
 import { TIMINGS, NAVIGATION, COPY_STATUS, SORT_KEYS } from '../utils/constants.js';
 import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
@@ -12,7 +12,7 @@ import { handleError } from './errorHandler.js';
 
 let copyStatusTimeoutId = null;
 
-// --- NOU: Funcție centralizată pentru gestionarea stării modalelor ---
+// --- Funcție centralizată pentru gestionarea stării modalelor ---
 /**
  * O funcție privată care actualizează starea pentru ambele modale,
  * asigurând că doar unul poate fi activ la un moment dat.
@@ -48,7 +48,6 @@ async function loadPlantDetails(plantId) {
     const { plants } = getState();
     const plantSummary = plants.find((p) => p.id == plantId);
 
-    // Verificăm dacă planta de bază există
     if (!plantSummary) {
         handleError(new Error(`Planta cu ID #${plantId} nu a fost găsită în lista inițială.`), 'încărcarea detaliilor');
         return null;
@@ -56,7 +55,6 @@ async function loadPlantDetails(plantId) {
     
     try {
         const detailedData = await fetchPlantDetails(plantId);
-        // Combinăm datele de bază cu cele detaliate
         return { ...plantSummary, ...detailedData };
     } catch (error) {
         handleError(error, `încărcarea detaliilor pentru planta #${plantId}`);
@@ -76,7 +74,6 @@ function getStateWithUpdatedNav(currentState, newFilterState) {
         return potentialNextState;
     }
     
-    // Obținem lista vizibilă de plante pe baza noii stări
     const visiblePlants = getMemoizedSortedAndFilteredPlants(
         potentialNextState.plants, potentialNextState.query, potentialNextState.activeTags,
         potentialNextState.sortOrder, potentialNextState.favoritesFilterActive, potentialNextState.favoriteIds
@@ -87,61 +84,7 @@ function getStateWithUpdatedNav(currentState, newFilterState) {
 }
 
 
-// --- Acțiuni Publice (Restul fișierului rămâne similar, dar cu logica de navigație actualizată) ---
-
-/**
- * Încarcă datele inițiale ale aplicației (lista de plante și tag-uri).
- */
-export async function loadInitialData() {
-    try {
-        updateState({ isLoading: true });
-        const plantsData = await loadAndProcessPlantsData();
-        const allTags = plantsData.flatMap((p) => p.tags || []);
-        const uniqueTags = [...new Set(allTags)].sort();
-        updateState({ plants: plantsData, allUniqueTags: uniqueTags, isLoading: false });
-    } catch (err) {
-        handleError(err, "încărcarea datelor inițiale");
-        updateState({ isLoading: false, hasError: true });
-    }
-}
-
-/**
- * Inițializează starea aplicației pe baza parametrilor din URL.
- * @param {object} [initialState={}] - Starea extrasă din URL.
- */
-export async function initialize(initialState = {}) {
-    let modalData = null;
-    let faqState = {};
-
-    if (initialState.modalPlantId) {
-        const current = await loadPlantDetails(initialState.modalPlantId);
-        if (current) {
-            const state = getState();
-            const visiblePlants = getMemoizedSortedAndFilteredPlants(
-                state.plants, initialState.query || "", initialState.activeTags || [],
-                initialState.sortOrder || SORT_KEYS.AZ, state.favoritesFilterActive, state.favoriteIds
-            );
-            const { prev, next } = getAdjacentPlants(current, visiblePlants);
-            modalData = { current, prev, next };
-        }
-    }
-
-    if (initialState.isFaqOpen) {
-        const faqData = await loadFaqData();
-        if(faqData) {
-            faqState = { faqData, isFaqDataLoaded: true };
-        }
-    }
-    
-    updateState({
-        query: initialState.query || "",
-        sortOrder: initialState.sortOrder || SORT_KEYS.AZ,
-        activeTags: initialState.activeTags || [],
-        modalPlant: modalData,
-        isFaqOpen: !!faqState.faqData && initialState.isFaqOpen,
-        ...faqState
-    });
-}
+// --- Acțiuni Publice ---
 
 /**
  * Actualizează interogarea de căutare.
@@ -210,7 +153,7 @@ export function selectRandomPlant() {
 }
 
 /**
- * MODIFICAT: Deschide modalul pentru o plantă specifică folosind noul helper.
+ * Deschide modalul pentru o plantă specifică.
  */
 export async function openPlantModal(plantId) {
     const current = await loadPlantDetails(plantId);
@@ -223,12 +166,11 @@ export async function openPlantModal(plantId) {
     );
     const { prev, next } = getAdjacentPlants(current, visiblePlants);
     
-    // Apelăm funcția centralizată
     setModalState({ current, prev, next });
 }
 
 /**
- * MODIFICAT: Închide modalul plantei folosind noul helper.
+ * Închide modalul plantei.
  */
 export function closeModal() {
     setModalState(null);
@@ -252,7 +194,7 @@ export async function navigateModal(direction) {
 // --- Acțiuni FAQ & Utilitare ---
 
 /**
- * MODIFICAT: Deschide modalul FAQ folosind noul helper.
+ * Deschide modalul FAQ.
  */
 export async function openFaqModal() {
     const { isFaqDataLoaded, isFaqLoadFailed } = getState();
@@ -263,15 +205,14 @@ export async function openFaqModal() {
     }
     
     if (isFaqDataLoaded) {
-        // Apelăm funcția centralizată
         setModalState(null, true);
         return;
     }
     
     try {
         const faqData = await loadFaqData();
-        updateState({ faqData, isFaqDataLoaded: true }); // Încărcăm datele
-        setModalState(null, true); // Apoi deschidem modalul
+        updateState({ faqData, isFaqDataLoaded: true });
+        setModalState(null, true);
     } catch (err) {
         handleError(err, "încărcarea datelor FAQ");
         updateState({ isFaqLoadFailed: true });
@@ -279,7 +220,7 @@ export async function openFaqModal() {
 }
 
 /**
- * MODIFICAT: Închide modalul FAQ folosind noul helper.
+ * Închide modalul FAQ.
  */
 export function closeFaqModal() {
     setModalState(null, false);

@@ -1,5 +1,46 @@
-// NOU: Importăm constantele necesare
-import { SORT_KEYS, PET_KEYWORDS } from '../utils/constants.js';
+// src/js/services/plantLogic.js
+
+import { SORT_KEYS, PET_KEYWORDS, DIFFICULTY_LEVELS, TOXICITY_MAP } from '../utils/constants.js';
+
+/**
+ * NOU: Pre-procesează datele pentru o singură plantă, adăugând câmpuri calculate.
+ * @param {object} plant - Obiectul original al plantei.
+ * @returns {object} Obiectul plantei cu datele suplimentare.
+ * @private
+ */
+function preprocessPlantData(plant) {
+    const difficultyConfig = DIFFICULTY_LEVELS.find(l => l.label === plant.difficulty?.toLowerCase()) || { value: 0, class: 'unknown' };
+    const toxicityConfig = TOXICITY_MAP[plant.toxicityLevel] || TOXICITY_MAP.default;
+    const growthRateMap = { 'lentă': 1, 'medie': 2, 'rapidă': 3 };
+
+    return {
+        ...plant,
+        difficultyValue: difficultyConfig.value,
+        difficultyClass: difficultyConfig.class,
+        toxicityInfo: toxicityConfig,
+        maxDifficulty: DIFFICULTY_LEVELS.length,
+        growthRateValue: growthRateMap[plant.growth_rate] || 0,
+        searchIndex: [
+            plant.name || '',
+            plant.latin || '',
+            plant.category || '',
+            ...(plant.tags || [])
+        ].join(' ').toLowerCase(),
+    };
+}
+
+/**
+ * NOU: Exportăm o funcție care aplică pre-procesarea pe un întreg array de plante.
+ * @param {Array<object>} plants - Lista de plante brute.
+ * @returns {Array<object>} Lista de plante procesate.
+ */
+export function processAllPlants(plants) {
+    if (!Array.isArray(plants)) {
+        throw new Error(`Datele primite pentru procesare nu sunt un array valid.`);
+    }
+    return plants.map(preprocessPlantData);
+}
+
 
 // --- Strategii de Sortare ---
 const SORT_STRATEGIES = {
@@ -36,7 +77,7 @@ const FILTER_STRATEGIES = {
         const isPetSearch = PET_KEYWORDS.some(keyword => query.includes(keyword));
         return isPetSearch ? plants.filter(p => p.toxicityLevel === 0) : plants;
     },
-    /** <-- ADAUGAT: Filtrează pentru a afișa doar plantele favorite. */
+    /** Filtrează pentru a afișa doar plantele favorite. */
     byFavorites: (plants, favoriteIds) => {
         return plants.filter(p => favoriteIds.includes(p.id));
     }
@@ -66,14 +107,12 @@ function sortPlants(plants, sortOrder) {
 }
 
 /**
- * <-- MODIFICAT: Funcția principală acceptă acum și parametrii pentru favorite.
  * Orchestrează filtrarea, sortarea și, opțional, filtrarea după favorite.
  */
 export function getSortedAndFilteredPlants(plants, query, activeTags, sortOrder, favoritesFilterActive, favoriteIds) {
     const filtered = filterPlants(plants, query, activeTags);
     const sorted = sortPlants(filtered, sortOrder);
 
-    // Aplicăm filtrul de favorite la final, doar dacă este activ.
     if (favoritesFilterActive) {
         return FILTER_STRATEGIES.byFavorites(sorted, favoriteIds);
     }
@@ -82,10 +121,7 @@ export function getSortedAndFilteredPlants(plants, query, activeTags, sortOrder,
 }
 
 /**
- * NOU: Calculează plantele adiacente (precedentă/următoare) pentru navigație.
- * @param {object} plant - Planta curentă.
- * @param {Array} visiblePlants - Lista de plante vizibile (deja filtrate și sortate).
- * @returns {{prev: object, next: object}}
+ * Calculează plantele adiacente (precedentă/următoare) pentru navigație.
  */
 export function getAdjacentPlants(plant, visiblePlants) {
     if (!plant || visiblePlants.length < 2) {
@@ -97,7 +133,6 @@ export function getAdjacentPlants(plant, visiblePlants) {
         return { prev: plant, next: plant };
     }
 
-    // Navigare circulară corectată
     const prevIndex = (currentIndex - 1 + visiblePlants.length) % visiblePlants.length;
     const nextIndex = (currentIndex + 1) % visiblePlants.length;
     

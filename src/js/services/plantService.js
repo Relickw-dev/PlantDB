@@ -1,19 +1,11 @@
 // src/js/services/plantService.js
 
-import { DATA_FILES, DIFFICULTY_LEVELS, TOXICITY_MAP } from '../utils/constants.js';
+import { DATA_FILES } from '../utils/constants.js';
 
 // --- Variabilă pentru cache ---
 let cachedPlants = null;
 
-// --- NOU: Wrapper robust pentru API-ul fetch ---
-
-/**
- * Un wrapper pentru fetch care adaugă reîncercări (retries) și timeout.
- * @param {string} url - URL-ul resursei.
- * @param {object} [options={}] - Opțiuni pentru fetch, plus 'retries' și 'timeout'.
- * @returns {Promise<any>} Datele JSON parsate.
- * @private
- */
+// --- Wrapper robust pentru API-ul fetch ---
 async function fetchWithRetries(url, options = {}) {
     const { retries = 2, timeout = 8000, ...fetchOptions } = options;
 
@@ -41,84 +33,51 @@ async function fetchWithRetries(url, options = {}) {
 
         } catch (error) {
             if (i === retries) {
-                // Aruncă eroarea finală după ce toate încercările au eșuat
                 throw error;
             }
-            // Așteaptă puțin înainte de a reîncerca (opțional, se poate adăuga backoff exponențial)
             await new Promise(res => setTimeout(res, 500 * (i + 1)));
         }
     }
 }
 
 
-// --- Funcții Helper (Private) ---
-
-/**
- * Pre-procesează datele pentru o singură plantă.
- * @param {object} plant - Obiectul original al plantei.
- * @returns {object} Obiectul plantei cu datele suplimentare.
- * @private
- */
-function preprocessPlantData(plant) {
-    const difficultyConfig = DIFFICULTY_LEVELS.find(l => l.label === plant.difficulty?.toLowerCase()) || { value: 0, class: 'unknown' };
-    const toxicityConfig = TOXICITY_MAP[plant.toxicityLevel] || TOXICITY_MAP.default;
-    const growthRateMap = { 'lentă': 1, 'medie': 2, 'rapidă': 3 };
-
-    return {
-        ...plant,
-        difficultyValue: difficultyConfig.value,
-        difficultyClass: difficultyConfig.class,
-        toxicityInfo: toxicityConfig,
-        maxDifficulty: DIFFICULTY_LEVELS.length,
-        growthRateValue: growthRateMap[plant.growth_rate] || 0,
-        searchIndex: [
-            plant.name || '',
-            plant.latin || '',
-            plant.category || '',
-            ...(plant.tags || [])
-        ].join(' ').toLowerCase(),
-    };
-}
-
 // --- Funcții Publice (Exportate) ---
 
 /**
- * MODIFICAT: Încarcă și pre-procesează datele plantelor folosind noul fetchWithRetries.
- * @returns {Promise<Array>} Lista de plante procesate.
+ * MODIFICAT: Încarcă datele plantelor, dar NU le mai procesează.
+ * Doar le preia și le pune în cache.
+ * @returns {Promise<Array>} Lista de plante brute.
  */
-export async function loadAndProcessPlantsData() {
+export async function fetchAllPlants() {
     if (cachedPlants) {
         return cachedPlants;
     }
     
-    // Folosim noul wrapper pentru a prelua datele de la backend
     const rawPlantData = await fetchWithRetries('http://localhost:3000/api/plants');
 
     if (!Array.isArray(rawPlantData)) {
         throw new Error(`Datele primite de la API nu sunt un array valid.`);
     }
 
-    cachedPlants = rawPlantData.map(preprocessPlantData);
+    cachedPlants = rawPlantData;
     return cachedPlants;
 }
 
 /**
- * MODIFICAT: Preia detaliile complete pentru o singură plantă folosind noul fetchWithRetries.
+ * Preia detaliile complete pentru o singură plantă.
  * @param {number} plantId - ID-ul plantei.
  * @returns {Promise<object>} Obiectul cu detaliile complete ale plantei.
  */
 export async function fetchPlantDetails(plantId) {
-    // Folosim noul wrapper
     return await fetchWithRetries(`http://localhost:3000/api/plants/${plantId}`);
 }
 
 
 /**
- * MODIFICAT: Încarcă datele pentru secțiunea FAQ folosind noul fetchWithRetries.
+ * Încarcă datele pentru secțiunea FAQ.
  * @returns {Promise<object>} Obiectul cu datele FAQ.
  */
 export async function loadFaqData() {
-    // Folosim noul wrapper
     const faqData = await fetchWithRetries(DATA_FILES.FAQ);
 
     if (!faqData || typeof faqData !== 'object' || Object.keys(faqData).length === 0) {

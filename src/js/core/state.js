@@ -3,10 +3,23 @@
 import { DEFAULT_STATE } from '../utils/constants.js';
 
 /**
- * NOU: O funcție de clonare optimizată.
- * Creează o copie superficială a obiectului principal și copii adânci doar pentru
- * array-uri și obiecte simple, ceea ce este mult mai performant decât structuredClone
- * pentru structura acestei aplicații.
+ * NOU: O funcție care "îngheață" recursiv un obiect, făcându-l complet imutabil.
+ * Aceasta previne orice modificare accidentală a stării în alte părți ale codului.
+ * @param {object} obj - Obiectul de "înghețat".
+ * @returns {object} Obiectul imutabil.
+ */
+function deepFreeze(obj) {
+    Object.keys(obj).forEach(prop => {
+        if (obj[prop] !== null && typeof obj[prop] === 'object') {
+            deepFreeze(obj[prop]);
+        }
+    });
+    return Object.freeze(obj);
+}
+
+
+/**
+ * O funcție de clonare optimizată.
  * @param {object} obj - Obiectul de clonat.
  * @returns {object} O copie a obiectului.
  */
@@ -24,8 +37,7 @@ function shallowCloneWithDeepArrays(obj) {
 
 
 /**
- * Conține starea curentă a aplicației. NU este exportat direct pentru a preveni
- * mutațiile necontrolate. Este "coloana vertebrală" a aplicației.
+ * Conține starea curentă a aplicației.
  * @private
  */
 let state = { ...DEFAULT_STATE };
@@ -33,46 +45,36 @@ let state = { ...DEFAULT_STATE };
 // --- LOGICA PRINCIPALĂ (Getters & Setters) ---
 
 /**
- * Returnează o copie sigură a stării curente.
- * Folosește o strategie de clonare optimizată pentru a preveni mutațiile externe
- * fără a sacrifica performanța.
- * @returns {object} O copie a stării curente.
+ * MODIFICAT: Returnează o copie sigură și "înghețată" a stării curente.
+ * @returns {object} O copie imutabilă a stării.
  */
 export function getState() {
-    // MODIFICAT: Folosim noua funcție de clonare, mai performantă.
-    return shallowCloneWithDeepArrays(state);
+    const clonedState = shallowCloneWithDeepArrays(state);
+    // Înghețăm starea clonată pentru a preveni orice mutație accidentală
+    return deepFreeze(clonedState);
 }
 
 /**
- * Actualizează una sau mai multe proprietăți ale stării globale și notifică
- * toți ascultătorii despre schimbare.
+ * Actualizează una sau mai multe proprietăți ale stării globale.
  * @param {Partial<typeof state>} newState - Un obiect cu noile valori.
- * @throws {Error} Aruncă o eroare dacă se încearcă adăugarea unei chei care nu există în DEFAULT_STATE.
  */
 export function updateState(newState) {
-    const oldState = getState(); // Obținem o copie sigură a stării vechi
-
-    const nextState = { ...state }; // Creăm o copie de lucru a stării curente
+    const oldStateForNotify = getState(); // Obținem o copie înghețată pentru notificare
+    const nextState = { ...state };
 
     for (const key in newState) {
-        // MODIFICAT: Validare strictă a cheilor.
-        // Previne adăugarea de proprietăți accidentale în stare.
         if (!Object.hasOwn(DEFAULT_STATE, key)) {
-            // Aruncăm o eroare pentru a face problemele vizibile imediat.
-            throw new Error(`[state] Încercare de a actualiza o cheie necunoscută: "${key}". Asigură-te că este definită în DEFAULT_STATE.`);
+            throw new Error(`[state] Încercare de a actualiza o cheie necunoscută: "${key}".`);
         }
         nextState[key] = newState[key];
     }
     
-    // Actualizăm starea principală cu noile valori
     state = nextState;
-
-    // Notificăm ascultătorii cu starea nouă (clonată) și cea veche.
-    notifyListeners(getState(), oldState);
+    notifyListeners(getState(), oldStateForNotify); // Trimitem noua stare înghețată
 }
 
 /**
- * Resetează complet starea la valorile implicite și notifică ascultătorii.
+ * Resetează complet starea la valorile implicite.
  */
 export function resetState() {
     const oldState = getState();
@@ -81,17 +83,8 @@ export function resetState() {
 }
 
 // --- SISTEMUL DE SUBSCRIBERE (Pub/Sub) ---
-// Această secțiune este deja robustă și nu necesită modificări.
-
 const { subscribe, notifyListeners } = (() => {
     const listeners = new Set();
-
-    /**
-     * Notifică toți ascultătorii despre o schimbare de stare.
-     * @private
-     * @param {object} currentState - Starea actuală, după modificare.
-     * @param {object} oldState - Starea anterioară, înainte de modificare.
-     */
     const notify = (currentState, oldState) => {
         listeners.forEach((callback) => {
             try {
@@ -101,22 +94,14 @@ const { subscribe, notifyListeners } = (() => {
             }
         });
     };
-
-    /**
-     * Adaugă o funcție (subscriber) care va fi apelată la fiecare schimbare a stării.
-     * @param {(currentState: object, oldState: object) => void} callback - Funcția de apelat.
-     * @returns {() => void} O funcție `unsubscribe` care elimină subscriber-ul.
-     */
     const sub = (callback) => {
         if (typeof callback !== 'function') {
             console.error('[state] Subscriber-ul trebuie să fie o funcție.');
-            return () => {}; // Returnează o funcție goală pentru a evita erori
+            return () => {};
         }
         listeners.add(callback);
-        // Returnează o funcție care permite eliminarea listener-ului
         return () => listeners.delete(callback);
     };
-
     return { subscribe: sub, notifyListeners: notify };
 })();
 

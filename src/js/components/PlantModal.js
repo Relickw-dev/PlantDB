@@ -1,3 +1,5 @@
+// src/js/components/PlantModal.js
+
 import { createElement, formatValue, dispatchEvent } from '../utils/helpers.js';
 import { CUSTOM_EVENTS, COPY_STATUS, NAVIGATION } from '../utils/constants.js';
 import { BaseModal } from './BaseModal.js';
@@ -19,10 +21,10 @@ function createKeyValue(label, value) {
 
 /**
  * NOU: Funcție generalizată pentru a crea orice secțiune cu titlu.
- * Înlocuiește createCareSection și createExtraInfoSection.
+ * Înlocuiește logica duplicată din metodele de randare a tab-urilor.
  * @param {string} title - Titlul secțiunii.
  * @param {string | string[] | {description: string, tip: string}} content - Conținutul de afișat.
- * @returns {HTMLElement | null} Elementul DOM al secțiunii sau null.
+ * @returns {HTMLElement | null} Elementul DOM al secțiunii sau null dacă nu există conținut.
  */
 function createTitledSection(title, content) {
     if (!title || !content || (Array.isArray(content) && content.length === 0)) return null;
@@ -52,6 +54,7 @@ function createTitledSection(title, content) {
 }
 
 function createClassificationTable(classification) {
+    // ... (această funcție rămâne neschimbată)
     if (!classification) return null;
     const table = createElement("table");
     const tbody = createElement("tbody");
@@ -125,9 +128,8 @@ export class PlantModal extends BaseModal {
         this.#updateCopyButton(copyStatus);
         this.open();
     }
-
-    // --- METODE PRIVATE DE REFACTORIZARE ---
-
+    
+    // ... (metodele #renderDetailsTab și #renderClassificationTab rămân similare)
     #renderDetailsTab(plant) {
         const fragment = document.createDocumentFragment();
         const toxicityText = plant.toxicity ? `🐱 ${formatValue(plant.toxicity.cats)}, 🐶 ${formatValue(plant.toxicity.dogs)}` : undefined;
@@ -143,21 +145,22 @@ export class PlantModal extends BaseModal {
     }
 
     /**
-     * MODIFICAT: Folosește noua funcție generalizată.
+     * MODIFICAT: Folosește noua funcție generalizată "createTitledSection".
+     * Metoda este acum mult mai simplă și mai ușor de citit.
      */
     #renderCareGuideTab(plant) {
         const fragment = document.createDocumentFragment();
         if (plant.care_guide) {
             const careSections = Object.values(plant.care_guide)
                 .map(guide => createTitledSection(guide.title, { description: guide.description, tip: guide.tip }))
-                .filter(Boolean);
+                .filter(Boolean); // Elimină secțiunile nule
             fragment.append(...careSections);
         }
         return fragment;
     }
 
     /**
-     * MODIFICAT: Folosește noua funcție generalizată.
+     * MODIFICAT: Folosește noua funcție generalizată "createTitledSection".
      */
     #renderExtraInfoTab(plant) {
         const fragment = document.createDocumentFragment();
@@ -166,7 +169,7 @@ export class PlantModal extends BaseModal {
             createTitledSection("❄️ Îngrijire Sezonieră (Repaus)", plant.seasonal_care?.dormant_season),
             createTitledSection("🐞 Dăunători Comuni", plant.common_pests),
             createTitledSection("💡 Curiozități", plant.quick_facts)
-        ].filter(Boolean);
+        ].filter(Boolean); // Elimină secțiunile nule
 
         if (extraSections.length > 0) {
             fragment.append(...extraSections);
@@ -183,7 +186,8 @@ export class PlantModal extends BaseModal {
         }
         return createElement("p", { text: "Informațiile de clasificare nu sunt disponibile." });
     }
-
+    
+    // ... (restul metodelor clasei rămân neschimbate)
     #updateContent(plant) {
         const detailsContent = this.#renderDetailsTab(plant);
         const careGuideContent = this.#renderCareGuideTab(plant);

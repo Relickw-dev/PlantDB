@@ -9,12 +9,24 @@ import { getState } from './state.js';
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 
 
-// --- Funcții Helper pentru gestionarea evenimentelor ---
+// --- NOU: Stocăm referințele la funcțiile handler pentru a le putea elimina corect ---
+const eventHandlers = {
+    // Folosim o funcție debounce stocată, nu una creată dinamic
+    handleSearchInput: debounce((e) => actions.search(e.target.value), TIMINGS.SEARCH_DEBOUNCE),
+    handleSortChange: (e) => actions.changeSortOrder(e.target.value),
+    handleRandomClick: () => {
+        ensurePlantModalIsLoaded().then(() => actions.selectRandomPlant());
+    },
+    handleTagSelected: (e) => actions.selectTag(e.detail.tag),
+    handleFaqCloseRequest: actions.closeFaqModal,
+    handleModalCloseRequest: actions.closeModal,
+    handleModalNavigateRequest: (e) => actions.navigateModal(e.detail.direction),
+    handleModalCopyRequest: actions.copyPlantDetails
+};
 
-/**
- * Gestionează click-ul pe butonul de favorit de pe un card.
- * @param {HTMLElement} target - Elementul pe care s-a dat click.
- */
+
+// --- Funcții Helper pentru gestionarea evenimentelor (rămân neschimbate) ---
+
 function handleFavoriteClick(target) {
     const plantId = parseInt(target.dataset.plantId, 10);
     if (!isNaN(plantId)) {
@@ -22,10 +34,6 @@ function handleFavoriteClick(target) {
     }
 }
 
-/**
- * Gestionează click-ul pe un card de plantă pentru a deschide modalul.
- * @param {HTMLElement} target - Elementul pe care s-a dat click.
- */
 function handleCardClick(target) {
     const plantId = parseInt(target.dataset.id, 10);
     if (isNaN(plantId)) return;
@@ -39,15 +47,10 @@ function handleCardClick(target) {
         });
 }
 
-/**
- * Handler centralizat pentru click-uri, folosind delegarea de evenimente pe body.
- * Identifică ținta și deleagă acțiunea către funcția corespunzătoare.
- * @param {MouseEvent} e - Obiectul evenimentului de click.
- */
 function handleBodyClick(e) {
     const favoriteBtn = e.target.closest('.favorite-btn[data-plant-id]');
     if (favoriteBtn) {
-        e.stopPropagation(); // Previne deschiderea modalului
+        e.stopPropagation();
         handleFavoriteClick(favoriteBtn);
         return;
     }
@@ -59,10 +62,6 @@ function handleBodyClick(e) {
     }
 }
 
-/**
- * Gestionează acțiunile declanșate de Floating Action Button (FAB).
- * @param {CustomEvent} e - Evenimentul custom 'fab-action'.
- */
 function handleFabAction(e) {
     const { action } = e.detail;
     switch (action) {
@@ -79,101 +78,74 @@ function handleFabAction(e) {
     }
 }
 
-/**
- * Gestionează navigația prin taste (stânga, dreapta, escape).
- * @param {KeyboardEvent} e - Obiectul evenimentului de la tastatură.
- */
 function handleKeyboardNavigation(e) {
     const state = getState();
-    const isModalOpen = !!state.modalPlant;
-    const isFaqOpen = state.isFaqOpen;
-
-    if (!isModalOpen && !isFaqOpen) return;
+    if (!state.modalPlant && !state.isFaqOpen) return;
 
     switch (e.key) {
         case 'ArrowRight':
-            if (isModalOpen) actions.navigateModal('next');
+            if (state.modalPlant) actions.navigateModal('next');
             break;
         case 'ArrowLeft':
-            if (isModalOpen) actions.navigateModal('prev');
+            if (state.modalPlant) actions.navigateModal('prev');
             break;
         case 'Escape':
-            if (isModalOpen) actions.closeModal();
-            if (isFaqOpen) actions.closeFaqModal();
+            if (state.modalPlant) actions.closeModal();
+            if (state.isFaqOpen) actions.closeFaqModal();
             break;
     }
 }
 
-/**
- * NOU: Handler pentru evenimentul 'popstate' (navigare back/forward în browser).
- */
 const handlePopState = () => actions.initialize(getStateFromURL());
 
 
 // --- Funcții principale de legare și dezlegare a evenimentelor ---
 
 /**
- * Atașează toate event listener-ele necesare aplicației.
- * @param {Object} dom - Referințele către elementele DOM.
+ * MODIFICAT: Atașează toți event listener-ele folosind referințe stocate.
  */
 export function bindEventListeners(dom) {
-    // Evenimente pe controale specifice
-    dom.searchInput.addEventListener('input', debounce((e) => actions.search(e.target.value), TIMINGS.SEARCH_DEBOUNCE));
-    dom.sortSelect.addEventListener('change', (e) => actions.changeSortOrder(e.target.value));
+    dom.searchInput.addEventListener('input', eventHandlers.handleSearchInput);
+    dom.sortSelect.addEventListener('change', eventHandlers.handleSortChange);
     dom.resetButton.addEventListener('click', actions.resetFilters);
     dom.showFavoritesBtn.addEventListener('click', actions.toggleFavoritesFilter);
-    dom.randomBtn.addEventListener('click', () => {
-        ensurePlantModalIsLoaded().then(() => actions.selectRandomPlant());
-    });
-
-    // Delegare la nivel de body
+    dom.randomBtn.addEventListener('click', eventHandlers.handleRandomClick);
+    
     document.body.addEventListener('click', handleBodyClick);
 
-    // Evenimente custom
-    dom.tagFilterContainer.addEventListener(CUSTOM_EVENTS.TAG_SELECTED, (e) => actions.selectTag(e.detail.tag));
-    dom.faqModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, actions.closeFaqModal);
-    dom.plantModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, actions.closeModal);
-    dom.plantModal.addEventListener(CUSTOM_EVENTS.NAVIGATE_REQUEST, (e) => actions.navigateModal(e.detail.direction));
-    dom.plantModal.addEventListener(CUSTOM_EVENTS.COPY_REQUEST, actions.copyPlantDetails);
+    dom.tagFilterContainer.addEventListener(CUSTOM_EVENTS.TAG_SELECTED, eventHandlers.handleTagSelected);
+    dom.faqModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, eventHandlers.handleFaqCloseRequest);
+    dom.plantModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, eventHandlers.handleModalCloseRequest);
+    dom.plantModal.addEventListener(CUSTOM_EVENTS.NAVIGATE_REQUEST, eventHandlers.handleModalNavigateRequest);
+    dom.plantModal.addEventListener(CUSTOM_EVENTS.COPY_REQUEST, eventHandlers.handleModalCopyRequest);
 
-    // Evenimente FAB
     dom.fabContainer.addEventListener('fab-action', handleFabAction);
 
-    // Evenimente globale (window)
     window.addEventListener('popstate', handlePopState);
     window.addEventListener('keydown', handleKeyboardNavigation);
 }
 
 /**
- * NOU: Detașează toți event listener-ii pentru a preveni memory leaks.
- * @param {Object} dom - Referințele către elementele DOM.
+ * MODIFICAT: Detașează toți event listener-ii folosind aceleași referințe.
  */
 export function unbindEventListeners(dom) {
-    // Detașarea listener-ilor de pe controale
-    dom.searchInput.removeEventListener('input', debounce((e) => actions.search(e.target.value), TIMINGS.SEARCH_DEBOUNCE));
-    dom.sortSelect.removeEventListener('change', (e) => actions.changeSortOrder(e.target.value));
+    dom.searchInput.removeEventListener('input', eventHandlers.handleSearchInput);
+    dom.sortSelect.removeEventListener('change', eventHandlers.handleSortChange);
     dom.resetButton.removeEventListener('click', actions.resetFilters);
     dom.showFavoritesBtn.removeEventListener('click', actions.toggleFavoritesFilter);
-    dom.randomBtn.removeEventListener('click', () => {
-        ensurePlantModalIsLoaded().then(() => actions.selectRandomPlant());
-    });
+    dom.randomBtn.removeEventListener('click', eventHandlers.handleRandomClick);
     
-    // Detașarea listener-ului de pe body
     document.body.removeEventListener('click', handleBodyClick);
     
-    // NOU: Detașarea listener-ilor pentru tooltip
-    document.body.removeEventListener('mouseover', (e) => showTooltip(e, dom.tooltip));
-    document.body.removeEventListener('mouseout', () => hideTooltip(dom.tooltip));
-    window.removeEventListener('scroll', () => hideTooltip(dom.tooltip), { capture: true });
-
-    // Detașarea listener-ilor de evenimente custom (deși nu este strict necesar dacă elementele sunt distruse)
-    dom.faqModal.removeEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, actions.closeFaqModal);
-    dom.plantModal.removeEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, actions.closeModal);
+    // Asigurăm eliminarea corectă pentru TOATE evenimentele custom
+    dom.tagFilterContainer.removeEventListener(CUSTOM_EVENTS.TAG_SELECTED, eventHandlers.handleTagSelected);
+    dom.faqModal.removeEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, eventHandlers.handleFaqCloseRequest);
+    dom.plantModal.removeEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, eventHandlers.handleModalCloseRequest);
+    dom.plantModal.removeEventListener(CUSTOM_EVENTS.NAVIGATE_REQUEST, eventHandlers.handleModalNavigateRequest);
+    dom.plantModal.removeEventListener(CUSTOM_EVENTS.COPY_REQUEST, eventHandlers.handleModalCopyRequest);
     
-    // Detașarea listener-ului FAB
     dom.fabContainer.removeEventListener('fab-action', handleFabAction);
 
-    // Detașarea listener-ilor globali
     window.removeEventListener('popstate', handlePopState);
     window.removeEventListener('keydown', handleKeyboardNavigation);
 }

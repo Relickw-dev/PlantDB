@@ -5,7 +5,7 @@ import { bindEventListeners, unbindEventListeners } from './eventManager.js';
 import { syncStateToUI } from './uiSync.js';
 import { showNotification } from '../components/NotificationService.js';
 import { getStateFromURL } from '../services/urlService.js';
-import { initializeTheme } from '../components/ThemeToggle.js';
+import { initializeTheme } from '../ui/ThemeToggle.js';
 import { TIMINGS, SORT_KEYS } from '../utils/constants.js';
 import { handleError, initializeGlobalErrorHandler } from './errorHandler.js';
 import { getState, updateState } from './state.js';

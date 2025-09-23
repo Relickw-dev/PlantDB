@@ -3,7 +3,7 @@
 import { debounce } from '../utils/helpers.js';
 import * as actions from './actions.js';
 import { CUSTOM_EVENTS, TIMINGS, FAB_ACTIONS, THEME } from '../utils/constants.js';
-import { applyTheme } from '../components/ThemeToggle.js';
+import { applyTheme } from '../ui/ThemeToggle.js';
 import { getStateFromURL } from '../services/urlService.js';
 import { getState } from './state.js';
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';

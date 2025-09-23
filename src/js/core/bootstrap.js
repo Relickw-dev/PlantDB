@@ -3,8 +3,8 @@
 import { PlantGrid } from '../components/PlantGrid.js';
 import { TagFilter } from '../components/TagFilter.js';
 import { FaqModal } from '../components/FaqModal.js';
-import { FabMenu } from '../components/FabMenu.js';
-import { TagToggle } from '../components/TagToggle.js';
+import { FabMenu } from '../ui/FabMenu.js';
+import { TagToggle } from '../ui/TagToggle.js';
 import { Tooltip } from '../components/Tooltip.js'; // <-- ADAUGĂ ACEST IMPORT
 
 /**

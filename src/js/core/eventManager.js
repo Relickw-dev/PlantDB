@@ -5,8 +5,8 @@ import { debounce } from '../utils/helpers.js';
 import * as plantActions from '../features/plants/plantsActions.js';
 import * as favoriteActions from '../features/favorites/favoritesActions.js';
 import * as faqActions from '../features/faq/faqActions.js';
-import { CUSTOM_EVENTS, FAB_ACTIONS, THEME } from '../utils/constants.js';
-import { applyTheme } from '../ui/ThemeToggle.js';
+import { CUSTOM_EVENTS, FAB_ACTIONS} from '../utils/constants.js';
+import * as themeActions from '../features/theme/themeActions.js';
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 
 // Handler-ele sunt acum grupate logic pe module
@@ -61,13 +61,11 @@ function handleBodyClick(e) {
 function handleFabAction(e) {
     const { action } = e.detail;
     switch (action) {
-        case FAB_ACTIONS.TOGGLE_THEME: {
-            const isLight = document.documentElement.classList.contains(THEME.CSS_CLASS_LIGHT);
-            applyTheme(isLight ? THEME.DARK : THEME.LIGHT);
+        case FAB_ACTIONS.TOGGLE_THEME:
+            themeActions.toggleTheme(); // MODIFICAT: Apelăm acțiunea
             break;
-        }
         case FAB_ACTIONS.SHOW_FAQ:
-            store.dispatch(faqActions.openFaq());
+            themeActions.showFaq(); // MODIFICAT: Apelăm acțiunea
             break;
         default:
             console.warn(`Acțiune FAB necunoscută: ${action}`);

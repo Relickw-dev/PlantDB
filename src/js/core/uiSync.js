@@ -7,6 +7,7 @@ import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js
 import { PET_KEYWORDS } from '../utils/constants.js';
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 import { handleError } from './errorHandler.js';
+import { applyTheme } from '../ui/ThemeToggle.js';
 
 function getEmptyStateContent(state) {
     const { query } = state.plants;
@@ -115,6 +116,15 @@ function syncModals(currentState, oldState, components) {
     }
 }
 
+function syncTheme(currentState, oldState) {
+    const currentTheme = currentState.theme.current;
+    const oldTheme = oldState.theme?.current;
+
+    if (currentTheme !== oldTheme) {
+        applyTheme(currentTheme);
+    }
+}
+
 export function syncStateToUI(elements, components) {
     const debouncedUpdateURL = debounce(updateURLFromState, 300);
 
@@ -123,6 +133,7 @@ export function syncStateToUI(elements, components) {
         syncControls(currentState, oldState, elements);
         syncTagFilter(currentState, oldState, components);
         syncModals(currentState, oldState, components);
+        syncTheme(currentState, oldState);
         
         debouncedUpdateURL(currentState);
     });

@@ -23,4 +23,5 @@ export const actionTypes = Object.freeze({
     // App-wide actions
     SET_INITIAL_DATA: 'app/setInitialData',
     SET_IS_LOADING: 'app/setIsLoading',
+    TOGGLE_THEME: 'theme/toggle',
 });

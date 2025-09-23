@@ -1,14 +1,26 @@
 // src/js/store/rootReducer.js
-import { plantsReducer } from '../features/plants/plantsReducer.js';
-import { favoritesReducer } from '../features/favorites/favoritesReducer.js';
-import { faqReducer } from '../features/faq/faqReducer.js';
-import { themeReducer } from '../features/theme/themeReducer.js';
 
-export function rootReducer(state = {}, action) {
-    return {
-        plants: plantsReducer(state.plants, action),
-        favorites: favoritesReducer(state.favorites, action),
-        faq: faqReducer(state.faq, action),
-        theme: themeReducer(state.theme, action),
+/**
+ * Creează reducer-ul rădăcină pe baza modulelor care au fost încărcate cu succes.
+ * @param {Object[]} features - Lista de module încărcate.
+ * @returns {Function} Reducer-ul combinat.
+ */
+export function createRootReducer(features) {
+    // Colectează toate reducer-ele din modulele încărcate
+    const reducers = features.reduce((acc, feature) => {
+        if (feature.name && feature.reducer) {
+            acc[feature.name] = feature.reducer;
+        }
+        return acc;
+    }, {});
+
+    // Returnează funcția finală de reducer
+    return function rootReducer(state = {}, action) {
+        const nextState = {};
+        for (const key in reducers) {
+            // Aplică fiecare reducer pe felia corespunzătoare de stare
+            nextState[key] = reducers[key](state[key], action);
+        }
+        return { ...state, ...nextState };
     };
 }

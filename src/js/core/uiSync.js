@@ -117,6 +117,9 @@ function syncModals(currentState, oldState, components) {
 }
 
 function syncTheme(currentState, oldState) {
+    // Verificăm dacă starea pentru temă există înainte de a o accesa
+    if (!currentState.theme) return;
+
     const currentTheme = currentState.theme.current;
     const oldTheme = oldState.theme?.current;
 

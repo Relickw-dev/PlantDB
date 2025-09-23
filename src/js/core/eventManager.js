@@ -5,7 +5,7 @@ import { debounce } from '../utils/helpers.js';
 import * as plantActions from '../features/plants/plantsActions.js';
 import * as favoriteActions from '../features/favorites/favoritesActions.js';
 import * as faqActions from '../features/faq/faqActions.js';
-import { CUSTOM_EVENTS, FAB_ACTIONS} from '../utils/constants.js';
+import { CUSTOM_EVENTS, FAB_ACTIONS, THEME } from '../utils/constants.js';
 import * as themeActions from '../features/theme/themeActions.js';
 import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
 
@@ -65,7 +65,7 @@ function handleFabAction(e) {
             themeActions.toggleTheme(); // MODIFICAT: Apelăm acțiunea
             break;
         case FAB_ACTIONS.SHOW_FAQ:
-            themeActions.showFaq(); // MODIFICAT: Apelăm acțiunea
+            store.dispatch(faqActions.openFaq());
             break;
         default:
             console.warn(`Acțiune FAB necunoscută: ${action}`);

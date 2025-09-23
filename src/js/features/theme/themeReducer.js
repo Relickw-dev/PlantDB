@@ -3,7 +3,6 @@ import { actionTypes } from '../../store/actionTypes.js';
 import { THEME } from '../../utils/constants.js';
 
 const initialState = {
-    // Citim tema salvată pentru starea inițială, cu fallback pe 'dark'
     current: localStorage.getItem(THEME.STORAGE_KEY) || THEME.DARK,
 };
 

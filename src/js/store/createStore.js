@@ -1,7 +1,8 @@
-// src/js/store/createStore.js
-import { rootReducer } from './rootReducer.js';
+/// src/js/store/createStore.js
 
-export function createStore(initialState) {
+// ELIMINAT: import { rootReducer } from './rootReducer.js';
+
+export function createStore(initialState, rootReducer) { // MODIFICAT: rootReducer este acum un parametru
     let state = initialState;
     const listeners = new Set();
 
@@ -23,7 +24,11 @@ export function createStore(initialState) {
 
         // Altfel, este un obiect acțiune pe care îl trimitem la reducer
         const oldState = getState();
-        state = rootReducer(state, action);
+        
+        // MODIFICAT: Folosim reducer-ul primit ca parametru
+        if (typeof rootReducer === 'function') {
+            state = rootReducer(state, action);
+        }
         
         listeners.forEach((callback) => {
             try {

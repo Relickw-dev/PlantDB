@@ -1,8 +1,8 @@
 // src/js/components/PlantModal.js
 
-import { createElement, formatValue, dispatchEvent } from '../utils/helpers.js';
-import { CUSTOM_EVENTS, COPY_STATUS, NAVIGATION } from '../utils/constants.js';
-import { BaseModal } from './BaseModal.js';
+import { createElement, formatValue, dispatchEvent } from '../../../shared/utils/helpers.js';
+import { CUSTOM_EVENTS, COPY_STATUS, NAVIGATION } from '../../../shared/utils/constants.js';
+import { BaseModal } from '../../../shared/components/BaseModal.js';
 
 // --- Subcomponente (Helpers de Randare) ---
 

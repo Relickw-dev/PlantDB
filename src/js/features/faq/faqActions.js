@@ -1,8 +1,8 @@
 // src/js/features/faq/faqActions.js
-import { actionTypes } from '../../store/actionTypes.js';
-import { loadFaqData } from '../../services/plantService.js';
-import { handleError } from '../../core/errorHandler.js';
-import { showNotification } from '../../components/NotificationService.js';
+import { actionTypes } from '../../shared/store/actionTypes.js';
+import { loadFaqData } from '../../features/plants/services/plantService.js';
+import { handleError } from '../../app/errorHandler.js';
+import { showNotification } from '../../shared/components/NotificationService.js';
 
 export const closeFaq = () => ({ type: actionTypes.CLOSE_FAQ });
 

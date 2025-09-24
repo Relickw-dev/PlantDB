@@ -1,4 +1,4 @@
 // src/js/features/theme/themeActions.js
-import { actionTypes } from '../../store/actionTypes.js';
+import { actionTypes } from '../../shared/store/actionTypes.js';
 
 export const toggleTheme = () => ({ type: actionTypes.TOGGLE_THEME });

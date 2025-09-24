@@ -1,6 +1,6 @@
 // src/js/services/plantService.js
 
-import { DATA_FILES } from '../utils/constants.js';
+import { DATA_FILES } from '../../../shared/utils/constants.js';
 
 // --- Variabilă pentru cache ---
 let cachedPlants = null;

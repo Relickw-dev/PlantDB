@@ -1,5 +1,5 @@
-import { createElement, dispatchEvent } from '../utils/helpers.js';
-import { CUSTOM_EVENTS } from '../utils/constants.js';
+import { createElement, dispatchEvent } from '../../../shared/utils/helpers.js';
+import { CUSTOM_EVENTS } from '../../../shared/utils/constants.js';
 
 /**
  * O clasă care gestionează randarea și interacțiunile pentru componenta de filtrare după tag-uri.

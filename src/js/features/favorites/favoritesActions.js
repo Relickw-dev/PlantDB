@@ -1,6 +1,6 @@
 // src/js/features/favorites/favoritesActions.js
-import { actionTypes } from '../../store/actionTypes.js';
-import * as favoriteService from '../../services/favoriteService.js';
+import { actionTypes } from '../../shared/store/actionTypes.js';
+import * as favoriteService from './services/favoriteService.js';
 
 export const loadFavorites = () => (dispatch) => {
     const favoriteIds = favoriteService.getFavorites();

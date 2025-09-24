@@ -1,4 +1,4 @@
-import { handleError } from '../core/errorHandler.js'; // ADAUGAT
+import { handleError } from '../../../app/errorHandler.js';
 
 // Cheia unică folosită pentru a stoca favoritele în localStorage.
 const FAVORITES_KEY = 'plantAppFavorites';

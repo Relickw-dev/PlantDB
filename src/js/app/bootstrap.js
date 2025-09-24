@@ -1,11 +1,11 @@
 // src/js/core/bootstrap.js
 
-import { PlantGrid } from '../components/PlantGrid.js';
-import { TagFilter } from '../components/TagFilter.js';
-import { FaqModal } from '../components/FaqModal.js';
-import { FabMenu } from '../ui/FabMenu.js';
-import { TagToggle } from '../ui/TagToggle.js';
-import { Tooltip } from '../components/Tooltip.js'; // <-- ADAUGĂ ACEST IMPORT
+import { PlantGrid } from '../features/plants/components/PlantGrid.js';
+import { TagFilter } from '../features/plants/components/TagFilter.js';
+import { FaqModal } from '../features/faq/components/FaqModal.js';
+import { FabMenu } from '../shared/ui/FabMenu.js';
+import { TagToggle } from '../shared/ui/TagToggle.js';
+import { Tooltip } from '../shared/components/Tooltip.js'; 
 
 /**
  * Găsește și validează elementele esențiale din DOM.

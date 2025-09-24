@@ -1,5 +1,5 @@
 // src/js/services/shareService.js
-import { handleError } from '../core/errorHandler.js';
+import { handleError } from '../../app/errorHandler.js';
 import { showNotification } from '../components/NotificationService.js';
 
 export async function sharePlant(plant) {

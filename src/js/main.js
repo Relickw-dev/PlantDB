@@ -1,6 +1,6 @@
 // src/js/main.js
-import { AppController } from './core/AppController.js';
-import { loadFeatures } from './core/featureLoader.js';
+import { AppController } from './app/AppController.js';
+import { loadFeatures } from './app/featureLoader.js';
 
 /**
  * Punctul de intrare principal al aplicației.

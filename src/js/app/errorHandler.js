@@ -1,6 +1,6 @@
 // src/js/core/errorHandler.js
 
-import { showNotification } from '../components/NotificationService.js';
+import { showNotification } from '../shared/components/NotificationService.js';
 
 // --- CLASE DE ERORI PERSONALIZATE ---
 

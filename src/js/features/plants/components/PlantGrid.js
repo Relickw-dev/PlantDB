@@ -1,7 +1,7 @@
 // src/js/components/PlantGrid.js
 
 import { createPlantCard } from './PlantCard.js';
-import { createElement } from '../utils/helpers.js';
+import { createElement } from '../../../shared/utils/helpers.js';
 
 /**
  * Creează și afișează o stare de încărcare (schelet).

@@ -1,6 +1,6 @@
 // src/js/services/plantLogic.js
 
-import { SORT_KEYS, PET_KEYWORDS, DIFFICULTY_LEVELS, TOXICITY_MAP } from '../utils/constants.js';
+import { SORT_KEYS, PET_KEYWORDS, DIFFICULTY_LEVELS, TOXICITY_MAP } from '../../../shared/utils/constants.js';
 
 /**
  * NOU: Pre-procesează datele pentru o singură plantă, adăugând câmpuri calculate.

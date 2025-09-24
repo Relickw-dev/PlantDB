@@ -1,5 +1,5 @@
-import { createElement } from '../utils/helpers.js';
-import { BaseModal } from './BaseModal.js';
+import { createElement } from '../../../shared/utils/helpers.js';
+import { BaseModal } from '../../../shared/components/BaseModal.js';
 
 // --- Configurație ---
 // Hartă pentru a traduce cheile din JSON în titluri vizibile.

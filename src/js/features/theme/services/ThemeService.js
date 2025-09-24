@@ -1,4 +1,4 @@
-import { THEME } from '../utils/constants.js';
+import { THEME } from '../../../shared/utils/constants.js';
 
 /**
  * Aplică o temă (light/dark) pe document și o salvează în localStorage.

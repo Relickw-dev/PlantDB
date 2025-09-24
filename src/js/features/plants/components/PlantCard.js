@@ -1,4 +1,4 @@
-import { createElement } from '../utils/helpers.js';
+import { createElement } from '../../../shared/utils/helpers.js';
 
 // --- Subcomponente Reutilizabile ---
 // Am grupat funcțiile de randare într-un obiect pentru a fi mai organizate și exportabile.

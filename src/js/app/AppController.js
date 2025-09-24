@@ -1,17 +1,17 @@
 // src/js/core/AppController.js
-import { createStore } from '../store/createStore.js';
-import { createRootReducer } from '../store/rootReducer.js';
-import { actionTypes } from '../store/actionTypes.js';
+import { createStore } from '../shared/store/createStore.js';
+import { createRootReducer } from '../shared/store/rootReducer.js';
+import { actionTypes } from '../shared/store/actionTypes.js';
 import { bootstrapApp } from './bootstrap.js';
 import { bindEventListeners, unbindEventListeners } from './eventManager.js';
 import { syncStateToUI } from './uiSync.js';
-import { showNotification } from '../components/NotificationService.js';
-import { getStateFromURL } from '../services/urlService.js';
-import { initializeTheme } from '../ui/ThemeToggle.js';
-import { TIMINGS, DEFAULT_STATE } from '../utils/constants.js'; // Am adăugat DEFAULT_STATE
+import { showNotification } from '../shared/components/NotificationService.js';
+import { getStateFromURL } from '../shared/services/urlService.js';
+import { initializeTheme } from '../features/theme/services/themeService.js';
+import { TIMINGS, DEFAULT_STATE } from '../shared/utils/constants.js'; // Am adăugat DEFAULT_STATE
 import { handleError, initializeGlobalErrorHandler } from './errorHandler.js';
-import { fetchAllPlants } from '../services/plantService.js';
-import { processAllPlants } from '../services/plantLogic.js';
+import { fetchAllPlants } from '../features/plants/services/plantService.js';
+import { processAllPlants } from '../features/plants/services/plantLogic.js';
 import { openPlantModal } from '../features/plants/plantsActions.js';
 import { openFaq } from '../features/faq/faqActions.js';
 import { loadFavorites } from '../features/favorites/favoritesActions.js'; // Adăugat pentru a încărca favoritele

@@ -1,12 +1,12 @@
 // src/js/core/uiSync.js
 
-import { debounce } from '../utils/helpers.js';
-import { updateURLFromState } from '../services/urlService.js';
-import { getMemoizedSortedAndFilteredPlants } from '../services/memoizedLogic.js';
-import { PET_KEYWORDS } from '../utils/constants.js';
-import { ensurePlantModalIsLoaded } from '../utils/dynamicLoader.js';
+import { debounce } from '../shared/utils/helpers.js';
+import { updateURLFromState } from '../shared/services/urlService.js';
+import { getMemoizedSortedAndFilteredPlants } from '../features/plants/services/memoizedLogic.js';
+import { PET_KEYWORDS } from '../shared/utils/constants.js';
+import { ensurePlantModalIsLoaded } from '../shared/utils/dynamicLoader.js';
 import { handleError } from './errorHandler.js';
-import { applyTheme } from '../ui/ThemeToggle.js';
+import { applyTheme } from '../features/theme/services/themeService.js';
 
 function getEmptyStateContent(state) {
     const { query } = state.plants;

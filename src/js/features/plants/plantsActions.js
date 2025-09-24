@@ -1,18 +1,16 @@
 // src/js/features/plants/plantsActions.js
 import { actionTypes } from '../../shared/store/actionTypes.js';
-import { fetchPlantDetails } from './services/plantService.js';
-import { getMemoizedSortedAndFilteredPlants } from './services/memoizedLogic.js';
+import { fetchPlantDetails } from '../plants/services/plantService.js';
+import { getMemoizedSortedAndFilteredPlants } from '../plants/services/memoizedLogic.js';
 import { getAdjacentPlants } from '../plants/services/plantLogic.js';
 import { handleError } from '../../app/errorHandler.js';
 import { showNotification } from '../../shared/components/NotificationService.js';
 import * as shareService from '../../shared/services/shareService.js';
+import { getFavoriteIds, isFavoritesFilterActive } from '../favorites/selectors.js'; // <-- IMPORT NOU
 
 export const setQuery = (query) => ({ type: actionTypes.SET_QUERY, payload: query });
-
 export const setSortOrder = (order) => ({ type: actionTypes.SET_SORT_ORDER, payload: order });
-
 export const resetFilters = () => ({ type: actionTypes.RESET_FILTERS });
-
 export const closeModal = () => ({ type: actionTypes.CLOSE_MODAL });
 
 export const selectTag = (tag) => (dispatch, getState) => {
@@ -33,7 +31,10 @@ export const openPlantModal = (plantId) => {
         try {
             const state = getState();
             const { all, query, activeTags, sortOrder } = state.plants;
-            const { filterActive, ids } = state.favorites;
+            
+            // MODIFICAT: Folosim selectori pentru a accesa starea 'favorites'
+            const favoritesActive = isFavoritesFilterActive(state);
+            const favoriteIds = getFavoriteIds(state);
 
             const plantSummary = all.find(p => p.id == plantId);
             if (!plantSummary) throw new Error(`Planta cu ID #${plantId} nu a fost găsită.`);
@@ -41,7 +42,7 @@ export const openPlantModal = (plantId) => {
             const detailedData = await fetchPlantDetails(plantId);
             const current = { ...plantSummary, ...detailedData };
 
-            const visiblePlants = getMemoizedSortedAndFilteredPlants(all, query, activeTags, sortOrder, filterActive, ids);
+            const visiblePlants = getMemoizedSortedAndFilteredPlants(all, query, activeTags, sortOrder, favoritesActive, favoriteIds);
             const { prev, next } = getAdjacentPlants(current, visiblePlants);
 
             dispatch({ type: actionTypes.SET_MODAL_PLANT, payload: { current, prev, next } });
@@ -62,8 +63,12 @@ export const navigateModal = (direction) => (dispatch, getState) => {
 export const selectRandomPlant = () => (dispatch, getState) => {
     const state = getState();
     const { all, query, activeTags, sortOrder } = state.plants;
-    const { filterActive, ids } = state.favorites;
-    const visiblePlants = getMemoizedSortedAndFilteredPlants(all, query, activeTags, sortOrder, filterActive, ids);
+
+    // MODIFICAT: Folosim selectori și aici
+    const favoritesActive = isFavoritesFilterActive(state);
+    const favoriteIds = getFavoriteIds(state);
+
+    const visiblePlants = getMemoizedSortedAndFilteredPlants(all, query, activeTags, sortOrder, favoritesActive, favoriteIds);
     if (visiblePlants.length === 0) {
         showNotification("Nu s-au găsit plante conform filtrelor tale.", { type: "info" });
         return;

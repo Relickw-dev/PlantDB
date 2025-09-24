@@ -6,12 +6,14 @@ import { ensurePlantModalIsLoaded } from '../../shared/utils/dynamicLoader.js';
 import { debounce } from '../../shared/utils/helpers.js';
 import { getMemoizedSortedAndFilteredPlants } from './services/memoizedLogic.js';
 import { handleError } from '../../app/errorHandler.js';
+import { getFavoriteIds, isFavoritesFilterActive } from '../favorites/selectors.js'; // <-- IMPORT NOU
 
 // --- Funcții ajutătoare pentru UI Sync ---
 
 function getEmptyStateContent(state) {
     const { query } = state.plants;
-    const { filterActive } = state.favorites;
+    // MODIFICAT: Folosim selector
+    const filterActive = isFavoritesFilterActive(state);
 
     if (filterActive) {
         return { message: 'Nu ai adăugat nicio plantă la favorite. Apasă pe inimă pentru a crea colecția ta!', imgSrc: "assets/icons/empty.svg" };
@@ -51,35 +53,33 @@ export default {
     syncUI: ({ dom, components, state, oldState }) => {
         const currentPlants = state.plants;
         const oldPlants = oldState.plants || {};
-        const currentFavorites = state.favorites;
-        const oldFavorites = oldState.favorites || {};
-
-        // Sincronizare Grilă
+        
+        // MODIFICAT: Folosim selectori pentru a verifica dacă e necesară re-randarea
         const needsGridRender =
             currentPlants.isLoading !== oldPlants.isLoading ||
             currentPlants.query !== oldPlants.query ||
             JSON.stringify(currentPlants.activeTags) !== JSON.stringify(oldPlants.activeTags) ||
             currentPlants.sortOrder !== oldPlants.sortOrder ||
             currentPlants.all.length !== (oldPlants.all || []).length ||
-            currentFavorites.filterActive !== oldFavorites.filterActive ||
-            JSON.stringify(currentFavorites.ids) !== JSON.stringify(oldFavorites.ids);
+            isFavoritesFilterActive(state) !== isFavoritesFilterActive(oldState) ||
+            JSON.stringify(getFavoriteIds(state)) !== JSON.stringify(getFavoriteIds(oldState));
 
         if (needsGridRender) {
             const visiblePlants = getMemoizedSortedAndFilteredPlants(
                 currentPlants.all, currentPlants.query, currentPlants.activeTags, currentPlants.sortOrder,
-                currentFavorites.filterActive, currentFavorites.ids
+                isFavoritesFilterActive(state), getFavoriteIds(state)
             );
             components.plantGrid.render({
                 plants: visiblePlants,
                 isLoading: currentPlants.isLoading,
-                favoriteIds: currentFavorites.ids,
+                favoriteIds: getFavoriteIds(state),
                 emptyStateContent: visiblePlants.length === 0 && !currentPlants.isLoading
                     ? getEmptyStateContent(state)
                     : null
             });
         }
 
-        // Sincronizare Controale
+        // Sincronizare Controale (rămâne la fel)
         if (dom.searchInput.value !== currentPlants.query) {
             dom.searchInput.value = currentPlants.query;
         }
@@ -87,16 +87,16 @@ export default {
             dom.sortSelect.value = currentPlants.sortOrder;
         }
 
-        // Sincronizare Filtru Tag-uri
-        if (JSON.stringify(currentPlants.allUniqueTags) !== JSON.stringify(oldPlants.allUniqueTags) ||
-            JSON.stringify(currentPlants.activeTags) !== JSON.stringify(oldPlants.activeTags)) {
+        // Sincronizare Filtru Tag-uri (rămâne la fel)
+        if (JSON.stringify(currentPlants.allUniqueTags) !== JSON.stringify((oldPlants).allUniqueTags) ||
+            JSON.stringify(currentPlants.activeTags) !== JSON.stringify((oldPlants).activeTags)) {
             components.tagFilter.render({
                 allTags: currentPlants.allUniqueTags,
                 activeTags: currentPlants.activeTags,
             });
         }
 
-        // Sincronizare Modal Plantă
+        // Sincronizare Modal Plantă (rămâne la fel)
         if (currentPlants.modalPlant !== oldPlants.modalPlant || currentPlants.copyStatus !== oldPlants.copyStatus) {
             ensurePlantModalIsLoaded().then(modal => {
                 if (currentPlants.modalPlant && currentPlants.modalPlant.current) {

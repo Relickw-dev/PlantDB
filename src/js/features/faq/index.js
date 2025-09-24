@@ -11,7 +11,7 @@ export default {
         faqModal: new FaqModal()
     }),
     bindEvents: (dom, store) => {
-        dom.faqModal._modalElement.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, () => store.dispatch(faqActions.closeFaq()));
+        dom.faqModal.addEventListener(CUSTOM_EVENTS.CLOSE_REQUEST, () => store.dispatch(faqActions.closeFaq()));
         dom.fabContainer.addEventListener('fab-action', (e) => {
             if (e.detail.action === FAB_ACTIONS.SHOW_FAQ) {
                 store.dispatch(faqActions.openFaq());

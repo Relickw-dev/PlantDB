@@ -1,20 +1,20 @@
-// src/js/core/AppController.js
+// src/js/app/AppController.js
 import { createStore } from '../shared/store/createStore.js';
 import { createRootReducer } from '../shared/store/rootReducer.js';
 import { actionTypes } from '../shared/store/actionTypes.js';
 import { bootstrapApp } from './bootstrap.js';
 import { bindEventListeners, unbindEventListeners } from './eventManager.js';
-import { syncStateToUI } from './uiSync.js';
 import { showNotification } from '../shared/components/NotificationService.js';
-import { getStateFromURL } from '../shared/services/urlService.js';
+import { getStateFromURL, updateURLFromState } from '../shared/services/urlService.js';
 import { initializeTheme } from '../features/theme/services/themeService.js';
-import { TIMINGS, DEFAULT_STATE } from '../shared/utils/constants.js'; // Am adăugat DEFAULT_STATE
+import { TIMINGS, DEFAULT_STATE } from '../shared/utils/constants.js';
 import { handleError, initializeGlobalErrorHandler } from './errorHandler.js';
 import { fetchAllPlants } from '../features/plants/services/plantService.js';
 import { processAllPlants } from '../features/plants/services/plantLogic.js';
 import { openPlantModal } from '../features/plants/plantsActions.js';
 import { openFaq } from '../features/faq/faqActions.js';
-import { loadFavorites } from '../features/favorites/favoritesActions.js'; // Adăugat pentru a încărca favoritele
+import { loadFavorites } from '../features/favorites/favoritesActions.js';
+import { debounce } from '../shared/utils/helpers.js';
 
 export class AppController {
     #features;
@@ -38,7 +38,6 @@ export class AppController {
             this.#components = { ...baseComponents };
 
             const rootReducer = createRootReducer(this.#features);
-            // Inițializăm store-ul cu starea implicită
             this.#store = createStore(DEFAULT_STATE, rootReducer);
 
             this.#features.forEach(feature => {
@@ -55,17 +54,15 @@ export class AppController {
                     feature.bindEvents(this.#dom, this.#store);
                 }
             });
-           
 
-            // Încărcăm favoritele salvate la pornire
             this.#store.dispatch(loadFavorites());
 
             await this.#runIntroAnimation();
             await this.#loadCoreData();
             await this.#initializeStateFromURL();
 
-             // Pasăm store-ul către funcția de sincronizare
-            syncStateToUI(this.#dom, this.#components, this.#store);
+            // NOU: Logica de sincronizare este acum aici
+            this.#setupUISync();
 
             showNotification("Ghidul de plante este gata! 🪴", { type: "success" });
             this.#isInitialized = true;
@@ -74,7 +71,30 @@ export class AppController {
             handleError(err, 'inițializarea aplicației');
         }
     }
-    
+
+    #setupUISync() {
+        const debouncedUpdateURL = debounce(updateURLFromState, 300);
+
+        const updateUI = (currentState, oldState) => {
+            this.#features.forEach(feature => {
+                if (feature.syncUI) {
+                    feature.syncUI({
+                        dom: this.#dom,
+                        components: this.#components,
+                        state: currentState,
+                        oldState: oldState
+                    });
+                }
+            });
+            debouncedUpdateURL(currentState);
+        };
+
+        this.#store.subscribe(updateUI);
+
+        // Forțăm o primă sincronizare completă
+        updateUI(this.#store.getState(), {});
+    }
+
     #runIntroAnimation() {
         return new Promise((resolve) => {
             if (!this.#dom.intro) return resolve();

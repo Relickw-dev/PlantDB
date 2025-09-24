@@ -1,6 +1,6 @@
 // src/js/features/faq/faqActions.js
 import { actionTypes } from '../../shared/store/actionTypes.js';
-import { loadFaqData } from '../../features/plants/services/plantService.js';
+import { loadFaqData } from './services/faqService.js';
 import { handleError } from '../../app/errorHandler.js';
 import { showNotification } from '../../shared/components/NotificationService.js';
 

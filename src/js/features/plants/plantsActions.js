@@ -2,7 +2,7 @@
 import { actionTypes } from '../../shared/store/actionTypes.js';
 import { fetchPlantDetails } from './services/plantService.js';
 import { getMemoizedSortedAndFilteredPlants } from './services/memoizedLogic.js';
-import { getAdjacentPlants } from './services/plantLogic.js';
+import { getAdjacentPlants } from '../plants/services/plantLogic.js';
 import { handleError } from '../../app/errorHandler.js';
 import { showNotification } from '../../shared/components/NotificationService.js';
 import * as shareService from '../../shared/services/shareService.js';

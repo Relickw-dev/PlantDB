@@ -1,9 +1,8 @@
-// src/js/services/plantService.js
+// src/js/features/faq/services/faqService.js
+import { DATA_FILES } from '../../../shared/utils/constants.js';
 
-// --- Variabilă pentru cache ---
-let cachedPlants = null;
-
-// --- Wrapper robust pentru API-ul fetch ---
+// Am păstrat funcția de fetch generică, dar ai putea să o muți într-un
+// fișier partajat dacă o folosești și în altă parte.
 async function fetchWithRetries(url, options = {}) {
     const { retries = 2, timeout = 8000, ...fetchOptions } = options;
 
@@ -38,34 +37,14 @@ async function fetchWithRetries(url, options = {}) {
     }
 }
 
-
-// --- Funcții Publice (Exportate) ---
-
 /**
- * MODIFICAT: Încarcă datele plantelor, dar NU le mai procesează.
- * Doar le preia și le pune în cache.
- * @returns {Promise<Array>} Lista de plante brute.
+ * Încarcă datele pentru secțiunea FAQ.
+ * @returns {Promise<object>} Obiectul cu datele FAQ.
  */
-export async function fetchAllPlants() {
-    if (cachedPlants) {
-        return cachedPlants;
+export async function loadFaqData() {
+    const faqData = await fetchWithRetries(DATA_FILES.FAQ);
+    if (!faqData || typeof faqData !== 'object' || Object.keys(faqData).length === 0) {
+        throw new Error(`Datele din "${DATA_FILES.FAQ}" nu au formatul așteptat.`);
     }
-    
-    const rawPlantData = await fetchWithRetries('http://localhost:3000/api/plants');
-
-    if (!Array.isArray(rawPlantData)) {
-        throw new Error(`Datele primite de la API nu sunt un array valid.`);
-    }
-
-    cachedPlants = rawPlantData;
-    return cachedPlants;
-}
-
-/**
- * Preia detaliile complete pentru o singură plantă.
- * @param {number} plantId - ID-ul plantei.
- * @returns {Promise<object>} Obiectul cu detaliile complete ale plantei.
- */
-export async function fetchPlantDetails(plantId) {
-    return await fetchWithRetries(`http://localhost:3000/api/plants/${plantId}`);
+    return faqData;
 }

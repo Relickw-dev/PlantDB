@@ -6,19 +6,24 @@ export default {
     name: 'favorites',
     reducer: favoritesReducer,
     bindEvents: (dom, store) => {
-        // Butonul de filtrare a favoritelor din header
         dom.showFavoritesBtn.addEventListener('click', () => store.dispatch(favoriteActions.toggleFavoritesFilter()));
-
-        // Delegare eveniment global pentru adăugarea/ștergerea unei favorite
         document.body.addEventListener('click', (e) => {
             const favoriteBtn = e.target.closest('.favorite-btn[data-plant-id]');
             if (favoriteBtn) {
-                e.stopPropagation(); // Previne deschiderea modalului
+                e.stopPropagation();
                 const plantId = parseInt(favoriteBtn.dataset.plantId, 10);
                 if (!isNaN(plantId)) {
                     store.dispatch(favoriteActions.toggleFavorite(plantId));
                 }
             }
         });
+    },
+    syncUI: ({ dom, state, oldState }) => {
+        const currentActive = state.favorites.filterActive;
+        const oldActive = (oldState.favorites || {}).filterActive;
+
+        if (currentActive !== oldActive) {
+            dom.showFavoritesBtn.classList.toggle('active', currentActive);
+        }
     }
 };

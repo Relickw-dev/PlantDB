@@ -6,15 +6,11 @@ import { ensurePlantModalIsLoaded } from '../../shared/utils/dynamicLoader.js';
 import { debounce } from '../../shared/utils/helpers.js';
 import { getMemoizedSortedAndFilteredPlants } from './services/memoizedLogic.js';
 import { handleError } from '../../app/errorHandler.js';
-import { getFavoriteIds, isFavoritesFilterActive } from '../favorites/selectors.js'; // <-- IMPORT NOU
-
-// --- Funcții ajutătoare pentru UI Sync ---
+import { getFavoriteIds, isFavoritesFilterActive } from '../favorites/selectors.js';
 
 function getEmptyStateContent(state) {
     const { query } = state.plants;
-    // MODIFICAT: Folosim selector
     const filterActive = isFavoritesFilterActive(state);
-
     if (filterActive) {
         return { message: 'Nu ai adăugat nicio plantă la favorite. Apasă pe inimă pentru a crea colecția ta!', imgSrc: "assets/icons/empty.svg" };
     }
@@ -23,8 +19,6 @@ function getEmptyStateContent(state) {
     }
     return { message: 'Nu am găsit nicio plantă. Încearcă o altă căutare.', imgSrc: "assets/icons/empty.svg" };
 }
-
-// --- Definiția Modulului ---
 
 export default {
     name: 'plants',
@@ -49,12 +43,29 @@ export default {
                 ensurePlantModalIsLoaded().then(() => store.dispatch(plantsActions.openPlantModal(plantId)));
             }
         });
+        
+        // NOU: Gestionarea evenimentelor de la tastatură, specifică acestui modul.
+        window.addEventListener('keydown', (e) => {
+            const state = store.getState();
+            if (!state.plants.modalPlant) return;
+
+            switch (e.key) {
+                case 'ArrowRight':
+                    store.dispatch(plantsActions.navigateModal('next'));
+                    break;
+                case 'ArrowLeft':
+                    store.dispatch(plantsActions.navigateModal('prev'));
+                    break;
+                case 'Escape':
+                    store.dispatch(plantsActions.closeModal());
+                    break;
+            }
+        });
     },
     syncUI: ({ dom, components, state, oldState }) => {
+        // ... (conținutul funcției syncUI rămâne neschimbat de la pasul anterior)
         const currentPlants = state.plants;
         const oldPlants = oldState.plants || {};
-        
-        // MODIFICAT: Folosim selectori pentru a verifica dacă e necesară re-randarea
         const needsGridRender =
             currentPlants.isLoading !== oldPlants.isLoading ||
             currentPlants.query !== oldPlants.query ||
@@ -79,7 +90,6 @@ export default {
             });
         }
 
-        // Sincronizare Controale (rămâne la fel)
         if (dom.searchInput.value !== currentPlants.query) {
             dom.searchInput.value = currentPlants.query;
         }
@@ -87,7 +97,6 @@ export default {
             dom.sortSelect.value = currentPlants.sortOrder;
         }
 
-        // Sincronizare Filtru Tag-uri (rămâne la fel)
         if (JSON.stringify(currentPlants.allUniqueTags) !== JSON.stringify((oldPlants).allUniqueTags) ||
             JSON.stringify(currentPlants.activeTags) !== JSON.stringify((oldPlants).activeTags)) {
             components.tagFilter.render({
@@ -95,8 +104,7 @@ export default {
                 activeTags: currentPlants.activeTags,
             });
         }
-
-        // Sincronizare Modal Plantă (rămâne la fel)
+        
         if (currentPlants.modalPlant !== oldPlants.modalPlant || currentPlants.copyStatus !== oldPlants.copyStatus) {
             ensurePlantModalIsLoaded().then(modal => {
                 if (currentPlants.modalPlant && currentPlants.modalPlant.current) {

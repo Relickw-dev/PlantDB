@@ -3,7 +3,7 @@ import { createStore } from '../shared/store/createStore.js';
 import { createRootReducer } from '../shared/store/rootReducer.js';
 import { actionTypes } from '../shared/store/actionTypes.js';
 import { bootstrapApp } from './bootstrap.js';
-import { bindEventListeners, unbindEventListeners } from './eventManager.js';
+// ELIMINAT: import { bindEventListeners, unbindEventListeners } from './eventManager.js';
 import { showNotification } from '../shared/components/NotificationService.js';
 import { getStateFromURL, updateURLFromState } from '../shared/services/urlService.js';
 import { initializeTheme } from '../features/theme/services/themeService.js';
@@ -48,7 +48,9 @@ export class AppController {
             });
 
             initializeTheme();
-            bindEventListeners(this.#dom, this.#store);
+            // ELIMINAT: bindEventListeners(this.#dom, this.#store);
+
+            // Fiecare modul își leagă acum propriile evenimente, inclusiv cele globale.
             this.#features.forEach(feature => {
                 if (feature.bindEvents) {
                     feature.bindEvents(this.#dom, this.#store);
@@ -60,8 +62,7 @@ export class AppController {
             await this.#runIntroAnimation();
             await this.#loadCoreData();
             await this.#initializeStateFromURL();
-
-            // NOU: Logica de sincronizare este acum aici
+            
             this.#setupUISync();
 
             showNotification("Ghidul de plante este gata! 🪴", { type: "success" });
@@ -90,8 +91,6 @@ export class AppController {
         };
 
         this.#store.subscribe(updateUI);
-
-        // Forțăm o primă sincronizare completă
         updateUI(this.#store.getState(), {});
     }
 
@@ -130,8 +129,9 @@ export class AppController {
     }
 
     destroy() {
+        // Nu mai este necesar unbindEventListeners, dar păstrăm metoda destroy
+        // pentru posibile curățări viitoare.
         if (this.#isInitialized) {
-            unbindEventListeners();
             console.log("Aplicația a fost curățată.");
         }
     }

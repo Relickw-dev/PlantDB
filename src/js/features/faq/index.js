@@ -17,11 +17,18 @@ export default {
                 store.dispatch(faqActions.openFaq());
             }
         });
+
+        // NOU: Gestionarea evenimentelor de la tastatură, specifică acestui modul.
+        window.addEventListener('keydown', (e) => {
+            const state = store.getState();
+            if (state.faq.isOpen && e.key === 'Escape') {
+                store.dispatch(faqActions.closeFaq());
+            }
+        });
     },
     syncUI: ({ components, state, oldState }) => {
         const currentFaq = state.faq;
         const oldFaq = oldState.faq || {};
-
         if (currentFaq.isOpen !== oldFaq.isOpen) {
             if (currentFaq.isOpen) {
                 if (currentFaq.data) {

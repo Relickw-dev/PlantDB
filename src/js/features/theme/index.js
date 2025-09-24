@@ -1,7 +1,7 @@
 // src/js/features/theme/index.js
 import { themeReducer } from './themeReducer.js';
 import { toggleTheme } from './themeActions.js';
-import { FAB_ACTIONS } from '../../utils/constants.js';
+import { FAB_ACTIONS } from '../../shared/utils/constants.js';
 
 export default {
     name: 'theme',

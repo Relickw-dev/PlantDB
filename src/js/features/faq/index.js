@@ -1,8 +1,8 @@
 // src/js/features/faq/index.js
 import { faqReducer } from './faqReducer.js';
 import * as faqActions from './faqActions.js';
-import { FaqModal } from '../../components/FaqModal.js';
-import { CUSTOM_EVENTS, FAB_ACTIONS } from '../../utils/constants.js';
+import { FaqModal } from './components/FaqModal.js';
+import { CUSTOM_EVENTS, FAB_ACTIONS } from '../../shared/utils/constants.js';
 
 // Contractul pe care îl expune acest feature
 export default {

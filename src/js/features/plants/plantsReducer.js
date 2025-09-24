@@ -1,6 +1,6 @@
 // src/js/features/plants/plantsReducer.js
-import { actionTypes } from '../../store/actionTypes.js';
-import { DEFAULT_STATE, SORT_KEYS } from '../../utils/constants.js';
+import { actionTypes } from '../../shared/store/actionTypes.js';
+import { DEFAULT_STATE, SORT_KEYS } from '../../shared/utils/constants.js';
 
 const initialState = DEFAULT_STATE.plants;
 

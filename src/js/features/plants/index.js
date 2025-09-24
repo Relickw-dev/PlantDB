@@ -1,9 +1,9 @@
 // src/js/features/plants/index.js
 import { plantsReducer } from './plantsReducer.js';
 import * as plantsActions from './plantsActions.js';
-import { CUSTOM_EVENTS } from '../../utils/constants.js';
-import { ensurePlantModalIsLoaded } from '../../utils/dynamicLoader.js';
-import { debounce } from '../../utils/helpers.js'; // Am adăugat import pentru debounce
+import { CUSTOM_EVENTS } from '../../shared/utils/constants.js';
+import { ensurePlantModalIsLoaded } from '../../shared/utils/dynamicLoader.js';
+import { debounce } from '../../shared/utils/helpers.js'; // Am adăugat import pentru debounce
 
 export default {
     name: 'plants',

@@ -1,6 +1,6 @@
 // src/js/features/theme/themeReducer.js
-import { actionTypes } from '../../store/actionTypes.js';
-import { THEME } from '../../utils/constants.js';
+import { actionTypes } from '../../shared/store/actionTypes.js';
+import { THEME } from '../../shared/utils/constants.js';
 
 const initialState = {
     current: localStorage.getItem(THEME.STORAGE_KEY) || THEME.DARK,

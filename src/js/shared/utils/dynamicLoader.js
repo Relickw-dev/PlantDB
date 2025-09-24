@@ -14,7 +14,7 @@ export async function ensurePlantModalIsLoaded() {
     }
 
     // Folosim dynamic import pentru a încărca fișierul doar la nevoie.
-    const { PlantModal } = await import('../components/PlantModal.js');
+    const { PlantModal } = await import('../../features/plants/components/PlantModal.js');
     
     // Creăm o nouă instanță și o salvăm în cache pentru apelurile viitoare.
     plantModalInstance = new PlantModal();

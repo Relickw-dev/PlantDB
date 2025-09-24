@@ -1,4 +1,4 @@
-import { BREAKPOINTS } from '../utils/constants.js';
+import { BREAKPOINTS } from '../../../shared/utils/constants.js';
 
 /**
  * O clasă care gestionează funcționalitatea de colapsare/expandare

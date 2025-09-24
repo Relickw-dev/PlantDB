@@ -4,7 +4,7 @@ import { PlantGrid } from '../features/plants/components/PlantGrid.js';
 import { TagFilter } from '../features/plants/components/TagFilter.js';
 import { FaqModal } from '../features/faq/components/FaqModal.js';
 import { FabMenu } from '../shared/ui/FabMenu.js';
-import { TagToggle } from '../shared/ui/TagToggle.js';
+import { TagToggle } from '../features/plants/components/TagToggle.js';
 import { Tooltip } from '../shared/components/Tooltip.js'; 
 
 /**

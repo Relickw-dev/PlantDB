@@ -3,7 +3,7 @@ import { actionTypes } from '../../shared/store/actionTypes.js';
 import { fetchPlantDetails } from '../plants/services/plantService.js';
 import { getMemoizedSortedAndFilteredPlants } from '../plants/services/memoizedLogic.js';
 import { getAdjacentPlants } from '../plants/services/plantLogic.js';
-import { handleError } from '../../app/errorHandler.js';
+import { handleError, OperationalError } from '../../app/errorHandler.js';
 import { showNotification } from '../../shared/components/NotificationService.js';
 import * as shareService from '../../shared/services/shareService.js';
 import { getFavoriteIds, isFavoritesFilterActive } from '../favorites/selectors.js'; // <-- IMPORT NOU
@@ -32,12 +32,14 @@ export const openPlantModal = (plantId) => {
             const state = getState();
             const { all, query, activeTags, sortOrder } = state.plants;
             
-            // MODIFICAT: Folosim selectori pentru a accesa starea 'favorites'
             const favoritesActive = isFavoritesFilterActive(state);
             const favoriteIds = getFavoriteIds(state);
 
             const plantSummary = all.find(p => p.id == plantId);
-            if (!plantSummary) throw new Error(`Planta cu ID #${plantId} nu a fost găsită.`);
+            if (!plantSummary) {
+                // Lansează o eroare specifică pentru a fi prinsă mai jos
+                throw new OperationalError(`Planta cu ID #${plantId} nu a fost găsită.`);
+            }
             
             const detailedData = await fetchPlantDetails(plantId);
             const current = { ...plantSummary, ...detailedData };
@@ -64,7 +66,6 @@ export const selectRandomPlant = () => (dispatch, getState) => {
     const state = getState();
     const { all, query, activeTags, sortOrder } = state.plants;
 
-    // MODIFICAT: Folosim selectori și aici
     const favoritesActive = isFavoritesFilterActive(state);
     const favoriteIds = getFavoriteIds(state);
 
@@ -85,6 +86,7 @@ export const copyPlantDetails = () => async (dispatch, getState) => {
         await navigator.clipboard.writeText(textToCopy);
         dispatch({ type: actionTypes.SET_COPY_STATUS, payload: 'success' });
     } catch (err) {
+        // Aici eroarea este de tip "Operational", dar handleError o gestionează corect
         handleError(err, "copierea detaliilor");
         dispatch({ type: actionTypes.SET_COPY_STATUS, payload: 'error' });
     } finally {

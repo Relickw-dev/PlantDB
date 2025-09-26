@@ -1,5 +1,5 @@
-// src/js/services/shareService.js
-import { handleError } from '../../app/errorHandler.js';
+// src/js/shared/services/shareService.js
+import { handleError, OperationalError } from '../../app/errorHandler.js'; // Adaugă OperationalError
 import { showNotification } from '../components/NotificationService.js';
 
 export async function sharePlant(plant) {
@@ -20,7 +20,8 @@ export async function sharePlant(plant) {
         }
     } catch (err) {
         if (err.name !== 'AbortError') {
-            handleError(err, "partajarea detaliilor");
+            // Folosim o eroare personalizată pentru a standardiza
+            handleError(new OperationalError(err.message), "partajarea detaliilor");
         }
     }
 }

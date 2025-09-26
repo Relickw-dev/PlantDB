@@ -1,4 +1,5 @@
-import { handleError } from '../../../app/errorHandler.js';
+// src/js/features/favorites/services/favoriteService.js
+import { handleError, OperationalError } from '../../../app/errorHandler.js'; // Adaugă OperationalError
 
 // Cheia unică folosită pentru a stoca favoritele în localStorage.
 const FAVORITES_KEY = 'plantAppFavorites';
@@ -19,13 +20,14 @@ export function getFavorites() {
         const parsedFavorites = JSON.parse(favoritesJSON);
 
         if (!Array.isArray(parsedFavorites)) {
-            throw new Error("Datele favoritelor nu sunt stocate ca un array.");
+            // Folosim o eroare personalizată pentru a fi mai explicit
+            throw new OperationalError("Datele favoritelor nu sunt stocate ca un array.");
         }
 
         return parsedFavorites.filter(id => typeof id === 'number');
 
     } catch (error) {
-        handleError(error, "parsarea datelor de favorite"); // MODIFICAT
+        handleError(error, "parsarea datelor de favorite");
         localStorage.removeItem(FAVORITES_KEY);
         return [];
     }

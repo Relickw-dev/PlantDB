@@ -6,9 +6,14 @@ import { ensurePlantModalIsLoaded } from '../../shared/utils/dynamicLoader.js';
 import { debounce } from '../../shared/utils/helpers.js';
 import { getMemoizedSortedAndFilteredPlants } from './services/memoizedLogic.js';
 import { getFavoriteIds, isFavoritesFilterActive } from '../favorites/selectors.js';
+// Importăm noii selectori
+import { 
+    isPlantsLoading, getQuery, getActiveTags, getSortOrder,
+    getAllUniqueTags, getModalPlant, getCopyStatus, getAllPlants
+} from './selectors.js';
 
 function getEmptyStateContent(state) {
-    const { query } = state.plants;
+    const query = getQuery(state);
     const filterActive = isFavoritesFilterActive(state);
     if (filterActive) {
         return { message: 'Nu ai adăugat nicio plantă la favorite. Apasă pe inimă pentru a crea colecția ta!', imgSrc: "assets/icons/empty.svg" };
@@ -45,7 +50,7 @@ export default {
         
         window.addEventListener('keydown', (e) => {
             const state = store.getState();
-            if (!state.plants.modalPlant) return;
+            if (!getModalPlant(state)) return;
 
             switch (e.key) {
                 case 'ArrowRight':
@@ -64,52 +69,56 @@ export default {
         const currentPlants = state.plants;
         const oldPlants = oldState.plants || {};
         const needsGridRender =
-            currentPlants.isLoading !== oldPlants.isLoading ||
-            currentPlants.query !== oldPlants.query ||
-            JSON.stringify(currentPlants.activeTags) !== JSON.stringify(oldPlants.activeTags) ||
-            currentPlants.sortOrder !== oldPlants.sortOrder ||
-            currentPlants.all.length !== (oldPlants.all || []).length ||
+            isPlantsLoading(state) !== isPlantsLoading(oldState) ||
+            getQuery(state) !== getQuery(oldState) ||
+            JSON.stringify(getActiveTags(state)) !== JSON.stringify(getActiveTags(oldState)) ||
+            getSortOrder(state) !== getSortOrder(oldState) ||
+            getAllPlants(state).length !== (getAllPlants(oldState) || []).length ||
             isFavoritesFilterActive(state) !== isFavoritesFilterActive(oldState) ||
             JSON.stringify(getFavoriteIds(state)) !== JSON.stringify(getFavoriteIds(oldState));
 
         if (needsGridRender) {
             const visiblePlants = getMemoizedSortedAndFilteredPlants(
-                currentPlants.all, currentPlants.query, currentPlants.activeTags, currentPlants.sortOrder,
+                getAllPlants(state), getQuery(state), getActiveTags(state), getSortOrder(state),
                 isFavoritesFilterActive(state), getFavoriteIds(state)
             );
             components.plantGrid.render({
                 plants: visiblePlants,
-                isLoading: currentPlants.isLoading,
+                isLoading: isPlantsLoading(state),
                 favoriteIds: getFavoriteIds(state),
-                emptyStateContent: visiblePlants.length === 0 && !currentPlants.isLoading
+                emptyStateContent: visiblePlants.length === 0 && !isPlantsLoading(state)
                     ? getEmptyStateContent(state)
                     : null
             });
         }
 
-        if (dom.searchInput.value !== currentPlants.query) {
-            dom.searchInput.value = currentPlants.query;
+        if (dom.searchInput.value !== getQuery(state)) {
+            dom.searchInput.value = getQuery(state);
         }
-        if (dom.sortSelect.value !== currentPlants.sortOrder) {
-            dom.sortSelect.value = currentPlants.sortOrder;
+        if (dom.sortSelect.value !== getSortOrder(state)) {
+            dom.sortSelect.value = getSortOrder(state);
         }
 
-        if (JSON.stringify(currentPlants.allUniqueTags) !== JSON.stringify((oldPlants).allUniqueTags) ||
-            JSON.stringify(currentPlants.activeTags) !== JSON.stringify((oldPlants).activeTags)) {
+        if (JSON.stringify(getAllUniqueTags(state)) !== JSON.stringify((getAllUniqueTags(oldState))) ||
+            JSON.stringify(getActiveTags(state)) !== JSON.stringify((getActiveTags(oldState)))) {
             components.tagFilter.render({
-                allTags: currentPlants.allUniqueTags,
-                activeTags: currentPlants.activeTags,
+                allTags: getAllUniqueTags(state),
+                activeTags: getActiveTags(state),
             });
         }
         
-        if (currentPlants.modalPlant !== oldPlants.modalPlant || currentPlants.copyStatus !== oldPlants.copyStatus) {
-            // Nu mai folosim try...catch, lăsăm handler-ul global să se ocupe de asta
+        const currentModalPlant = getModalPlant(state);
+        const oldModalPlant = getModalPlant(oldState);
+        const currentCopyStatus = getCopyStatus(state);
+        const oldCopyStatus = getCopyStatus(oldState);
+
+        if (currentModalPlant !== oldModalPlant || currentCopyStatus !== oldCopyStatus) {
             ensurePlantModalIsLoaded().then(modal => {
-                if (currentPlants.modalPlant && currentPlants.modalPlant.current) {
+                if (currentModalPlant && currentModalPlant.current) {
                     modal.render({
-                        plant: currentPlants.modalPlant.current,
-                        adjacentPlants: { prev: currentPlants.modalPlant.prev, next: currentPlants.modalPlant.next },
-                        copyStatus: currentPlants.copyStatus
+                        plant: currentModalPlant.current,
+                        adjacentPlants: { prev: currentModalPlant.prev, next: currentModalPlant.next },
+                        copyStatus: currentCopyStatus
                     });
                 } else {
                     modal.close();

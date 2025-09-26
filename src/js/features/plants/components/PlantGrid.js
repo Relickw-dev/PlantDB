@@ -95,13 +95,10 @@ export class PlantGrid {
 
         morphdom(this.#container, newGrid, {
             getNodeKey: node => node.dataset ? node.dataset.id : node.id,
+            // Am eliminat complet logica specială pentru butonul de favorite.
+            // Acum, morphdom va re-reda întreaga componentă PlantCard,
+            // ceea ce este o abordare mai "pură" și mai simplă.
             onBeforeElUpdated: (fromEl, toEl) => {
-                if (fromEl.dataset.id?.startsWith('fav-btn-')) {
-                    if (fromEl.className !== toEl.className) {
-                        fromEl.className = toEl.className;
-                    }
-                    return false;
-                }
                 if (fromEl.tagName === 'IMG' && fromEl.hasAttribute('src')) {
                     return false;
                 }

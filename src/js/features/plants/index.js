@@ -5,7 +5,6 @@ import { CUSTOM_EVENTS, PET_KEYWORDS } from '../../shared/utils/constants.js';
 import { ensurePlantModalIsLoaded } from '../../shared/utils/dynamicLoader.js';
 import { debounce } from '../../shared/utils/helpers.js';
 import { getMemoizedSortedAndFilteredPlants } from './services/memoizedLogic.js';
-import { handleError } from '../../app/errorHandler.js';
 import { getFavoriteIds, isFavoritesFilterActive } from '../favorites/selectors.js';
 
 function getEmptyStateContent(state) {
@@ -44,7 +43,6 @@ export default {
             }
         });
         
-        // NOU: Gestionarea evenimentelor de la tastatură, specifică acestui modul.
         window.addEventListener('keydown', (e) => {
             const state = store.getState();
             if (!state.plants.modalPlant) return;
@@ -63,7 +61,6 @@ export default {
         });
     },
     syncUI: ({ dom, components, state, oldState }) => {
-        // ... (conținutul funcției syncUI rămâne neschimbat de la pasul anterior)
         const currentPlants = state.plants;
         const oldPlants = oldState.plants || {};
         const needsGridRender =
@@ -106,6 +103,7 @@ export default {
         }
         
         if (currentPlants.modalPlant !== oldPlants.modalPlant || currentPlants.copyStatus !== oldPlants.copyStatus) {
+            // Nu mai folosim try...catch, lăsăm handler-ul global să se ocupe de asta
             ensurePlantModalIsLoaded().then(modal => {
                 if (currentPlants.modalPlant && currentPlants.modalPlant.current) {
                     modal.render({
@@ -116,7 +114,7 @@ export default {
                 } else {
                     modal.close();
                 }
-            }).catch(err => handleError(err, 'sincronizarea modalului de plantă'));
+            });
         }
     }
 };

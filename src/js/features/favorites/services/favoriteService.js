@@ -38,11 +38,10 @@ export function getFavorites() {
  * @param {number[]} favoriteIds - Array-ul de ID-uri de salvat.
  */
 function saveFavorites(favoriteIds) {
-    // Asigurăm că salvăm întotdeauna un array valid.
     if (Array.isArray(favoriteIds)) {
         localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteIds));
     } else {
-        console.error("Încercare de a salva date invalide pentru favorite. Salvarea a fost anulată.");
+        handleError(new OperationalError("Încercare de a salva date invalide pentru favorite. Salvarea a fost anulată."), "salvarea favoritelor");
     }
 }
 

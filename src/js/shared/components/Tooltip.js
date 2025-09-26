@@ -1,18 +1,15 @@
 // src/js/components/Tooltip.js
-
 import { createElement } from '../utils/helpers.js';
+import { OperationalError, handleError } from '../../app/errorHandler.js';
 
 export class Tooltip {
     #tooltipElement;
     #currentTarget = null;
 
-    /**
-     * @param {HTMLElement} tooltipElement - Elementul DOM pentru tooltip.
-     */
     constructor(tooltipElement) {
-        this.#tooltipElement = tooltipElement; // MODIFICAT: Acum primește direct elementul
+        this.#tooltipElement = tooltipElement;
         if (!this.#tooltipElement) {
-            console.warn(`Elementul pentru Tooltip nu a fost găsit.`);
+            handleError(new OperationalError('Elementul pentru Tooltip nu a fost găsit.'), 'Tooltip initialization');
             return;
         }
         

@@ -1,5 +1,5 @@
 import { BREAKPOINTS } from '../../../shared/utils/constants.js';
-
+import { OperationalError, handleError } from '../../../app/errorHandler.js';
 /**
  * O clasă care gestionează funcționalitatea de colapsare/expandare
  * pentru secțiunea de filtrare a tag-urilor.
@@ -13,13 +13,13 @@ export class TagToggle {
      * @param {HTMLElement} headerElement - Elementul DOM pentru întregul header al secțiunii de tag-uri.
      */
     constructor(headerElement) {
-        this.#header = headerElement; // MODIFICAT: Acum primește direct elementul
+        this.#header = headerElement;
 
         this.#toggleBtn = document.getElementById('toggle-tags-btn');
         this.#tagContainer = document.getElementById('tag-filter-buttons');
 
         if (!this.#header || !this.#toggleBtn || !this.#tagContainer) {
-            console.warn('Elementele necesare pentru TagToggle nu au fost găsite în DOM.');
+            handleError(new OperationalError('Elementele necesare pentru TagToggle nu au fost găsite în DOM.'), 'TagToggle initialization');
             return;
         }
 

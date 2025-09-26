@@ -1,20 +1,14 @@
 import { FAB_ACTIONS } from '../utils/constants.js';
 import { dispatchEvent } from '../utils/helpers.js';
+import { OperationalError, handleError } from '../../app/errorHandler.js';
 
-/**
- * O clasă pentru a gestiona meniul de tip "Floating Action Button" (FAB).
- * Încapsulează logica de deschidere/închidere și delegarea acțiunilor.
- */
 export class FabMenu {
     #container;
 
-    /**
-     * @param {HTMLElement} containerElement - Elementul DOM care conține meniul FAB.
-     */
     constructor(containerElement) {
-        this.#container = containerElement; // MODIFICAT: Acum primește direct elementul
+        this.#container = containerElement;
         if (!this.#container) {
-            console.warn(`Containerul pentru FabMenu nu a fost găsit.`);
+            handleError(new OperationalError('Containerul pentru FabMenu nu a fost găsit.'), 'FabMenu initialization');
             return;
         }
         this.#bindEvents();

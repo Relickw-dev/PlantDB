@@ -1,64 +1,18 @@
-// src/js/core/bootstrap.js
+// src/js/app/bootstrap.js
 
-import { PlantGrid } from '../features/plants/components/PlantGrid.js';
-import { TagFilter } from '../features/plants/components/TagFilter.js';
-import { FaqModal } from '../features/faq/components/FaqModal.js';
-import { FabMenu } from '../shared/ui/FabMenu.js';
-import { TagToggle } from '../features/plants/components/TagToggle.js';
-import { Tooltip } from '../shared/components/Tooltip.js'; 
+import { siteConfig } from './siteConfig.js';
+import { bootstrapFromConfig } from '../shared/core/genericBootstrap.js';
 
 /**
- * Găsește și validează elementele esențiale din DOM.
- * @returns {Object} Un obiect cu referințe către elementele DOM.
- */
-function queryDOMElements() {
-    const selectors = {
-        gridContainer: "#grid",
-        tagFilterContainer: "#tag-filter-buttons",
-        searchInput: "#search",
-        sortSelect: "#sort",
-        resetButton: "#reset",
-        randomBtn: "#randomBtn",
-        faqModal: "#faq-modal",
-        plantModal: "#modal",
-        showFavoritesBtn: "#showFavoritesBtn",
-        fabContainer: "#fab-container",
-        appContainer: ".container",
-        intro: "#intro",
-        tooltip: "#app-tooltip",
-    };
-
-    const elements = {};
-    for (const key in selectors) {
-        const el = document.querySelector(selectors[key]);
-        if (!el) throw new Error(`Element esențial nu a fost găsit: '${selectors[key]}'`);
-        elements[key] = el;
-    }
-    return elements;
-}
-
-/**
- * Inițializează toate componentele UI ale aplicației.
- * @param {Object} domElements - Obiectul cu elementele DOM.
- * @returns {Object} Un obiect cu instanțele componentelor.
- */
-export function initComponents(domElements) {
-    return {
-        plantGrid: new PlantGrid(domElements.gridContainer),
-        tagFilter: new TagFilter(domElements.tagFilterContainer),
-        faqModal: new FaqModal(),
-        fabMenu: new FabMenu('#fab-container'),
-        tagToggle: new TagToggle('.tag-filter-header'),
-        tooltip: new Tooltip(`#${domElements.tooltip.id}`),
-    };
-}
-
-/**
- * Punctul de intrare pentru inițializarea aplicației.
- * @returns {{dom: Object, components: Object}}
+ * Punctul de intrare pentru inițializarea aplicației PlantDB.
+ * Această funcție combină configurația specifică a site-ului cu
+ * logica generică de bootstrap pentru a pregăti aplicația.
+ *
+ * @returns {{dom: Object, components: Object}} Un obiect care conține
+ * referințele către elementele DOM esențiale și instanțele componentelor UI.
  */
 export function bootstrapApp() {
-    const dom = queryDOMElements();
-    const components = initComponents(dom);
-    return { dom, components };
+    // Apelează funcția generică de bootstrap, transmițându-i
+    // configurația specifică importată din `siteConfig.js`.
+    return bootstrapFromConfig(siteConfig);
 }

@@ -7,26 +7,21 @@ export class Tooltip {
     #currentTarget = null;
 
     /**
-     * @param {string} selector - Selectorul CSS pentru elementul tooltip din HTML.
+     * @param {HTMLElement} tooltipElement - Elementul DOM pentru tooltip.
      */
-    constructor(selector) {
-        this.#tooltipElement = document.querySelector(selector);
+    constructor(tooltipElement) {
+        this.#tooltipElement = tooltipElement; // MODIFICAT: Acum primește direct elementul
         if (!this.#tooltipElement) {
-            console.warn(`Elementul pentru Tooltip ('${selector}') nu a fost găsit.`);
+            console.warn(`Elementul pentru Tooltip nu a fost găsit.`);
             return;
         }
         
-        // Legăm evenimentele direct în constructorul clasei.
-        // Astfel, componenta este complet autonomă.
         document.body.addEventListener('mouseover', this.#show);
         document.body.addEventListener('mouseout', this.#hide);
         window.addEventListener('scroll', this.#hide, { capture: true });
     }
-
-    /**
-     * Poziționează tooltip-ul relativ la elementul țintă.
-     * @private
-     */
+    
+    // ... restul metodelor rămân neschimbate (#position, #show, #hide)
     #position = (target) => {
         if (!target || !this.#tooltipElement) return;
 
@@ -50,10 +45,6 @@ export class Tooltip {
         this.#tooltipElement.style.left = `${left}px`;
     }
 
-    /**
-     * Afișează tooltip-ul. Metoda este legată de 'mouseover'.
-     * @private
-     */
     #show = (e) => {
         const target = e.target.closest('[data-tooltip]');
         if (!target) return;
@@ -65,10 +56,6 @@ export class Tooltip {
         this.#position(this.#currentTarget);
     }
 
-    /**
-     * Ascunde tooltip-ul. Metoda este legată de 'mouseout' și 'scroll'.
-     * @private
-     */
     #hide = () => {
         if (!this.#currentTarget) return;
         this.#currentTarget = null;

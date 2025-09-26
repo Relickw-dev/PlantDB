@@ -1,7 +1,5 @@
 import { FAB_ACTIONS } from '../utils/constants.js';
-// <-- ELIMINAT: import { applyTheme } from './ThemeToggle.js';
-// <-- ELIMINAT: import * as actions from '../core/actions.js';
-import { dispatchEvent } from '../utils/helpers.js'; // <-- ADAUGAT
+import { dispatchEvent } from '../utils/helpers.js';
 
 /**
  * O clasă pentru a gestiona meniul de tip "Floating Action Button" (FAB).
@@ -10,10 +8,13 @@ import { dispatchEvent } from '../utils/helpers.js'; // <-- ADAUGAT
 export class FabMenu {
     #container;
 
-    constructor(selector) {
-        this.#container = document.querySelector(selector);
+    /**
+     * @param {HTMLElement} containerElement - Elementul DOM care conține meniul FAB.
+     */
+    constructor(containerElement) {
+        this.#container = containerElement; // MODIFICAT: Acum primește direct elementul
         if (!this.#container) {
-            console.warn(`Containerul pentru FabMenu ('${selector}') nu a fost găsit.`);
+            console.warn(`Containerul pentru FabMenu nu a fost găsit.`);
             return;
         }
         this.#bindEvents();
@@ -31,7 +32,6 @@ export class FabMenu {
 
             const action = button.dataset.action;
             if (action) {
-                // <-- MODIFICAT: Emitem un eveniment în loc să apelăm acțiuni
                 dispatchEvent(this.#container, 'fab-action', { action });
                 this.#closeMenu();
             }

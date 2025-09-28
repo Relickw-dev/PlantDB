@@ -1,14 +1,13 @@
 /// src/js/store/createStore.js
 
-// ELIMINAT: import { rootReducer } from './rootReducer.js';
 
-export function createStore(initialState, rootReducer) { // MODIFICAT: rootReducer este acum un parametru
+export function createStore(initialState, rootReducer) { 
     let state = initialState;
     const listeners = new Set();
 
     function getState() {
         // Returnează o copie pentru a preveni mutațiile accidentale
-        return JSON.parse(JSON.stringify(state));
+        return state;
     }
 
     function subscribe(callback) {

@@ -84,10 +84,14 @@ export class PlantModal extends BaseModal {
     #elements = {};
     #currentPlant = null;
 
+    // Adăugăm o referință la containerul de conținut
+    #contentWrapper;
+
     constructor() {
         super('modal');
         this.#elements = {
             heroImage: this._modalElement.querySelector(".modal-hero-image"),
+            contentWrapper: this._modalElement.querySelector(".modal-content-wrapper"), // Salvează referința
             title: this._modalElement.querySelector("#modalTitle"),
             latinName: this._modalElement.querySelector("#modalLatin"),
             description: this._modalElement.querySelector("#modalDesc"),
@@ -108,15 +112,29 @@ export class PlantModal extends BaseModal {
         this.#bindComponentEvents();
     }
 
-    render({ plant, adjacentPlants, copyStatus = COPY_STATUS.IDLE }) {
+    // Am făcut metoda async pentru a putea folosi `await` sau `setTimeout`
+    async render({ plant, adjacentPlants, copyStatus = COPY_STATUS.IDLE }) {
         if (!plant) return;
-        this.#currentPlant = plant;
-        this.#resetInternalState();
-        this.#updateHeader(plant);
-        this.#updateContent(plant);
-        this.#updateNavigation(adjacentPlants, plant);
-        this.#updateCopyButton(copyStatus);
-        this.open();
+
+        // Verificăm dacă planta s-a schimbat pentru a declanșa animația
+        const plantChanged = !this.#currentPlant || this.#currentPlant.id !== plant.id;
+
+        if (plantChanged) {
+            // Declanșăm animația de fade-out
+            this.#elements.contentWrapper.classList.add('fade-out');
+            await new Promise(resolve => setTimeout(resolve, 200)); // Așteptăm ca animația să se termine
+
+            // Actualizăm conținutul
+            this.#currentPlant = plant;
+            this.#resetInternalState();
+            this.#updateHeader(plant);
+            this.#updateContent(plant);
+            this.#updateNavigation(adjacentPlants, plant);
+            this.#elements.contentWrapper.classList.remove('fade-out'); // Fade-in
+        }
+        
+        this.#updateCopyButton(copyStatus); // Actualizăm butonul de copiere separat
+        this.open(); // Deschidem modalul
     }
     
     #renderDetailsTab(plant) {

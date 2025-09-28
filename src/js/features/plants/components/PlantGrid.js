@@ -37,6 +37,7 @@ function createEmptyState({ message, imgSrc }) {
         className: "empty-state",
         children: [
             createElement("img", { attrs: { src: imgSrc, alt: "Niciun rezultat" } }),
+            createElement("h3", { text: "Ups, nu am găsit nimic." }),
             createElement("p", { text: message }),
         ]
     });
